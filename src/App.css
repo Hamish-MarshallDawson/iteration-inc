@@ -1,4 +1,69 @@
+/* Ensure the navbar is fixed to the left side of the screen */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Full height of the viewport */
+  width: 200px; /* Adjust width as needed */
+  background-color: rgba(13, 6, 40, 0.9); /* 90% opacity */
+  color: #fff;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  align-items: flex-start; /* Align items to the left */
+}
+
+/* Style for the logo or left section */
+.navbar-left .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Style for the navigation links */
+.navbar-center .nav-links {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column; /* Stack links vertically */
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-center .nav-links li {
+  margin-bottom: 1rem; /* Space between links */
+}
+
+.navbar-center .nav-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Snake logo animation stuff */
+.snake {
+  height: 10vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .snake {
+    animation: snake-logo-spin infinite 10s linear;
+  }
+}
+
+@keyframes snake-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ensure the rest of the page content is not hidden behind the navbar */
 .App {
+  margin-left: 220px; /* Adjust based on navbar width */
   text-align: center;
 }
 
@@ -13,8 +78,10 @@
   }
 }
 
+/* Not exactly matching the gradient in the demo and
+ obviously missing the icon faded background but pretty close */
 .App-header {
-  background-color: #282c34;
+  background: linear-gradient(to left bottom, #4117e5 14%, #0d0628);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
