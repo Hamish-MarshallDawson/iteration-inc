@@ -1,10 +1,10 @@
-// Filename - pages/index.js
-
 import React from "react";
 
 import logo from "../logo.svg";
 
 import Navbar from "../components/nav";
+
+import "../App.css";
 
 const HomeScreen = () => {
   return (

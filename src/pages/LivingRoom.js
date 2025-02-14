@@ -2,6 +2,8 @@
 
 import React from "react";
 
+import "../App.css";
+
 const LivingRoom = () => {
   return (
     <div>
