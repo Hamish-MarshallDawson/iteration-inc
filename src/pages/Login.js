@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-
-import '../Login.css';
+import { useNavigate } from 'react-router-dom';
+import '../css/login-page.css';
 
 
 function Login() {
@@ -9,6 +9,8 @@ function Login() {
     //these are state variables
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
 
 
     const handleLogin = (e) => {
@@ -18,6 +20,7 @@ function Login() {
 
         if (email === "123@bombaclat.com" || password === "123456") {
             alert("Login successful");
+            navigate('/');
         } else {
             alert("Login failed");
         }
