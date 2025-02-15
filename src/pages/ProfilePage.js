@@ -1,4 +1,4 @@
-// Filename - pages/about.js
+// Filename - pages/ProfilePage.js
 
 import React from "react";
 
@@ -6,8 +6,10 @@ import "../App.css";
 
 const ProfilePage = () => {
   return (
-    <div>
-      <h1>Check your profile here</h1>
+    <div className="App">
+      <h1>Profile</h1>
+      <p>Full name goes here </p>
+      <p>Email goes here </p>
     </div>
   );
 };

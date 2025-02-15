@@ -7,6 +7,8 @@ import Bedroom from "./pages/Bedroom.js";
 import Kitchen from "./pages/Kitchen.js";
 import LivingRoom from "./pages/LivingRoom.js";
 import HomeScreen from "./pages/HomeScreen.js";
+import ProfilePage from "./pages/ProfilePage.js";
+
 import "./App.css";
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
         <Route path="/contact" element={<Kitchen />} />
         <Route path="/blogs" element={<LivingRoom />} />
         <Route path="/sign-up" element={<HomeScreen />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );
