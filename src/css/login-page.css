@@ -42,7 +42,7 @@
   }
 
 
-  /*!!!!!!!!!!!!!!
+  /*!!!!!!!!!!!!!! affect the format in HOME page, need to be fixed!!!
   same code from App.css -> .App-header from Hamish, just to get the same colour scheme on the background
   may changed later if the colour scheme changes*/
   body {
@@ -57,6 +57,11 @@
     color: white;
     
   }
+
+  .helper-text{
+    font-size: 15px;
+  }
+
   
   
   

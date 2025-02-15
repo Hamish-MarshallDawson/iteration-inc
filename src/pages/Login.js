@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom"
 import '../css/login-page.css';
 
 
@@ -15,15 +16,14 @@ function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
 
-        if (email === "123@bombaclat.com" || password === "123456") {
+        if (email === "123@bombaclat.com" && password === "123456") {
             alert("Login successful");
-            navigate('/');
+            navigate('/authentication');
         } else {
             alert("Login failed");
         }
+        
     }
 
 
@@ -31,15 +31,14 @@ function Login() {
         <div className="login">
             <h1>Login</h1>
 
-            <form onSubmit={handleLogin} className="login-form">
+            <form onSubmit={handleLogin}>
                 <div className="input">
                     <label>Email:</label>
                     <input 
                         type="email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email" required 
-                        
+                        required 
                     />
                 </div>
                 
@@ -59,6 +58,14 @@ function Login() {
              
             </form>
 
+            <div className="helper-text">
+                <p>
+                    <Link to="/passwordReset">Forgot Password?</Link>
+                </p>
+                <p>
+                     Don't have an account? <Link to="/sign-up">Sign Up</Link>
+                </p>
+            </div>
          
         </div>
     );
