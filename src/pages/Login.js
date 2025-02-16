@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios";                      // Import axios for making HTTP requests and to be able to communicate with the back-end server
+import Spinner from "../components/Spinner.js";  // Import LoadingSpinner component
 
 import "../css/login-page.css";
 
@@ -10,6 +11,7 @@ function Login() {
   // These are state variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Use to navigate to different pages
   const navigate = useNavigate();       
@@ -18,6 +20,7 @@ function Login() {
   const handleLogin = async (e) => {
     // Prevent default form submission behavior
     e.preventDefault();
+    setIsLoading(true);
 
     try{
         // Send a POST request to the backend with email and password that user entered
@@ -25,7 +28,7 @@ function Login() {
             email,
             password,
         });
-
+        setIsLoading(false);
         // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
         if (response.status === 200) {
             //Then we alert the user that login was successful and redirect to the Home Page
@@ -40,7 +43,7 @@ function Login() {
             navigate('/');  // Redirect to the Home Page
         }
     }catch(error){    
-
+        setIsLoading(false);
         // Otherwise, if user entered wrong login credentials, it will display error message
         if (error.response && error.response.status === 401) {
             // Show error message for invalid credentials
@@ -79,9 +82,10 @@ function Login() {
           />
         </div>
 
-        <button type="submit" className="submit-button">
-          Login
+        <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'Login'}
         </button>
+        {isLoading && <Spinner />}  {/* Use the Spinner component here */}
       </form>
 
       <div className="helper-text">
