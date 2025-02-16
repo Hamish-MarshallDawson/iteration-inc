@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import "../css/login-page.css";
 
 // testing something
@@ -11,15 +13,24 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (email === "123@bombaclat.com" && password === "123456") {
-      alert("Login successful");
-      navigate("/authentication");
-    } else {
-      alert("Login failed");
+    try{
+        const response = await axios.post("http://localhost:5000/api/login", {
+            email,
+            password,
+        });
+
+        if (response.status === 200) {
+            alert("User registered, " + response.data.message);  // Show success message
+            navigate('/');  // Redirect to the Home Page
+        }
+    }catch(error){    
+        alert('Invalid email or password');
+        alert("Login failed, " + error);
     }
+
   };
 
   return (
