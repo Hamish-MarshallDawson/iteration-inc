@@ -6,7 +6,6 @@ import Login from "./pages/Login.js";
 import Bedroom from "./pages/Bedroom.js";
 import Kitchen from "./pages/Kitchen.js";
 import LivingRoom from "./pages/LivingRoom.js";
-import HomeScreen from "./pages/HomeScreen.js";
 import ProfilePage from "./pages/ProfilePage.js";
 
 import Authentication from "./pages/Authentication.js";
@@ -21,7 +20,7 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route exact path="/" element={<HomeScreen />} />
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />{" "}
         {/* This is the route to the Login page in directory ./pages/Login.js, imported in the header */}
         <Route path="/about" element={<Bedroom />} />
