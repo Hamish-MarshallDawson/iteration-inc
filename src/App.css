@@ -1,3 +1,33 @@
+/* Apply the background to the entire app */
+body {
+  position: relative;
+  background: url("bgImages.svg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to left bottom, #4117e5 14%, #0d0628);
+  opacity: 0.8; /* Adjust to blend with the SVG */
+  z-index: -1;
+}
+
+/* Ensure content is positioned correctly */
+.App {
+  position: relative; /* Keeps content above the background */
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 /* Ensure the navbar is fixed to the left side of the screen */
 .navbar {
   position: fixed;
@@ -94,7 +124,6 @@
 /* Not exactly matching the gradient in the demo and
  obviously missing the icon faded background but pretty close */
 .App-header {
-  background: linear-gradient(to left bottom, #4117e5 14%, #0d0628);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
