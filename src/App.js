@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 import Navbar from "./components/nav.js";
 
@@ -15,9 +20,11 @@ import SignUp from "./pages/SignUp.js";
 import "./App.css";
 
 function App() {
+  // const location = useLocation();
+
   return (
     <Router>
-      <Navbar />
+      {location.pathname !== "/login" && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Login />} />
