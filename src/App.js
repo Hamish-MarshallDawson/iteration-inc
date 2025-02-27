@@ -20,15 +20,26 @@ import SignUp from "./pages/SignUp.js";
 import "./App.css";
 
 function App() {
-  // const location = useLocation();
-
   return (
     <Router>
-      {location.pathname !== "/login" && <Navbar />}
+      <MainContent />{" "}
+      {/* Move everything inside a separate component that has access to useLocation */}
+    </Router>
+  );
+}
+
+// Separate component for conditional rendering
+function MainContent() {
+  const location = useLocation(); // Get current route
+
+  return (
+    <>
+      {/* Render Navbar only if NOT on login page */}
+      {location.pathname !== "/" && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />{" "}
+        {/* <Route path="/login" element={<Login />} />{" "} */}
         {/* This is the route to the Login page in directory ./pages/Login.js, imported in the header */}
         <Route path="/about" element={<Bedroom />} />
         <Route path="/contact" element={<Kitchen />} />
@@ -40,7 +51,7 @@ function App() {
         <Route path="/passwordReset" element={<PasswordReset />} />{" "}
         {/* This is the route to the sign up page in directory ./pages/SignUp.js, imported in the header */}
       </Routes>
-    </Router>
+    </>
   );
 }
 
