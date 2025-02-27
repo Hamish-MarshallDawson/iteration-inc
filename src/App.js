@@ -22,8 +22,10 @@ import "./App.css";
 function App() {
   return (
     <Router>
-      <MainContent />{" "}
-      {/* Move everything inside a separate component that has access to useLocation */}
+      <div className="App">
+        <MainContent />{" "}
+        {/* Move everything inside a separate component that has access to useLocation */}
+      </div>
     </Router>
   );
 }

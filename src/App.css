@@ -19,6 +19,7 @@ body::before {
   /* opacity: 0.8; Adjust to blend with the SVG */
   z-index: -1;
 }
+
 /* Ensure content is positioned correctly */
 .App {
   position: relative; /* Keeps content above the background */
@@ -30,6 +31,69 @@ body::before {
   align-items: center;
   min-height: 100vh;
 }
+
+/* Login page section
+.
+.
+.
+.
+.
+. */
+
+/* .login {
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 50px 300px 100px 100px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  position: relative;
+} */
+
+/* Testing */
+.input {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* NAV BAR SECTION
+.
+.
+.
+.
+.
+.
+
+
+
+*/
 
 /* Ensure the navbar is fixed to the left side of the screen */
 .navbar {
