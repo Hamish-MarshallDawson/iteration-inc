@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
+import profileIcon from "./profileIcon.svg"; // Import the SVG correctly
 
 const Navbar = () => {
   return (
     <nav className="navbar">
-      <div className="navbar-left"></div>
       <div className="navbar-center">
         <img
           src="/images/iterationincv3.png"
@@ -12,7 +12,13 @@ const Navbar = () => {
         />
         <ul className="nav-links">
           <li>
-            <Link to="/rooms">Rooms</Link>
+            <Link to="/rooms">Living Room</Link>
+          </li>
+          <li>
+            <Link to="/rooms">Kitchen</Link>
+          </li>
+          <li>
+            <Link to="/rooms">Bedroom</Link>
           </li>
           <li>
             <Link to="/energy-report">Energy Report</Link>
@@ -20,8 +26,11 @@ const Navbar = () => {
           <li>
             <Link to="/awards">Awards</Link>
           </li>
-          <li>
-            <Link to="/profile">Profile</Link>
+          <li className="profile-item">
+            <Link className="ProfileLink" to="/profile">
+              Profile
+              <img src={profileIcon} alt="Profile" className="profileIcon" />
+            </Link>
           </li>
         </ul>
       </div>
