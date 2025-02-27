@@ -57,8 +57,7 @@ function Login() {
   // Rendering login page
   return (
     <div className="login">
-      <h1>Login</h1>
-
+      <div className="inputFields"></div>
       <form onSubmit={handleLogin}>
         <div className="input">
           <label>Email:</label>
