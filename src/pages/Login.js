@@ -55,44 +55,52 @@ function Login() {
   };
 
   // Rendering login page
+  // Rendering login page
   return (
-    <div className="login">
-      <div className="inputFields"></div>
-      <form onSubmit={handleLogin}>
-        <div className="input">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input">
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-button" disabled={isLoading}>
-          {isLoading ? "Loading..." : "Login"}
-        </button>
-        {isLoading && <Spinner />} {/* Use the Spinner component here */}
-      </form>
+    <div className="login-container">
+      <img
+        src="/images/iterationincv3.png"
+        alt="Snake logo"
+        className="snake-logo"
+      />
+      <div className="login">
+        <form onSubmit={handleLogin}>
+          <div className="inputFields">
+            <div className="input">
+              <label>Email:</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input">
+              <label>Password:</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? "Loading..." : "Login"}
+          </button>
+          {isLoading && <Spinner />} {/* Use the Spinner component here */}
+        </form>
 
-      <div className="helper-text">
-        <p>
-          <Link to="/passwordReset">Forgot Password?</Link>
-        </p>
-        <p>
-          Don't have an account? <Link to="/sign-up">Sign Up</Link>
-        </p>
+        <div className="helper-text">
+          <p>
+            <Link to="/passwordReset">Forgot Password?</Link>
+          </p>
+          <p>
+            Don't have an account? <Link to="/sign-up">Sign Up</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
 export default Login;
