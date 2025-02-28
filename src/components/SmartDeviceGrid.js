@@ -32,29 +32,34 @@ export default function SmartDeviceGrid() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold text-orange-300 mb-4">
+    <div className="smart-device-grid-container p-6">
+      <h2 className="section-title text-xl font-semibold text-orange-300 mb-4">
         Smart devices
       </h2>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="device-grid grid grid-cols-4 gap-4">
         {devices.map((device) => (
           <Card
             key={device.id}
-            className="p-4 flex flex-col items-center bg-orange-400 rounded-lg shadow-lg"
+            className="device-card p-4 flex flex-col items-center bg-orange-400 rounded-lg shadow-lg"
           >
-            <CardContent className="text-center">
+            <CardContent className="device-card-content text-center">
               <DeviceIcon
                 type={device.type}
-                className="text-black text-6xl mb-2"
+                className="device-icon text-black text-6xl mb-2"
               />
               <Switch
                 checked={device.isOn}
                 onCheckedChange={() => toggleDevice(device.id)}
-                className="mb-2"
+                className="device-switch mb-2"
               />
-              <p className="text-sm text-black">{device.isOn ? "On" : "Off"}</p>
-              <Button variant="ghost" className="mt-2 flex items-center gap-1">
+              <p className="device-status text-sm text-black">
+                {device.isOn ? "On" : "Off"}
+              </p>
+              <Button
+                variant="ghost"
+                className="settings-button mt-2 flex items-center gap-1"
+              >
                 <Settings size={16} /> Settings
               </Button>
             </CardContent>
@@ -64,11 +69,11 @@ export default function SmartDeviceGrid() {
         {/* Add Device Card */}
         <Card
           onClick={addDevice}
-          className="p-4 flex flex-col items-center justify-center bg-orange-400 rounded-lg shadow-lg cursor-pointer hover:bg-orange-500 transition"
+          className="add-device-card p-4 flex flex-col items-center justify-center bg-orange-400 rounded-lg shadow-lg cursor-pointer hover:bg-orange-500 transition"
         >
-          <CardContent className="text-center">
-            <Plus className="text-black text-6xl mb-2" />
-            <p className="text-sm text-black">Add Device</p>
+          <CardContent className="add-device-card-content text-center">
+            <Plus className="add-icon text-black text-6xl mb-2" />
+            <p className="add-text text-sm text-black">Add Device</p>
           </CardContent>
         </Card>
       </div>
