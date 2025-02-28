@@ -11,6 +11,8 @@ import Login from "./pages/Login.js";
 import Bedroom from "./pages/Bedroom.js";
 import Kitchen from "./pages/Kitchen.js";
 import LivingRoom from "./pages/LivingRoom.js";
+import EnergyReport from "./pages/EnergyReport.js";
+import Awards from "./pages/Awards.js";
 import ProfilePage from "./pages/ProfilePage.js";
 
 import Authentication from "./pages/Authentication.js";
@@ -46,6 +48,8 @@ function MainContent() {
         <Route path="/Bedroom" element={<Bedroom />} />
         <Route path="/Kitchen" element={<Kitchen />} />
         <Route path="/Livingroom" element={<LivingRoom />} />
+        <Route path="/Energyreport" element={<EnergyReport />} />
+        <Route path="/Awards" element={<Awards />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/authentication" element={<Authentication />} />{" "}
