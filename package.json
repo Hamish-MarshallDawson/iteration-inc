@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@shadcn/ui": "^0.0.4",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "cra-template": "1.2.0",
+    "lucide-react": "^0.476.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",

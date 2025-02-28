@@ -1,15 +1,11 @@
-// Filename - pages/about.js
+import SmartDeviceGrid from "../components/SmartDeviceGrid";
 
-import React from "react";
-
-import "../App.css";
-
-const Kitchen = () => {
+function Kitchen() {
   return (
-    <div>
-      <h1>I cooka da pasta</h1>
+    <div className="App">
+      <SmartDeviceGrid />
     </div>
   );
-};
+}
 
 export default Kitchen;

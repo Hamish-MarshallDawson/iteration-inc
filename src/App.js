@@ -43,9 +43,9 @@ function MainContent() {
         <Route path="/" element={<Login />} />
         {/* <Route path="/login" element={<Login />} />{" "} */}
         {/* This is the route to the Login page in directory ./pages/Login.js, imported in the header */}
-        <Route path="/about" element={<Bedroom />} />
-        <Route path="/contact" element={<Kitchen />} />
-        <Route path="/blogs" element={<LivingRoom />} />
+        <Route path="/Bedroom" element={<Bedroom />} />
+        <Route path="/Kitchen" element={<Kitchen />} />
+        <Route path="/Livingroom" element={<LivingRoom />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/authentication" element={<Authentication />} />{" "}
