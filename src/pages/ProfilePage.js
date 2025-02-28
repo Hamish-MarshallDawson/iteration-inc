@@ -3,12 +3,21 @@
 import React from "react";
 import "../css/profile-page.css"; // Ensure this imports your CSS file
 
+import Card from "../components/ui/card.js";
+import Button from "../components/ui/button.js";
+import Switch from "../components/ui/Switch.js";
+import CardContent from "../components/ui/cardContent.js";
+
+// <Card className="w-[300px] h-[180px] bg-[#fca17d] rounded-lg shadow-md flex flex-col items-center justify-center text-center mt-[50px] p-[15px]">
+
 const ProfilePage = () => {
   return (
-
     <div className="container">
+
       <h1 className="title">Profile</h1>
-      <div className="card">
+
+      {/* Profile Info */}
+      <Card className="card">
         <div className="profile-image">
           <svg
             viewBox="0 0 24 24"
@@ -25,7 +34,20 @@ const ProfilePage = () => {
         </div>
         <h3>Full Name</h3>
         <p>Email goes here</p>
+      </Card>
+
+    {/* Update Profile */}
+      <Card className="card">
+        <h2 className="text-lg font-semibold mb-2">Update Profile</h2>
+        <Button className="">Update Name</Button>
+        <Button className="">Update Contact Info</Button>
+      </Card>
+
+      {/* Log Out Button */}
+      <div>
+        <Button className="w-full bg-red-500 hover:bg-red-600">Log Out</Button>
       </div>
+
     </div>
   );
 };
