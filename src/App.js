@@ -15,9 +15,13 @@ import EnergyReport from "./pages/EnergyReport.js";
 import Awards from "./pages/Awards.js";
 import ProfilePage from "./pages/ProfilePage.js";
 
-import Authentication from "./pages/Authentication.js";
 import PasswordReset from "./pages/PasswordReset.js";
+import PasswordReset2 from "./pages/PasswordReset2.js";
 import SignUp from "./pages/SignUp.js";
+import Verify from "./components/Verify"; 
+import SignUp2 from "./pages/SignUp2.js";
+
+
 
 import "./App.css";
 
@@ -52,10 +56,10 @@ function MainContent() {
         <Route path="/Awards" element={<Awards />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/authentication" element={<Authentication />} />{" "}
-        {/* This is the route to the 2-factor authentication page in directory ./pages/Authentication.js, imported in the header */}
-        <Route path="/passwordReset" element={<PasswordReset />} />{" "}
-        {/* This is the route to the sign up page in directory ./pages/SignUp.js, imported in the header */}
+        <Route path="/passwordReset" element={<PasswordReset />} />
+        <Route path="/passwordReset2" element={<PasswordReset2 />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/sign-up-2" element={<SignUp2 />} />
       </Routes>
     </>
   );
