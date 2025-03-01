@@ -23,10 +23,15 @@ function Login() {
 
     try {
       // Send a POST request to the backend with email and password that user entered
+      const response = await axios.post('./api/loginServer.js', { email, password });
+
+      /*
       const response = await axios.post("http://localhost:5000/api/login", {
         email,
         password,
       });
+      */
+
       setIsLoading(false);
       // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
       if (response.status === 200) {
