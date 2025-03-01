@@ -23,14 +23,16 @@ function Login() {
 
     try {
       // Send a POST request to the backend with email and password that user entered
-      const response = await axios.post('/api/login', { email, password });
 
-      /*
+      //
+      //const response = await axios.post('/api/login', { email, password });
+
+      
       const response = await axios.post("http://localhost:5000/api/login", {
         email,
         password,
       })
-      */
+      
 
       setIsLoading(false);
       // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
@@ -44,7 +46,7 @@ function Login() {
                 should redirect to a 2 factor authentication page not home page
             */
         alert("User registered, " + response.data.message);
-        navigate("/"); // Redirect to the Home Page
+        navigate("/profile"); // Redirect to the Profile Page
       }
     } catch (error) {
       setIsLoading(false);
