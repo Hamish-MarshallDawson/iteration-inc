@@ -23,13 +23,13 @@ function Login() {
 
     try {
       // Send a POST request to the backend with email and password that user entered
-      const response = await axios.post('./api/loginServer.js', { email, password });
+      const response = await axios.post('/api/login', { email, password });
 
       /*
       const response = await axios.post("http://localhost:5000/api/login", {
         email,
         password,
-      });
+      })
       */
 
       setIsLoading(false);
@@ -51,9 +51,15 @@ function Login() {
       // Otherwise, if user entered wrong login credentials, it will display error message
       if (error.response && error.response.status === 401) {
         // Show error message for invalid credentials
+        alert(error.response.data.message);
         alert("Invalid email or password");
+        
+      } else if (error.request){
+        // If request was made but server did not respond
+        alert("No response from server. Please try again later.");
       } else {
         // Or may be server did not receive request at all, it was network error or something, display general error message
+        alert(error.response.data.message);
         alert("Shit went wrong. Please try again.");
       }
     }
