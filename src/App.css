@@ -1,22 +1,30 @@
 /* Apply the background to the entire app */
+html,
 body {
-  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+body {
   background: url("bgImages.svg") no-repeat center center fixed;
   background-size: cover;
-  background-color: black;
+  background-color: #000000;
 }
 
 body::before {
   content: "";
-  position: absolute;
+  position: fixed; /* Ensure it stays fixed to viewport */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+
   mix-blend-mode: multiply;
   background: url("gradient.svg") no-repeat center center fixed;
-  /* background: linear-gradient(to left bottom, #4117E5 14%, #0D0628 100%); */
-  /* opacity: 0.8; Adjust to blend with the SVG */
+  background-size: cover;
   z-index: -1;
 }
 
@@ -381,8 +389,6 @@ button:hover {
   color: #000000; /* Black text */
 }
 
-
-
 /*  Modal Overlay */
 .modal-overlay {
   position: fixed;
@@ -408,4 +414,3 @@ button:hover {
   z-index: 1001;
   position: relative;
 }
-
