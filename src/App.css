@@ -4,8 +4,9 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
-  overflow: hidden;
+  height: auto; /* Change max-height to auto */
+  min-height: 100%;
+  overflow: auto;
 }
 
 body {
@@ -49,7 +50,14 @@ body::before {
 . */
 /* Login page section */
 /* Container for the login page */
-.login-container, .profile-container {
+
+.App,
+.login-container {
+  min-height: auto;
+  height: auto;
+}
+
+.login-container {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
