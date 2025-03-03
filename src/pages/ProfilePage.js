@@ -4,14 +4,9 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-// import "../css/profile-page.css";
 import "../App.css";
 
-import Card from "../components/ui/card.js";
 import Button from "../components/ui/button.js";
-// import CardContent from "../components/ui/cardContent.js";
-
-// <Card className="w-[300px] h-[180px] bg-[#fca17d] rounded-lg shadow-md flex flex-col items-center justify-center text-center mt-[50px] p-[15px]">
 
 const ProfilePage = () => {
   return (
