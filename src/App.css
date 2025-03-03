@@ -49,7 +49,7 @@ body::before {
 . */
 /* Login page section */
 /* Container for the login page */
-.login-container {
+.login-container, .profile-container {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
@@ -65,7 +65,7 @@ body::before {
 }
 
 /* Login page section */
-.login {
+.login, .profile-card {
   height: auto;
   width: 20rem;
   border-radius: 15px;
@@ -76,6 +76,17 @@ body::before {
   display: flex;
   flex-direction: column;
   padding: 2rem;
+}
+
+/* Profile page: profile icon*/
+.profile-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Input fields container */

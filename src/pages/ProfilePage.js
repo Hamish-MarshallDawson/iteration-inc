@@ -4,7 +4,8 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-import "../css/profile-page.css";
+// import "../css/profile-page.css";
+import "../App.css";
 
 import Card from "../components/ui/card.js";
 import Button from "../components/ui/button.js";
@@ -14,12 +15,22 @@ import Button from "../components/ui/button.js";
 
 const ProfilePage = () => {
   return (
-    <div className="container">
+    <div className="profile-container">
 
-      <h1 className="title">Profile</h1>
+      <h1 style={{
+        fontSize: 36,
+        fontStyle: "italic",
+        color: "#fca17d", /* Matches the card color */
+        textAlign: "center",
+      }}>Profile</h1>
 
       {/* Profile Info */}
-      <Card className="card">
+      <div className="profile-card"
+      style = {{
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+      }}>
         <div className="profile-image">
           <svg
             viewBox="0 0 24 24"
@@ -28,22 +39,28 @@ const ProfilePage = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="profile-icon"
+            style = {{
+              width: 40,
+              height: 40,
+            }}
           >
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M6 20v-2a6 6 0 0112 0v2"></path>
           </svg>
         </div>
-        <h3>Full Name</h3>
-        <p>Email goes here</p>
-      </Card>
+        <h2>Full Name</h2>
+        <h3>Email goes here</h3>
+      </div>
 
     {/* Update Profile */}
-      <Card className="card">
+      <div className="profile-card"
+      style={{
+        marginTop: "2rem",
+      }}>
         <h2 className="text-lg font-semibold mb-2">Update Profile</h2>
         <Button className="">Update Name</Button>
         <Button className="">Update Contact Info</Button>
-      </Card>
+      </div>
 
       {/* Log Out Button */}
       <div>
