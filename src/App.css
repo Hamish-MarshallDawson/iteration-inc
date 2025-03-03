@@ -52,12 +52,14 @@ body::before {
 /* Container for the login page */
 
 .App,
-.login-container {
+.login-container,
+.profile-container {
   min-height: auto;
   height: auto;
 }
 
-.login-container {
+.login-container,
+.profile-container {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
