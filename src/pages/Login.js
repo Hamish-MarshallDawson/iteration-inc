@@ -25,14 +25,12 @@ function Login() {
       // Send a POST request to the backend with email and password that user entered
 
       //
-      //const response = await axios.post('/api/login', { email, password });
+      const response = await axios.post("/api/login", { email, password });
 
-      
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      })
-      
+      // const response = await axios.post("http://localhost:5000/api/login", {
+      //   email,
+      //   password,
+      // })
 
       setIsLoading(false);
       // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
@@ -55,8 +53,7 @@ function Login() {
         // Show error message for invalid credentials
         alert(error.response.data.message);
         alert("Invalid email or password");
-        
-      } else if (error.request){
+      } else if (error.request) {
         // If request was made but server did not respond
         alert("No response from server. Please try again later.");
       } else {
