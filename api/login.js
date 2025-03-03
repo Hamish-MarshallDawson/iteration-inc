@@ -1,9 +1,9 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ message: `Method ${req.method} not allowed` });
-  }
+  // if (req.method !== "POST") {
+  //   return res
+  //     .status(405)
+  //     .json({ message: `Method ${req.method} not allowed` });
+  // }
 
   try {
     const { email, password } = req.body;
