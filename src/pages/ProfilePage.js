@@ -1,14 +1,25 @@
 // Filename - pages/ProfilePage.js
 
-import React from "react";
-
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
+import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
 import "../App.css";
 
-import Button from "../components/ui/button.js";
-
 const ProfilePage = () => {
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const changeName = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    setIsLoading(false);
+  };
+
   return (
     <div className="profile-container">
 
@@ -49,24 +60,61 @@ const ProfilePage = () => {
 
     {/* Update Profile */}
       <div className="profile-card"
-      style={{
-        marginTop: "2rem",
+        style={{
+          marginTop: "2rem",
       }}>
-        <h2 className="text-lg font-semibold mb-2">Update Profile</h2>
-        <Button className="">Update Name</Button>
-        <Button className="">Update Contact Info</Button>
+      <form onSubmit={changeName}>
+        <div className="inputFields">
+        <div className="input">
+            <label>Update Name</label>
+            <input
+              style={{marginBottom:"0"}}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+        <button style = {{
+          width: "4rem",
+          height: "2rem",
+          marginTop: "0",
+          marginBottom: "2rem",
+        }} disabled={isLoading}>
+          {isLoading ? "Loading..." : "Submit"}
+        </button>
+          <div className="input">
+            <label>Update Email</label>
+            <input
+              type="email"
+              style={{marginBottom:"0"}}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <button style = {{
+          width: "4rem",
+          height: "2rem",
+          marginTop: "0",
+          marginBottom: "1rem",
+        }} disabled={isLoading}>
+          {isLoading ? "Loading..." : "Submit"}
+        </button>
+        {isLoading && <Spinner />} {/* Use the Spinner component here */}
+      </form>
       </div>
 
-      {/* Log Out Button */}
-      <div>
-        <Link to="/">
-            <Button className="w-full bg-red-500 hover:bg-red-600">Log Out</Button>
-        </Link>
-      </div>
+
+    {/* Log Out Button */}
+    <div>
+      <Link to="/">
+            <button>Log Out</button>
+      </Link>
+    </div>
 
     </div>
   );
 };
 
 export default ProfilePage;
-
