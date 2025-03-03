@@ -1,12 +1,14 @@
 // Filename - pages/ProfilePage.js
 
 import React from "react";
-import "../css/profile-page.css"; // Ensure this imports your CSS file
+
+import { Link } from "react-router-dom";
+
+import "../css/profile-page.css";
 
 import Card from "../components/ui/card.js";
 import Button from "../components/ui/button.js";
-import Switch from "../components/ui/Switch.js";
-import CardContent from "../components/ui/cardContent.js";
+// import CardContent from "../components/ui/cardContent.js";
 
 // <Card className="w-[300px] h-[180px] bg-[#fca17d] rounded-lg shadow-md flex flex-col items-center justify-center text-center mt-[50px] p-[15px]">
 
@@ -45,7 +47,9 @@ const ProfilePage = () => {
 
       {/* Log Out Button */}
       <div>
-        <Button className="w-full bg-red-500 hover:bg-red-600">Log Out</Button>
+        <Link to="/">
+            <Button className="w-full bg-red-500 hover:bg-red-600">Log Out</Button>
+        </Link>
       </div>
 
     </div>
