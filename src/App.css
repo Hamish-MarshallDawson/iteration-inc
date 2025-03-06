@@ -1,12 +1,12 @@
-/* Apply the background to the entire app */
-html,
+/* Apply the background to the entire app html, */
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: auto; /* Change max-height to auto */
-  min-height: 100%;
-  overflow: auto;
+  width: 100vw; /* Ensure full viewport width */
+  height: 100dvh; /* Use dynamic viewport height */
+  overflow: hidden; /* Prevent content overflow */
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -22,7 +22,7 @@ body::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-
+  min-height: 100%;
   mix-blend-mode: multiply;
   background: url("gradient.svg") no-repeat center center fixed;
   background-size: cover;
@@ -35,10 +35,25 @@ body::before {
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   z-index: 1;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  width: 100dvw; /* Ensure it takes the full width */
+  height: 100dvh; /* Ensure it takes the full height */
+  display: flex;
+  flex-direction: row; /* Keep navbar and content side by side */
+}
+
+.structure {
+  display: flex;
+  flex: 1; /* Ensures it takes the full available space */
+  height: 100dvh; /* Full viewport height */
+  overflow: hidden; /* Prevent scrolling issues */
+}
+
+.MainContent {
+  flex: 1; /* Take remaining width after navbar */
+  height: 100dvh; /* Ensure it doesn't exceed viewport height */
+  overflow-y: auto; /* Enable scrolling only for content */
 }
 
 /* Login page section
@@ -64,7 +79,7 @@ body::before {
   flex-direction: column;
   align-items: center; /* Center everything horizontally */
   justify-content: center; /* Center everything vertically */
-  min-height: 100vh; /* Ensure the container takes the full viewport height */
+  min-height: 100dvh; /* Ensure the container takes the full viewport height */
 }
 
 /* Snake logo styling */
@@ -75,7 +90,8 @@ body::before {
 }
 
 /* Login page section */
-.login, .profile-card {
+.login,
+.profile-card {
   height: auto;
   width: 20rem;
   border-radius: 15px;
@@ -183,64 +199,71 @@ button:hover {
 */
 
 /* Ensure the navbar is fixed to the left side of the screen */
+
+/* Navbar Section */
 .navbar {
   position: fixed;
-  top: 0;
   left: 0;
-  height: 100vh; /* Full viewport height */
-  width: 22vw; /* Adjust width as needed */
-  background-color: rgba(13, 6, 40, 0.9); /* Increase opacity for visibility */
+  top: 0;
+  height: 100dvh; /* Full height */
+  width: 20rem; /* Fixed width */
+  background-color: rgba(13, 6, 40, 0.9);
   color: #fca17d;
-  padding: 2rem 0;
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center horizontally */
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Center the navigation links */
 .navbar-center {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%; /* Full height */
-  flex-grow: 1; /* Takes all available space */
-  justify-content: flex-start; /* Align items to the top */
+  height: 100%;
+  /* flex-grow: 1; */
+  justify-content: flex-start;
 }
 
-/* Style for the navigation links */
 .nav-links {
   list-style-type: none;
   display: flex;
-  justify-content: space-around;
-  flex-direction: column; /* Stack links vertically */
+  justify-content: space-between;
+  flex-direction: column;
+  gap: clamp(5px, 0.5rem, 15px);
   margin: 0;
   padding: 0;
-  width: 100%; /* Take full width of the navbar-center */
+  width: 100%;
+  height: 100%;
 }
 
 .nav-links li {
-  margin-bottom: 5rem; /* Space between links */
+  /* margin-bottom: 3rem; Reduce margin to fit better */
+  text-align: left;
+  flex-shrink: 0; /* Prevent items from shrinking */
+  /* margin-bottom: 5rem; Space between links */
+  padding-bottom: -5rem;
   text-align: left; /* Ensure text is aligned to the left */
 }
 
 .nav-links a {
   color: #fca17d;
   text-decoration: none;
-  font-size: 3rem; /* Make text bigger */
-
+  font-size: clamp(15px, 3rem, 35px); /* Make text bigger */
+  font-weight: bold;
   transition: color 0.3s ease-in-out;
 }
 
 .nav-links a:hover {
   color: #fca17d86; /* Highlight color */
 }
+
 /* Ensure that the Profile link and icon are inline and styled the same */
 .ProfileLink {
-  font-size: 2rem !important; /* Make text size smaller */
+  /* font-size: clamp(5px, 2rem, 15px) !important; Make text size smaller */
   opacity: 0.6 !important; /* Default opacity */
   display: inline-flex; /* Align text and icon horizontally */
   align-items: center; /* Vertically center text and icon */
   transition: opacity 0.3s ease-in-out; /* Smooth transition for opacity */
+  margin-bottom: 1rem;
 }
 
 .profileIcon {
@@ -261,23 +284,6 @@ button:hover {
   opacity: 0.5 !important; /* Ensure the icon's opacity is also full on hover */
 }
 
-.nav-links li {
-  margin-bottom: 5rem; /* Space between links */
-  text-align: left; /* Ensure text is aligned to the left */
-}
-
-.nav-links a {
-  color: #fca17d;
-  text-decoration: none;
-  font-size: 3rem; /* Make text bigger */
-  font-weight: bold;
-  transition: color 0.3s ease-in-out;
-}
-
-.nav-links a:hover {
-  color: #fca17d86; /* Highlight color */
-}
-
 .ProfileLink:hover,
 .ProfileLink:focus {
   opacity: 1; /* Make sure both are fully visible on hover */
@@ -286,7 +292,7 @@ button:hover {
 /* Snake logo animation stuff */
 .snake {
   height: 12vmin;
-  margin-bottom: 6rem; /* Extra space below */
+  margin-bottom: clamp(20px, 3rem, 30px); /* Extra space below */
 }
 
 @media (prefers-reduced-motion: no-preference) {
