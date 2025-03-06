@@ -1,11 +1,7 @@
 import SmartDeviceGrid from "../components/SmartDeviceGrid";
 
 function Kitchen() {
-  return (
-    <div className="App">
-      <SmartDeviceGrid />
-    </div>
-  );
+  return <SmartDeviceGrid />;
 }
 
 export default Kitchen;

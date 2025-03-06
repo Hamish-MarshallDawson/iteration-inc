@@ -1,3 +1,15 @@
+html {
+  box-sizing: border-box;
+  /* Might replace with JS later */
+  scroll-behavior: smooth;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 /* Apply the background to the entire app html, */
 body {
   margin: 0;
@@ -33,9 +45,9 @@ body::before {
 .App {
   position: relative; /* Keeps content above the background */
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  z-index: 1;
+  /* z-index: 1; */
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   width: 100dvw; /* Ensure it takes the full width */
   height: 100dvh; /* Ensure it takes the full height */
@@ -45,6 +57,7 @@ body::before {
 
 .structure {
   display: flex;
+  flex-direction: row;
   flex: 1; /* Ensures it takes the full available space */
   width: 100dvh;
   height: 100dvh; /* Full viewport height */
@@ -52,7 +65,7 @@ body::before {
 }
 
 .MainContent {
-  margin-left: 20rem;
+  /* margin-left: 20rem; */
   width: 100%;
   flex: 1; /* Take remaining width after navbar */
   height: 100dvh; /* Ensure it doesn't exceed viewport height */
@@ -205,7 +218,7 @@ button:hover {
 
 /* Navbar Section */
 .navbar {
-  position: fixed;
+  position: relative;
   left: 0;
   top: 0;
   height: 100dvh; /* Full height */
