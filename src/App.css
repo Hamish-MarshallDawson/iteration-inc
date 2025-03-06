@@ -46,11 +46,14 @@ body::before {
 .structure {
   display: flex;
   flex: 1; /* Ensures it takes the full available space */
+  width: 100dvh;
   height: 100dvh; /* Full viewport height */
   overflow: hidden; /* Prevent scrolling issues */
 }
 
 .MainContent {
+  margin-left: 20rem;
+  width: 100%;
   flex: 1; /* Take remaining width after navbar */
   height: 100dvh; /* Ensure it doesn't exceed viewport height */
   overflow-y: auto; /* Enable scrolling only for content */
