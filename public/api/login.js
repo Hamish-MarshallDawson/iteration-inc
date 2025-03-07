@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   //     .status(405)
   //     .json({ message: `Method ${req.method} not allowed` });
   // }
-
+  // Nice comment
   try {
     const { email, password } = req.body;
     const usersDatabase = [
