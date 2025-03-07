@@ -26,10 +26,11 @@ const ProfilePage = () => {
     <div className="profile-container">
 
       <h1 style={{
-        fontSize: 36,
+        fontSize: 40,
         fontStyle: "italic",
         color: "#fca17d", /* Matches the card color */
         textAlign: "center",
+        marginBottom: "2rem",
       }}>Profile</h1>
 
       {/* Profile Info */}
