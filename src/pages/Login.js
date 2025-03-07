@@ -27,15 +27,21 @@ function Login() {
       //
       // const response = await axios.post("./api/login", { email, password });
 
+<<<<<<< HEAD
       /* const response = await axios.post(`${window.location.origin}/api/login`, {
          email,
          password,
        });*/
 
       const response = await axios.post("./api/login", {
+=======
+      const response = await axios.post(`${window.location.origin}/api/login`, {
+>>>>>>> a00caf5 (move api folder back)
         email,
         password,
       });
+
+
 
       // const response = await axios.post("http://localhost:5000/api/login", {
       //   email,
