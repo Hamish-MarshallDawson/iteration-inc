@@ -17,6 +17,8 @@ const ProfilePage = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    // code goes here
+    
     setIsLoading(false);
   };
 
