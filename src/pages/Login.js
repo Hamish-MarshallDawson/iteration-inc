@@ -27,7 +27,12 @@ function Login() {
       //
       // const response = await axios.post("./api/login", { email, password });
 
-      const response = await axios.post(`${window.location.origin}/api/login`, {
+      /* const response = await axios.post(`${window.location.origin}/api/login`, {
+         email,
+         password,
+       });*/
+
+      const response = await axios.post(`/api/login`, {
         email,
         password,
       });
