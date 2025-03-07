@@ -10,6 +10,7 @@ html {
   box-sizing: inherit;
 }
 
+/* testing css */
 /* Apply the background to the entire app html, */
 body {
   margin: 0;
@@ -121,7 +122,7 @@ body::before {
   padding: 2rem;
 }
 .energy-card {
-  width: auto
+  width: auto;
 }
 
 /* Profile page: profile icon*/
