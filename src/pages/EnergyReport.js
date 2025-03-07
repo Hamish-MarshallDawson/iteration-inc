@@ -37,7 +37,8 @@ const BarGraph = () => {
         label: 'Energy Usage (kWh)',
         data: [16, 4, 21, 9],
         fill: true,
-        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
+        borderRadius: 10, // Rounded corners for the bars
         tension: 0.1,
       },
     ],
@@ -51,16 +52,54 @@ const BarGraph = () => {
         position: 'top',
       },
       title: {
-        display: true,
+        display: false,
         text: 'Recent Energy Usage',
       },
     },
     scales: {
       y: {
         beginAtZero: true,
+        position: "right",
         title: {
           display: true,
           text: 'kWh',
+          color: '#000000',
+          font: {
+            size: 16,
+            weight: 'bold',
+          },
+        },
+        ticks: {
+          color: '#000000',
+          font: {
+            size: 16,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          color: 'white',
+          lineWidth: 2,
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Day",
+          color: '#000000',
+          font: {
+            size: 16,
+            weight: 'bold',
+          },
+        },
+        ticks: {
+          color: '#000000',
+          font: {
+            size: 16,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          display: false, // Hide vertical grid lines
         },
       },
     },
@@ -99,7 +138,7 @@ const EnergyReport = () => {
           height: "2rem",
           fontSize: 12
         }}>
-          "Download summary..."
+          Download summary...
         </button>
       </div>
     </div>
