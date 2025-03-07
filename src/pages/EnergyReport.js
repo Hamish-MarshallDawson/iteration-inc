@@ -82,7 +82,7 @@ const EnergyReport = () => {
         textAlign: "center",
       }}>Energy Summary</h1>
 
-      <div className="profile-card"
+      <div className="energy-card"
       style = {{
         alignItems: "center",
         justifyContent: "center",
