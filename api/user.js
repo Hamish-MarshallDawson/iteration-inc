@@ -1,8 +1,8 @@
-const pool = require("./db");
+const pool = require("./neon");
 
 module.exports = async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM users");
+        const result = await pool.query("SELECT * FROM Users");
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Database error:", error);

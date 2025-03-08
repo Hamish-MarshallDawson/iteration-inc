@@ -1,12 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// Ensure Prisma Client is reused to avoid too many connections in Serverless environments
+const globalForPrisma = globalThis;
+globalForPrisma.prisma = globalForPrisma.prisma || new PrismaClient();
+export const prisma = globalForPrisma.prisma;
 
 export default async function handler(req, res) {
 
   const { email, password } = req.body;
 
   try {
+    
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -20,7 +24,7 @@ export default async function handler(req, res) {
 
     res.status(201).json({ message: "User registered", user: newUser });
   } catch (error) {
-    console.error(error);
+    console.error("Database Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }

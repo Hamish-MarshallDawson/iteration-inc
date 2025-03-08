@@ -18,6 +18,7 @@ import PasswordReset2 from "../pages/PasswordReset2.js";
 import SignUp from "../pages/SignUp.js";
 import Verify from "./Verify.js";
 import SignUp2 from "../pages/SignUp2.js";
+import TestDB  from "../pages/Testdb.js";
 
 import Navbar from "./nav.js"; // Ensure correct import
 
@@ -52,6 +53,7 @@ function MainContent() {
             <Route path="/passwordReset2" element={<PasswordReset2 />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/sign-up-2" element={<SignUp2 />} />
+            <Route path="/testdb" element={<TestDB />} />
           </Routes>
         </div>
       </div>
