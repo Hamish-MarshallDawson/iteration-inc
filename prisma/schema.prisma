@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Test3 {
+  id        String   @id @default(uuid()) @map("id")
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Test2 {
+  id        String   @id @default(uuid()) @map("id")
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Devices {
+  DeviceID        Int               @id @default(autoincrement())
+  UserID          Int?
+  DeviceName      String?           @db.VarChar(100)
+  DeviceType      devicetype?
+  Status          status?
+  EnergyUsed      String?
+  Users           Users?            @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+  EnergyUse       EnergyUse[]
+  Recommendations Recommendations[]
+  Rooms           Rooms[]
+  Schedules       Schedules[]
+}
+
+model EnergyUse {
+  EnergyUseID Int       @id(map: "Energy Use_pkey") @default(autoincrement())
+  DeviceID    Int?
+  UserID      Int?
+  Timestamp   DateTime? @db.Timestamp(6)
+  EnergyUsed  Decimal?  @db.Decimal
+  Devices     Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Users       Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+}
+
+model Recommendations {
+  RecID            Int      @id @default(autoincrement())
+  UserID           Int?
+  DeviceID         Int?
+  DeviceConditions String?
+  EnvConditions    String?
+  SuggestedAction  String?
+  Devices          Devices? @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Users            Users?   @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+}
+
+model Rooms {
+  RoomID     Int      @id @default(autoincrement())
+  UserID     Int?
+  RoomName   String?  @db.VarChar(100)
+  DeviceID   Int?
+  DeviceName String?  @db.VarChar(50)
+  Devices    Devices? @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Users      Users?   @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+}
+
+model Schedules {
+  ScheduleID Int       @id @default(autoincrement())
+  DeviceID   Int?
+  UserID     Int?
+  Frequency  freq?
+  StartTime  DateTime? @db.Timestamp(6)
+  EndTime    DateTime? @db.Timestamp(6)
+  Devices    Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Users      Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+}
+
+model SecurityLogs {
+  LogID            Int       @id(map: "Security Logs_pkey") @default(autoincrement())
+  UserID           Int?
+  EventDescription String?
+  Timestamp        DateTime? @db.Timestamp(6)
+  Users            Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "constraint_1")
+}
+
+model UserActivity {
+  ActivityID Int       @id(map: "User Activity_pkey") @default(autoincrement())
+  UserID     Int?
+  DeviceID   String?
+  Timestamp  DateTime? @db.Timestamp(6)
+  Action     action?
+  Users      Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+}
+
+model Users {
+  UserID          Int               @id(map: "Uses_pkey") @default(autoincrement())
+  FirstName       String            @db.VarChar(25)
+  LastName        String            @db.VarChar(32)
+  Email           String            @db.VarChar(100)
+  Password        String?           @db.VarChar(100)
+  EnergyGoal      Decimal?          @db.Decimal
+  UserType        usertype?
+  Devices         Devices[]
+  EnergyUse       EnergyUse[]
+  Recommendations Recommendations[]
+  Rooms           Rooms[]
+  Schedules       Schedules[]
+  SecurityLogs    SecurityLogs[]
+  UserActivity    UserActivity[]
+}
+
+model Usertest {
+  id String @id
+}
+
+enum Action {
+  Turn_On  @map("Turn On")
+  Turn_Off @map("Turn Off")
+}
+
+enum Frequency {
+  Once
+  Daily
+  Weekly
+  Monthly
+}
+
+enum Status {
+  Online
+  Offline
+  Defective
+}
+
+enum User_Type {
+  Home_Dweller @map("Home Dweller")
+  Home_Manager @map("Home Manager")
+  Admin
+
+  @@map("User Type")
+}
+
+enum UserType {
+  Home_Dweller @map("Home Dweller")
+  Home_Manager @map("Home Manager")
+  Admin
+}
+
+enum action {
+  Turn_On  @map("Turn On")
+  Turn_Off @map("Turn Off")
+}
+
+enum devicetype {
+  Light
+  Thermostat
+  Robot
+  Speaker
+  Coffee_Machine @map("Coffee Machine")
+  Other
+}
+
+enum freq {
+  Once
+  Daily
+  Weekly
+  Monthly
+}
+
+enum status {
+  Online
+  Offline
+  Defective
+}
+
+enum usertype {
+  Home_Dweller @map("Home Dweller")
+  Home_Manager @map("Home Manager")
+  Admin
+}
