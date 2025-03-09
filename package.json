@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^5.12.1",
     "@shadcn/ui": "^0.0.4",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
