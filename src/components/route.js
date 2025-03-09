@@ -32,7 +32,7 @@ function MainContent() {
     "/passwordReset",
     "/passwordReset2",
   ];
-
+// routes were refactored to this file for conviences
   return (
     <>
       <div className="structure">
