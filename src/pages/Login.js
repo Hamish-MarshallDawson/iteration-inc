@@ -12,13 +12,13 @@ function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    fetch(`${window.location.origin}/api/user.js`) // Adjust URL after deployment
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((err) => console.error("Error fetching users:", err));
-  }, []);
+  // const [users, setUsers] = useState([]);
+  // useEffect(() => {
+  //   fetch(`${window.location.origin}/api/user.js`) // Adjust URL after deployment
+  //     .then((res) => res.json())
+  //     .then((data) => setUsers(data))
+  //     .catch((err) => console.error("Error fetching users:", err));
+  // }, []);
 
   // Use to navigate to different pages
   const navigate = useNavigate();
