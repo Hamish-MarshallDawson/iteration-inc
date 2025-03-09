@@ -1,21 +1,37 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../App.css";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false); // Track verification step
   const navigate = useNavigate();
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit  = async (e) => {
     e.preventDefault();
     if (!email) {
       alert("Please enter your email.");
       return;
     }
-    // Redirect to verification page, passing the email and redirect target page which is signup2
-    navigate("/verify", { state: { email, redirectTo: "/sign-up-2"} });
+
+    try {
+      // Check if email already exists
+      const response = await axios.post(`${window.location.origin}/api/checkEmail`, { email });
+  
+      if (response.status === 200) {
+        // If email is available, proceed to verification page
+        navigate("/verify", { state: { email, redirectTo: "/filling-information" } });
+      }
+    } catch (error) {
+      // Show error if email is already registered
+      if (error.response && error.response.status === 400) {
+        alert("This email is already registered. Try logging in.");
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    }
+
   };
 
   return (
