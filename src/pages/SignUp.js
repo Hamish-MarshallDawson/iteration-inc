@@ -2,15 +2,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
+import Spinner from "../components/Spinner.js"; 
 
 export default function SignUp() {
   // State variables
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // Function to handle form submission
   const handleSubmit  = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     // Ensure the user enters an email before proceeding anything
     if (!email) {
@@ -21,7 +25,8 @@ export default function SignUp() {
     try {
       // Make a POST request to check if the email already exists in the database (through api route)
       const response = await axios.post(`${window.location.origin}/api/checkEmail`, { email });
-  
+      setIsLoading(false);
+
       // Receive response after request
       if (response.status === 200) {
         // If email is available, alert the user and proceed to the verification page
@@ -30,6 +35,7 @@ export default function SignUp() {
       }
 
     } catch (error) {
+      setIsLoading(false);
 
       // If email is already in use, show an error message
       if (error.response && error.response.status === 400) {
@@ -70,14 +76,13 @@ export default function SignUp() {
             </div>
           </div>
 
-          <button type="submit" className="submit-button">
-            Next
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? "Loading..." : "Next"}
           </button>
+          {isLoading && <Spinner />}
 
           <button
             onClick={() => navigate("/")}
-            className="submit-button"
-            style={{ backgroundColor: "red", marginTop: "10px" }}
           >
             Go Back
         </button>

@@ -129,6 +129,27 @@ model Usertest {
   id String @id
 }
 
+model Test8 {
+  id        String   @id
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Test6 {
+  id        String   @id
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Test7 {
+  id        String   @id
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
 enum Action {
   Turn_On  @map("Turn On")
   Turn_Off @map("Turn Off")
