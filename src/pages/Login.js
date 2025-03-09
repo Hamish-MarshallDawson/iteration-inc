@@ -40,13 +40,10 @@ function Login() {
         password,
       });
 
-
       // const response = await axios.post("./api/login", {
       //   email,
       //   password,
       // });
-
-
 
       // const response = await axios.post("http://localhost:5000/api/login", {
       //   email,
@@ -85,7 +82,7 @@ function Login() {
     }
   };
 
-  // Rendering login page
+  // Rendering login page should work now
   return (
     <div className="login-container">
       <img
