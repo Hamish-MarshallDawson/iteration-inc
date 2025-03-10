@@ -82,7 +82,7 @@ function Login() {
     }
   };
 
-  //next 
+  //next update
   // Rendering login page should work now
   return (
     <div className="login-container">
@@ -127,7 +127,6 @@ function Login() {
             Don't have an account? <Link to="/sign-up">Sign Up</Link>
           </p>
         </div>
-
       </div>
     </div>
   );
