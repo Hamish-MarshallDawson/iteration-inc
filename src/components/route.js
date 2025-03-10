@@ -31,6 +31,7 @@ function MainContent() {
     "/sign-up",
     "/passwordReset",
     "/passwordReset2",
+    "/verify",
     "/filling-information",
   ];
   // routes were refactored to this file for conviences
