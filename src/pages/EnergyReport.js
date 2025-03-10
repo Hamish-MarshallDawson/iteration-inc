@@ -30,51 +30,72 @@ ChartJS.register(
 );
 
 
-
-const useEnergyData = (day, month) => {
-  const [deviceData, setDeviceData] = useState([]);
+const useEnergyData = (userEmail) => {
+  //const [deviceData, setDeviceData] = useState([]);
+  const [totalData, setTotalData] = useState([]);
   const [userData, setUserData] = useState([]);
-  const date = `2025-${month}-${day}`;
 
 
   useEffect(() => {
     const fetchData = async () => {
       
       // Queries for getting the energy usage data from the database
-      const query_device = `
-      SELECT d.DeviceType, SUM(e.EnergyUsed) AS TotalEnergyUsed
-      FROM EnergyUse e
-      JOIN Devices d ON e.DeviceID = d.DeviceID
-      WHERE DATE(e.Timestamp) = '${date}'
-      GROUP BY d.DeviceType;
-    `; // this one gets all data on a certain day, grouped by device
-    const query_user = `
-      SELECT u.FirstName, u.LastName, SUM(e.EnergyUsed) AS TotalEnergyUsed
-      FROM EnergyUse e
-      JOIN Users u ON e.UserID = u.UserID
-      WHERE DATE(e.Timestamp) = '${date}'
-      GROUP BY u.UserID;
-    `; // this one gets all data on a certain day, grouped by user
+      // const query_device = `
+      //   SELECT DATE(e.Timestamp) AS Date, SUM(e.EnergyUsed) AS TotalEnergyUsed
+      //   FROM EnergyUse e
+      //   JOIN Devices d ON e.DeviceID = d.DeviceID
+      //   WHERE d.DeviceType = '${deviceType}' AND e.Timestamp >= NOW() - INTERVAL '7 days'
+      //   GROUP BY DATE(e.Timestamp)
+      //   ORDER BY Date ASC;
+      // `;
+
+      const query_total = `
+        SELECT DATE(e.Timestamp), SUM(e.EnergyUsed) AS TotalEnergyUsed
+        FROM EnergyUse e
+        GROUP BY DATE(e.Timestamp)
+        ORDER BY Date ASC;
+      `;
+
+      const query_user = `
+        SELECT DATE(e.Timestamp), SUM(e.EnergyUsed) AS TotalEnergyUsed
+        FROM EnergyUse e
+        JOIN Users u ON e.UserID = u.UserID
+        WHERE u.email = '${userEmail}'
+        GROUP BY DATE(e.Timestamp)
+        ORDER BY Date ASC;
+      `;
 
 
     try {
-      const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
-      setDeviceData(deviceResponse.data);
+      //const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
+      //setDeviceData(deviceResponse.data);
+
+      const totalResponse = await axios.post('/api/query', { query_user }); // Replace with your API endpoint
+      setTotalData(totalResponse.data);
+      
       const userResponse = await axios.post('/api/query', { query_user }); // Replace with your API endpoint
       setUserData(userResponse.data);
+
     } catch (error) {
       console.error('Error fetching data:', error);
     }
     };
 
     fetchData();
-  }, [month, day]);
+  }, [userEmail]);
 
-  return deviceData, userData;
+  return { totalData, userData };
 };
 
 
 const BarGraph = () => {
+
+  const { totalData, userData } = useEnergyData("ldd1999@outlook.com")
+
+  console.log(totalData);
+  // devices.forEach()
+  
+
   // Sample data for the chart
   const data = {
     labels: ['10/09', '11/09', '12/09', '13/09'],
@@ -105,6 +126,7 @@ const BarGraph = () => {
       },
     ],
   };
+
 
   // Options for the chart
   const options = {
