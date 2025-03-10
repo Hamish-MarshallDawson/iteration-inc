@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios"; // Import axios for making HTTP requests and to be able to communicate with the back-end server
@@ -11,6 +11,14 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // const [users, setUsers] = useState([]);
+  // useEffect(() => {
+  //   fetch(`${window.location.origin}/api/user.js`) // Adjust URL after deployment
+  //     .then((res) => res.json())
+  //     .then((data) => setUsers(data))
+  //     .catch((err) => console.error("Error fetching users:", err));
+  // }, []);
 
   // Use to navigate to different pages
   const navigate = useNavigate();
@@ -31,6 +39,11 @@ function Login() {
         email,
         password,
       });
+
+      // const response = await axios.post("./api/login", {
+      //   email,
+      //   password,
+      // });
 
       // const response = await axios.post("http://localhost:5000/api/login", {
       //   email,
@@ -69,7 +82,8 @@ function Login() {
     }
   };
 
-  // Rendering login page
+  //next update
+  // Rendering login page should work now
   return (
     <div className="login-container">
       <img

@@ -17,7 +17,8 @@ import PasswordReset from "../pages/PasswordReset.js";
 import PasswordReset2 from "../pages/PasswordReset2.js";
 import SignUp from "../pages/SignUp.js";
 import Verify from "./Verify.js";
-import SignUp2 from "../pages/SignUp2.js";
+import FillInfo from "../pages/SignUpFillingInfo.js";
+import TestDB from "../pages/Testdb.js";
 
 import Navbar from "./nav.js"; // Ensure correct import
 
@@ -30,8 +31,10 @@ function MainContent() {
     "/sign-up",
     "/passwordReset",
     "/passwordReset2",
+    "/verify",
+    "/filling-information",
   ];
-
+  // routes were refactored to this file for conviences
   return (
     <>
       <div className="structure">
@@ -51,7 +54,8 @@ function MainContent() {
             <Route path="/passwordReset" element={<PasswordReset />} />
             <Route path="/passwordReset2" element={<PasswordReset2 />} />
             <Route path="/verify" element={<Verify />} />
-            <Route path="/sign-up-2" element={<SignUp2 />} />
+            <Route path="/filling-information" element={<FillInfo />} />
+            <Route path="/testdb" element={<TestDB />} />
           </Routes>
         </div>
       </div>

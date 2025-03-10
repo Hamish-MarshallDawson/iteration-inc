@@ -10,6 +10,7 @@ html {
   box-sizing: inherit;
 }
 
+/* testing css */
 /* Apply the background to the entire app html, */
 body {
   margin: 0;
@@ -107,7 +108,8 @@ body::before {
 
 /* Login page section */
 .login,
-.profile-card {
+.profile-card,
+.energy-card {
   height: auto;
   width: 20rem;
   border-radius: 15px;
@@ -118,6 +120,9 @@ body::before {
   display: flex;
   flex-direction: column;
   padding: 2rem;
+}
+.energy-card {
+  width: auto;
 }
 
 /* Profile page: profile icon*/
