@@ -29,6 +29,93 @@
     />
     <link rel="apple-touch-icon" href="/favicon/logo192.png" />
     <title>Iteration-Inc</title>
+
+    <script>
+      /*
+      Javascript that should be running on the client.
+      Handles devices on the user end.
+
+
+      TODO: (if you know what you're doing)
+      ---------------------
+      getDevices() -          questionable priority considering vercel
+                              should get ready for expo
+
+      updateDevice(device) -  way to get sample data. needed at some point
+
+      updateAllDevices() -    /\ /\ /\ see above /\ /\ /\
+      */
+
+      // reduced functionality device manager class
+      // client doesn't need nearly as much info as the server
+      class clientDeviceManager {
+          constructor() {
+              // empty device psuedo-hashmap
+              // should contain the same information as the server's one
+              this.devices = {}
+          }
+
+          // contact the server to get any devices it has but this doesn't
+          getDevices() {}
+
+          // get fresh data from the server for a given device
+          updateDevice(device) {}
+
+          // get fresh data from the server for all devices in the network
+          updateAllDevices() {}
+      }
+
+      // client version of device class made from a server-side device
+      // can be more generic as the client doesn't care if a device is real or simulated
+      // IMPORTANT!!! - if the server-side device class is changed, this must be changed too!
+      class clientDevice {
+          constructor(device, dom) {
+              // copy over all values from given server-side device
+              this.data = device.data
+              this.name = device.name
+              this.deviceType = device.deviceType
+              this.lastUpdated = device.lastUpdated
+              this.ID = device.ID
+              this.room = device.room
+
+              // a link to the DOM element representing the device in html
+              this.domElement = dom
+          }
+
+          // retrieve data from the object
+          // returns value on success, null on failure
+          // not strictly neccessary, but good practice and may be required later
+          getData(key) {
+              if (this.data[""+key] !== undefined) {
+                  return this.data[""+key]
+              }
+              else {
+                  return null
+              }
+          }
+
+          // put data into the object. will overwrite existing values
+          // performs basic type checking for both key and value given
+          // returns true on success, false on failure
+          // not strictly neccessary, but good practice and may be required later
+          setData(key,value) {
+              if (typeof(key) == String && value !== undefined && value != null) {
+                  this.data[""+key] = value
+                  return true
+              }
+              else {
+                  return false
+              }
+          }
+
+          setDomElement(newElement) {
+              this.domElement = newElement
+          }
+
+      }
+      // End of Massive javascript
+    </script>
+
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
