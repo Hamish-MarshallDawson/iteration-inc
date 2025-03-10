@@ -50,14 +50,14 @@ const useEnergyData = (userEmail) => {
       // `;
 
       const query_total = `
-        SELECT DATE(e.Timestamp), SUM(e.EnergyUsed) AS TotalEnergyUsed
+        SELECT DATE(e.Timestamp) AS Date, SUM(e.EnergyUsed) AS TotalEnergyUsed
         FROM EnergyUse e
         GROUP BY DATE(e.Timestamp)
         ORDER BY Date ASC;
       `;
 
       const query_user = `
-        SELECT DATE(e.Timestamp), SUM(e.EnergyUsed) AS TotalEnergyUsed
+        SELECT DATE(e.Timestamp) AS Date, SUM(e.EnergyUsed) AS TotalEnergyUsed
         FROM EnergyUse e
         JOIN Users u ON e.UserID = u.UserID
         WHERE u.email = '${userEmail}'
@@ -66,19 +66,20 @@ const useEnergyData = (userEmail) => {
       `;
 
 
-    try {
-      //const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
-      //setDeviceData(deviceResponse.data);
+      try {
+        //const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
+        //setDeviceData(deviceResponse.data);
 
-      const totalResponse = await axios.post('/api/query', { query_user }); // Replace with your API endpoint
-      setTotalData(totalResponse.data);
-      
-      const userResponse = await axios.post('/api/query', { query_user }); // Replace with your API endpoint
-      setUserData(userResponse.data);
+        const totalResponse = await axios.post(`${window.location.origin}/api/query`, { query : query_total }); // Replace with your API endpoint
+        console.log("Total Data:", totalResponse.data);
+        setTotalData(totalResponse.data);
+        
+        const userResponse = await axios.post(`${window.location.origin}/api/query`, { query : query_user }); // Replace with your API endpoint
+        setUserData(userResponse.data);
 
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
     fetchData();
@@ -92,38 +93,26 @@ const BarGraph = () => {
 
   const { totalData, userData } = useEnergyData("ldd1999@outlook.com")
 
-  console.log(totalData);
-  // devices.forEach()
-  
-
   // Sample data for the chart
   const data = {
-    labels: ['10/09', '11/09', '12/09', '13/09'],
+    labels: totalData.map((row) => row.Date),
     datasets: [
       {
-        label: 'Total Energy',
-        data: [16, 4, 21, 9],
+        label: 'Total Energy Used',
+        data: totalData.map((row) => row.TotalEnergyUsed),    // [16, 4, 21, 9],
         fill: true,
         backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
         tension: 0.1,
       },
       {
-        label: "Lighting Energy",
-        data: [12,2,17,4],
+        label: "Your Energy Used",
+        data: userData.map((row) => row.TotalEnergyUsed), // [12,2,17,4],
         fill: true,
         backgroundColor: 'rgba(75,196,196,1)',
         borderRadius: 10,
         tension: 0.1,
-      },
-      {
-        label: "Heating Energy",
-        data: [4,2,4,5],
-        fill: true,
-        backgroundColor: 'rgba(240,10,0,1)',
-        borderRadius: 10,
-        tension: 0.1,
-      },
+      }
     ],
   };
 
