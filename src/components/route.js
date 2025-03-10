@@ -18,7 +18,7 @@ import PasswordReset2 from "../pages/PasswordReset2.js";
 import SignUp from "../pages/SignUp.js";
 import Verify from "./Verify.js";
 import FillInfo from "../pages/SignUpFillingInfo.js";
-import TestDB  from "../pages/Testdb.js";
+import TestDB from "../pages/Testdb.js";
 
 import Navbar from "./nav.js"; // Ensure correct import
 
@@ -31,8 +31,9 @@ function MainContent() {
     "/sign-up",
     "/passwordReset",
     "/passwordReset2",
+    "/filling-information",
   ];
-// routes were refactored to this file for conviences
+  // routes were refactored to this file for conviences
   return (
     <>
       <div className="structure">
