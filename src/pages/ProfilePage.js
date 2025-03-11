@@ -48,7 +48,7 @@ const ProfilePage = () => {
 
   // Handle email update, by redirect to verify page and further update-email page
   const handleUpdateEmail = () => {
-    navigate("/verify", { state: { email, redirectTo: "/update-email" } });
+    navigate("/verify", { state: { email, redirectTo: "/updateEmail" } });
   };
 
   // Handle password, by redirect to password reset page

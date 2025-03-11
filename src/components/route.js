@@ -19,6 +19,8 @@ import SignUp from "../pages/SignUp.js";
 import Verify from "./Verify.js";
 import FillInfo from "../pages/SignUpFillingInfo.js";
 import TestDB from "../pages/Testdb.js";
+import UpdateEmail from "../pages/UpdateEmail.js";
+import ConfirmUpdateEmail from "../pages/ConfirmUpdateEmail.js";
 
 import Navbar from "./nav.js"; // Ensure correct import
 
@@ -56,6 +58,8 @@ function MainContent() {
             <Route path="/verify" element={<Verify />} />
             <Route path="/filling-information" element={<FillInfo />} />
             <Route path="/testdb" element={<TestDB />} />
+            <Route path="/updateEmail" element={<UpdateEmail />} />
+            <Route path="/confirmUpdateEmail" element={<ConfirmUpdateEmail />} />
           </Routes>
         </div>
       </div>
