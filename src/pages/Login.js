@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios"; 
+import { jwtDecode } from "jwt-decode"; 
 import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
 import "../App.css";
 
@@ -13,6 +14,23 @@ function Login() {
 
   // Use to navigate to different pages
   const navigate = useNavigate();
+
+
+  // Check if user already logged in when page load
+  useEffect(() => {
+    try {
+      // Fetch n decode token
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode(token);
+        // Redirect to profile page if already logged in
+        navigate("/profile"); 
+    } catch (error) {
+      console.error("Invalid token");
+      // Remove invalid token
+      localStorage.removeItem("token"); 
+    }
+  }, [navigate]);
+
 
   // Function to handle form submission
   const handleLogin = async (e) => {
@@ -33,8 +51,11 @@ function Login() {
 
       // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
       if (response.status === 200) {
+        // Store jwt to local 
+        localStorage.setItem("token", response.data.token);
         alert("User registered, " + response.data.message);
-        navigate("/profile"); // Redirect to the Profile Page
+        // Redirect to the Profile Page as they alreay logedin
+        navigate("/profile"); 
       }
 
     } catch (error) {

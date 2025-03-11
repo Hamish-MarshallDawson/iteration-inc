@@ -1,25 +1,59 @@
 // Filename - pages/ProfilePage.js
 
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import { Link } from "react-router-dom";
-
-import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+// !!Import jwtDecode to decode jwt
+import { jwtDecode } from "jwt-decode"; 
+
 const ProfilePage = () => {
-
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userType, setUserType] = useState("");
+
+  const navigate = useNavigate();
 
 
-  const changeName = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // !!Extract email from JWT token when page is load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
+    if (!token) {
+      navigate("/"); 
+      return;
+    }
+    try {
+      // !!Decode the jwt token and store to the variable
+      const decoded = jwtDecode(token);
+      setEmail(decoded.email);
+      setFirstName(decoded.firstName);
+      setLastName(decoded.lastName);
+      setUserType(decoded.userType);
+    } catch (error) {
+      console.error("Invalid token, logging out");
+      localStorage.removeItem("token");
+      // Redirect to login if token is invalid
+      navigate("/");
+    }
+  }, [navigate]);
 
-    // code goes here
-    
-    setIsLoading(false);
+  // Handle logout, by clear token and go back to login page
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/"); 
+  };
+
+  // Handle email update, by redirect to verify page and further update-email page
+  const handleUpdateEmail = () => {
+    navigate("/verify", { state: { email, redirectTo: "/update-email" } });
+  };
+
+  // Handle password, by redirect to password reset page
+  const handleUpdatePassword = () => {
+    navigate("/passwordReset");
   };
 
   return (
@@ -57,62 +91,36 @@ const ProfilePage = () => {
             <path d="M6 20v-2a6 6 0 0112 0v2"></path>
           </svg>
         </div>
-        <h2>Full Name</h2>
-        <h3>Email goes here</h3>
+
+
+
+        <h2>{firstName} {lastName}</h2>
+        <h3>{email}</h3>
+        <h3>User Type: {userType}</h3>
+
+
       </div>
 
-    {/* Update Profile */}
-      <div className="profile-card"
+    {/* Update Email & Password Buttons */}
+    <div className="profile-card"
         style={{
           marginTop: "2rem",
-      }}>
-      <form onSubmit={changeName}>
-        <div className="inputFields">
-        <div className="input">
-            <label>Update Name</label>
-            <input
-              style={{marginBottom:"0"}}
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-        <button style = {{
-          width: "4rem",
-          height: "2rem",
-          marginTop: "0",
-          marginBottom: "2rem",
-        }} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Submit"}
-        </button>
-          <div className="input">
-            <label>Update Email</label>
-            <input
-              type="email"
-              style={{marginBottom:"0"}}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-        <button style = {{
-          width: "4rem",
-          height: "2rem",
-          marginTop: "0",
-          marginBottom: "1rem",
-        }} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Submit"}
-        </button>
-        {isLoading && <Spinner />} {/* Use the Spinner component here */}
-      </form>
-      </div>
+    }}>
+      <button onClick={handleUpdateEmail}>
+        Update Email
+      </button>
 
+      <button onClick={handleUpdatePassword}>
+        Update Password
+      </button>
+    </div>
 
     {/* Log Out Button */}
     <div>
       <Link to="/">
-            <button>Log Out</button>
+            <button onClick={handleLogout}>
+              Log Out
+            </button>
       </Link>
     </div>
 

@@ -2,6 +2,11 @@
 import { prisma } from "./globalPrisma.js";
 // Import bcrypt for password hashing and comparison
 import bcrypt from "bcryptjs"; 
+// Import JWT
+import jwt from "jsonwebtoken";
+// Use Jwt key stored in .env or default hello (test purporse, might removed later)
+const SECRET_KEY = process.env.JWT_SECRET || "hello";
+
 
 export default async function handler(req, res) {
 
@@ -39,8 +44,21 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Generate jwt token (just like session)
+    const token = jwt.sign(
+      { 
+        email: user.Email, 
+        userId: user.UserID, 
+        firstName: user.FirstName, 
+        lastName: user.LastName, 
+        userType: user.UserType 
+      }, 
+      SECRET_KEY, 
+      { expiresIn: "1h" } // Token expires in 1 hour
+    );
+
     // If login is successful, return a success response with user email
-    res.status(200).json({ message: "Login successful", user: { email: user.Email } });
+    res.status(200).json({ message: "Login successful", user: { email: user.Email }, token });
 
   } catch (error) {
     // Return a generic internal server error response
