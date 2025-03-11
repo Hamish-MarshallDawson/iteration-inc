@@ -40,6 +40,8 @@ const useEnergyData = (userEmail) => {
     const fetchData = async () => {
       
       // Queries for getting the energy usage data from the database
+      
+      
       // const query_device = `
       //   SELECT DATE(e.Timestamp) AS Date, SUM(e.EnergyUsed) AS TotalEnergyUsed
       //   FROM EnergyUse e
@@ -75,6 +77,7 @@ const useEnergyData = (userEmail) => {
         setTotalData(totalResponse.data);
         
         const userResponse = await axios.post(`${window.location.origin}/api/query`, { query : query_user }); // Replace with your API endpoint
+        console.log("User Data:", userResponse.data);
         setUserData(userResponse.data);
 
       } catch (error) {
