@@ -14,8 +14,7 @@ export default function SignUpStep2() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [energyGoal, setEnergyGoal] = useState(""); 
+  const [lastName, setLastName] = useState(""); 
 
   // Validation function for passwords
   const isValidPassword = (password) => {
@@ -56,7 +55,6 @@ export default function SignUpStep2() {
         lastName,
         email,
         password,
-        energyGoal: parseFloat(energyGoal),
       });
 
       // Receive response after request
@@ -129,14 +127,6 @@ export default function SignUpStep2() {
               />
             </div>
 
-            <div className="input">
-              <label>Energy Goal: </label>
-              <input 
-                type="number" v
-                alue={energyGoal} 
-                onChange={(e) => setEnergyGoal(e.target.value)} 
-                required />
-            </div>
           </div>
 
           <button type="submit" className="submit-button">

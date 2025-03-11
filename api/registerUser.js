@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   try {
     // Extract the user's info from the request body
-    const { firstName, lastName, email, password, energyGoal } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     // Insert the new user into the database
     const newUser = await prisma.Users.create({
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         LastName: lastName,
         Email: email,
         Password: password,
-        EnergyGoal: parseFloat(energyGoal),
+        EnergyGoal: 100,
         UserType: "Home_Dweller", // Default user type
       },
     });
