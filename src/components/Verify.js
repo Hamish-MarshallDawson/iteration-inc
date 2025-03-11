@@ -115,7 +115,7 @@ export default function Verify() {
           Resend Code
         </button>
 
-        <button onClick={() => navigate(-1)} className="submit-button" style={{ backgroundColor: "red" }}>
+        <button onClick={() => navigate(-1)} className="submit-button">
           Go Back
         </button>
       </div>

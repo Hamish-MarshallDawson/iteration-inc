@@ -1,32 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../App.css";
+import Spinner from "../components/Spinner.js"; 
 
 export default function PasswordReset() {
+  // State variables
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Temporary array act as user database
-  const usersDatabase = [
-    { email: "johnPork@a.com" },
-    { email: "bombaclot@b.com" }
-  ];
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check if email exists in the database
-    const userExists = usersDatabase.some(user => user.email === email);
-    
-    // If email does not exist, alert the user
-    if (!userExists) {
-      alert("This email is not registered.");
+    setIsLoading(true);
+
+    // Ensure the user enters an email before proceeding anything
+    if (!email) {
+      alert("Please enter your email.");
+      setIsLoading(false);
       return;
     }
+    
+    try {
+      // Make a POST request to check if the email already exists in the database (through api route)
+      const response = await axios.post(`${window.location.origin}/api/checkEmail`, { email });
 
-    // Redirect to verification page with email and reset page as redirect target
-    navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
+      // Checkemail api succeeds when email dont exist
+      alert("Email is not registered.");
+      setIsLoading(false);
+
+    } catch (error) {
+      setIsLoading(false);
+
+      if (error.response && error.response.status === 400) {
+        // If API returns a 400 error, it means the email exists
+        alert("Email exist, proceeding to verification.");
+        navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
+      } else {
+        // If an unknown error occurs, show a general message
+        alert("Something went wrong. Please try again.");
+      }
+    }
+
   };
 
   return (
@@ -52,14 +69,14 @@ export default function PasswordReset() {
             </div>
           </div>
 
-          <button type="submit" className="submit-button">
-            Next
+          <button type="submit" className="submit-button" disabled={isLoading}>
+          {isLoading ? "Loading..." : "Next"}
           </button>
+          {isLoading && <Spinner />}
 
           <button
             onClick={() => navigate("/")}
             className="submit-button"
-            style={{ backgroundColor: "red", marginTop: "10px" }}
           >
             Go Back
           </button>

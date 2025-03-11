@@ -53,7 +53,7 @@ const ProfilePage = () => {
 
   // Handle password, by redirect to password reset page
   const handleUpdatePassword = () => {
-    navigate("/passwordReset");
+    navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
   };
 
   return (
