@@ -7,6 +7,7 @@ app.use(cors());                            // Middleware to allow cross-origin 
 
 
 // This is just a temporary array acting as a database for user login information
+// bomboclat
 let usersDatabase = [  
     { email: 'donpollo@bombaclat.com', password: 'abc123' },
     { email: 'vas@nein.com', password: 'mano' }
