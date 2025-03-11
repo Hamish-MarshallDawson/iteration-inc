@@ -6,6 +6,7 @@ export default function Verify() {
   const [generatedCode, setGeneratedCode] = useState(null);
   const [codeExpiration, setCodeExpiration] = useState(null);
   const [inputCode, setInputCode] = useState("");
+  const [countdown, setCountdown] = useState(30);
 
   const navigate = useNavigate(); 
   const location = useLocation();
@@ -20,6 +21,15 @@ export default function Verify() {
     return Math.floor(1000 + Math.random() * 9000).toString();
   };
 
+  // Function to generate and store the verification code & set expiration time
+  const generateAndStoreCode = () => {
+    const code = generateCode();
+    setGeneratedCode(code);
+    setCodeExpiration(Date.now() + 30000);
+    setCountdown(30); 
+    alert(`Your verification code is: ${code}`);
+  };
+
   // Automatically generate and send code when the page loads
   useEffect(() => {
     if (!flag) {
@@ -27,15 +37,19 @@ export default function Verify() {
         flag = true;
     }
   }, []); 
-  
 
-  // Function to generate and store the verification code & set expiration time
-  const generateAndStoreCode = () => {
-    const code = generateCode();
-    setGeneratedCode(code);
-    setCodeExpiration(Date.now() + 30000);
-    alert(`Your verification code is: ${code}`);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remainingTime = Math.max(0, Math.floor((codeExpiration - Date.now()) / 1000));
+      setCountdown(remainingTime);
+      if (remainingTime === 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval); 
+  }, [codeExpiration]);
+  
 
   const verifyCode = () => {
     // Check if code is expired or not generated
@@ -83,6 +97,10 @@ export default function Verify() {
             />
           </div>
         </div>
+
+        <p style={{ textAlign: "center", color: countdown === 0 ? "red" : "black" }}>
+          {countdown > 0 ? `Code expires in: ${countdown}s` : "Code expired! Request a new code."}
+        </p>
 
         <button onClick={verifyCode} className="submit-button">
           Verify
