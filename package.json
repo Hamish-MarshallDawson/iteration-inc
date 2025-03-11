@@ -5,6 +5,7 @@
   "dependencies": {
     "@shadcn/ui": "^0.0.4",
     "axios": "^1.7.9",
+    "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.8",
     "cors": "^2.8.5",
     "cra-template": "1.2.0",

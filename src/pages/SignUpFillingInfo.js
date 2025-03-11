@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
+import Spinner from "../components/Spinner.js"; 
 
 export default function SignUpStep2() {
   const location = useLocation();
@@ -16,6 +17,9 @@ export default function SignUpStep2() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState(""); 
 
+  // State for spinner
+  const [isLoading, setIsLoading] = useState(false);
+
   // Validation function for passwords
   const isValidPassword = (password) => {
     return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password); // At least 8 characters, 1 uppercase letter, 1 number
@@ -24,6 +28,7 @@ export default function SignUpStep2() {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     // Check if two entreis of passwords match
     if (password !== confirmPassword) {
@@ -57,6 +62,8 @@ export default function SignUpStep2() {
         password,
       });
 
+      setIsLoading(false);
+
       // Receive response after request
       if (response.status === 201) {
         // If insertion success, then prompt to user and redirect to profile page
@@ -64,6 +71,7 @@ export default function SignUpStep2() {
         navigate("/profile");
       }
     } catch (error) {
+      setIsLoading(false);
       // Else just show an error message
       alert(error.response?.data?.message || "Something went wrong. Please try again.");
     }
@@ -129,10 +137,11 @@ export default function SignUpStep2() {
 
           </div>
 
-          <button type="submit" className="submit-button">
-            Create Account
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? "Creating..." : "Create Account"}
           </button>
-
+          {isLoading && <Spinner />}
+          
           <button
             onClick={() => navigate("/sign-up")}
           >

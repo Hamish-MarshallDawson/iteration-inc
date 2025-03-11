@@ -1,5 +1,6 @@
 // Import shared Prisma client
 import { prisma } from "./globalPrisma.js";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
 
@@ -7,13 +8,16 @@ export default async function handler(req, res) {
     // Extract the user's info from the request body
     const { firstName, lastName, email, password } = req.body;
 
+    // Hash the password before store it to database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Insert the new user into the database
     const newUser = await prisma.Users.create({
       data: {
         FirstName: firstName,
         LastName: lastName,
         Email: email,
-        Password: password,
+        Password: hashedPassword,
         EnergyGoal: 100,
         UserType: "Home_Dweller", // Default user type
       },
