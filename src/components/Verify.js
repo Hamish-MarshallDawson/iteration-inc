@@ -3,6 +3,7 @@ import { useNavigate, useLocation  } from "react-router-dom";
 import "../App.css";
 
 export default function Verify() {
+  // State variablles
   const [generatedCode, setGeneratedCode] = useState(null);
   const [codeExpiration, setCodeExpiration] = useState(null);
   const [inputCode, setInputCode] = useState("");
@@ -11,9 +12,12 @@ export default function Verify() {
   const navigate = useNavigate(); 
   const location = useLocation();
 
-  const email = location.state?.email || "";            // Retrieve email
-  const redirectTo = location.state?.redirectTo || "/"; // Default to home if missing
+  // Retrieve email that passed from last page 
+  const email = location.state?.email || "";  
+  // Retrieve the target page that passed from last page, default to home if missing
+  const redirectTo = location.state?.redirectTo || "/";
 
+  // A boolean flag 
   let flag = false;
 
   // Functiona that can generate a random 4-digit code
@@ -21,7 +25,7 @@ export default function Verify() {
     return Math.floor(1000 + Math.random() * 9000).toString();
   };
 
-  // Function to generate and store the verification code & set expiration time
+  // Function to generate and store the verification code & set expiration time to 30 second & set count down on the page & alert code to simulate it was send to the email
   const generateAndStoreCode = () => {
     const code = generateCode();
     setGeneratedCode(code);
@@ -38,6 +42,7 @@ export default function Verify() {
     }
   }, []); 
 
+  //Display a count down of 30s on the page
   useEffect(() => {
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((codeExpiration - Date.now()) / 1000));
@@ -52,7 +57,7 @@ export default function Verify() {
   
 
   const verifyCode = () => {
-    // Check if code is expired or not generated
+    // Check if code is expired (date.now > date.then+30s) or not generated
     if (!generatedCode || Date.now() > codeExpiration) {
       alert("Code expired! Please generate a new one.");
       return;
