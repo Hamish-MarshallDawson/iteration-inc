@@ -7,34 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test5 {
-  id        String   @id @default(uuid()) @map("id")
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
-model Test4 {
-  id        String   @id @default(uuid()) @map("id")
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
-model Test3 {
-  id        String   @id @default(uuid()) @map("id")
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
-model Test2 {
-  id        String   @id @default(uuid()) @map("id")
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
 model Devices {
   DeviceID        Int               @id @default(autoincrement())
   UserID          Int?
@@ -42,10 +14,11 @@ model Devices {
   DeviceType      devicetype?
   Status          status?
   EnergyUsed      String?
+  RoomID          Int?
+  Rooms           Rooms?            @relation(fields: [RoomID], references: [RoomID], onDelete: NoAction, onUpdate: NoAction, map: "RoomID")
   Users           Users?            @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
   EnergyUse       EnergyUse[]
   Recommendations Recommendations[]
-  Rooms           Rooms[]
   Schedules       Schedules[]
 }
 
@@ -71,13 +44,9 @@ model Recommendations {
 }
 
 model Rooms {
-  RoomID     Int      @id @default(autoincrement())
-  UserID     Int?
-  RoomName   String?  @db.VarChar(100)
-  DeviceID   Int?
-  DeviceName String?  @db.VarChar(50)
-  Devices    Devices? @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
-  Users      Users?   @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+  RoomID   Int       @id @default(autoincrement())
+  RoomName String?   @db.VarChar(100)
+  Devices  Devices[]
 }
 
 model Schedules {
@@ -119,7 +88,6 @@ model Users {
   Devices         Devices[]
   EnergyUse       EnergyUse[]
   Recommendations Recommendations[]
-  Rooms           Rooms[]
   Schedules       Schedules[]
   SecurityLogs    SecurityLogs[]
   UserActivity    UserActivity[]
@@ -127,27 +95,6 @@ model Users {
 
 model Usertest {
   id String @id
-}
-
-model Test8 {
-  id        String   @id
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
-model Test6 {
-  id        String   @id
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-}
-
-model Test7 {
-  id        String   @id
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
 }
 
 enum Action {

@@ -1,43 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
+import { Plus, Settings } from "lucide-react";
+import { jwtDecode } from "jwt-decode"; 
+
 import Card from "./ui/card.js";
 import Button from "./ui/button.js";
 import Switch from "./ui/Switch";
 import CardContent from "./ui/cardContent";
 
-import { Plus, Settings } from "lucide-react";
-
 import "../App.css";
 
-export default function SmartDeviceGrid() {
-  const [devices, setDevices] = useState([
-    { id: 1, name: "Coffee Maker", type: "coffee", isOn: false },
-    { id: 2, name: "Speaker", type: "speaker", isOn: false },
-    { id: 3, name: "Lightbulb", type: "lightbulb", isOn: false },
-  ]);
 
-  const [showAddModal, setShowAddModal] = useState(false);
+export default function SmartDeviceGrid({ roomId }) {
+  const navigate = useNavigate();
+  
+  const [devices, setDevices] = useState([]);               
   const [deviceName, setDeviceName] = useState("");
   const [deviceType, setDeviceType] = useState("lightbulb");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [userID, setUserID] = useState(null);
+  const [roomID, setRoomID] = useState(null);
 
-  const addDevice = () => {
+
+  useEffect(() => {
+    // Get the room id
+    setRoomID(roomId)
+
+    // Extrat userid from jwt
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in again");
+        navigate("/");
+        return;
+      }
+      const decoded = jwtDecode(token);
+      setUserID(decoded.userId);
+    } catch (error) {
+      alert("Invalid token. Logging out.");
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+
+
+
+  }, [navigate]);
+
+
+  // For add device
+  const addDevice = async () => {
     if (!deviceName.trim()) {
       alert("Device name cannot be empty.");
       return;
     }
+    try {
+      const response = await axios.post(`${window.location.origin}/api/addDevice`, {
+        deviceName,
+        deviceType,
+        roomID,
+        userID
+      });
 
-    const newDevice = {
-      id: Date.now(),
-      name: deviceName,
-      type: deviceType, 
-      isOn: false,
-    };
-
-    setDevices([...devices, newDevice]);
-    setShowAddModal(false);
-    setDeviceName("");
-    setDeviceType("lightbulb");
-
+      if (response.status === 201) {
+        setDevices([...devices, response.data.device]);
+        setShowAddModal(false);
+        setDeviceName("");
+        setDeviceType("lightbulb");
+      }
+    } catch (error) {
+      console.error("Error adding device:", error);
+      alert("Failed to add device.");
+    }
   };
 
   const toggleDevice = (id) => {
@@ -85,13 +119,12 @@ export default function SmartDeviceGrid() {
 
         {/* Add Device cARD */}
         <div onClick={() => setShowAddModal(true)}
-          className="add-device-card p-4 flex flex-col items-center justify-center bg-orange-400 rounded-lg shadow-lg cursor-pointer hover:bg-orange-500 transition"
+          className="add-device-card"
         >
-          <CardContent className="add-device-card-content text-center">
-            <Plus className="add-icon text-black text-6xl mb-2" />
-            <p className="add-text text-sm text-black">Add Device</p>
+          <CardContent className="add-device-card-contentr">
+            <Plus className="add-icon" />
+            <p className="add-text">Add Device</p>
           </CardContent>
-
         </div>
       </div>
 
@@ -102,6 +135,7 @@ export default function SmartDeviceGrid() {
 
             <h3>Add New Device</h3>
 
+            {/* Input device name*/}
             <div className="inputFields">
               <div className="input">
                 <label>Device Name:</label>
@@ -115,6 +149,7 @@ export default function SmartDeviceGrid() {
               </div>
             </div>
 
+            {/* Select device type*/}
             <div className="inputFields">
               <div className="input">
                 <label>Device Type:</label>
@@ -123,14 +158,19 @@ export default function SmartDeviceGrid() {
                   onChange={(e) => setDeviceType(e.target.value)}
                   className="input-select"
                 >
-                  <option value="coffee">Coffee Maker</option>
+                 <option value="coffee">Coffee Maker</option>
                   <option value="speaker">Speaker</option>
                   <option value="lightbulb">Lightbulb</option>
+                  <option value="thermostat">Thermostat</option>
+                  <option value="robot">Robot</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
             </div>
 
+            {/* Save Device to database*/}
             <Button onClick={addDevice}>Save</Button>
+            {/* Close modal*/}
             <Button onClick={() => setShowAddModal(false)}>Cancel</Button>
           </div>
         </div>
@@ -139,7 +179,7 @@ export default function SmartDeviceGrid() {
   );
 }
 
-// Function to return appropriate icon for device type
+
 function DeviceIcon({ type, className }) {
   switch (type) {
     case "coffee":
@@ -148,7 +188,15 @@ function DeviceIcon({ type, className }) {
       return <span className={`${className}`}>🔊</span>;
     case "lightbulb":
       return <span className={`${className}`}>💡</span>;
+    case "thermostat":
+      return <span className={`${className}`}>🌡️</span>;
+    case "robot":
+      return <span className={`${className}`}>🤖</span>;
+    case "other":
+      return <span className={`${className}`}>🐱</span>;
     default:
       return <span className={`${className}`}>❓</span>;
   }
 }
+
+
