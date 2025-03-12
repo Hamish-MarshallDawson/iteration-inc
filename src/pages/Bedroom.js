@@ -1,15 +1,11 @@
 // Filename - pages/about.js
 
 import React from "react";
-
+import SmartDeviceGrid from "../components/SmartDeviceGrid";
 import "../App.css";
 
 const Bedroom = () => {
-  return (
-    <div>
-      <h1>We sleep in this room</h1>
-    </div>
-  );
+  return <SmartDeviceGrid roomId={3}/>;
 };
 
 export default Bedroom;
