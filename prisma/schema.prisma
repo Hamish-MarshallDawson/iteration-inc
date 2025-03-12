@@ -85,6 +85,7 @@ model Users {
   Password        String?           @db.VarChar(100)
   EnergyGoal      Decimal?          @db.Decimal
   UserType        usertype?
+  Awards          Awards[]
   Devices         Devices[]
   EnergyUse       EnergyUse[]
   Recommendations Recommendations[]
@@ -95,6 +96,20 @@ model Users {
 
 model Usertest {
   id String @id
+}
+
+model Awards {
+  AwardID     Int        @id @default(autoincrement())
+  UserID      Int
+  Title       String     @db.VarChar(100)
+  Description String?
+  Icon        String?    @db.VarChar(200)
+  IsUnlocked  Boolean?   @default(false)
+  DateEarned  DateTime?  @db.Timestamp(6)
+  Condition   Json       @db.Json
+  Type        awardtype
+  Level       awardlevel
+  Users       Users      @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum Action {
@@ -160,4 +175,28 @@ enum usertype {
   Home_Dweller @map("Home Dweller")
   Home_Manager @map("Home Manager")
   Admin
+}
+
+enum AwardLevel {
+  Bronze
+  Silver
+  Gold
+}
+
+enum AwardType_ {
+  Badge
+  Trophy
+
+  @@map("AwardType ")
+}
+
+enum awardlevel {
+  Bronze
+  Silver
+  Gold
+}
+
+enum awardtype {
+  Badge
+  Trophy
 }
