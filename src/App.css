@@ -227,7 +227,7 @@ button:hover {
   left: 0;
   top: 0;
   height: 100dvh; /* Full height */
-  width: 20rem; /* Fixed width */
+  width: clamp (10rem, 20rem, 10vw); /* Fixed width */
   background-color: rgba(13, 6, 40, 0.9);
   color: #fca17d;
   display: flex;
@@ -268,7 +268,7 @@ button:hover {
 .nav-links a {
   color: #fca17d;
   text-decoration: none;
-  font-size: clamp(15px, 3rem, 35px); /* Make text bigger */
+  font-size: clamp(15px, 5rem, 45px); /* Make text bigger */
   font-weight: bold;
   transition: color 0.3s ease-in-out;
 }
@@ -280,7 +280,7 @@ button:hover {
 /* Ensure that the Profile link and icon are inline and styled the same */
 .ProfileLink {
   /* font-size: clamp(5px, 2rem, 15px) !important; Make text size smaller */
-  opacity: 0.6 !important; /* Default opacity */
+  opacity: 0.8 !important; /* Default opacity */
   display: inline-flex; /* Align text and icon horizontally */
   align-items: center; /* Vertically center text and icon */
   transition: opacity 0.3s ease-in-out; /* Smooth transition for opacity */
@@ -303,11 +303,6 @@ button:hover {
 .ProfileLink:hover .profileIcon,
 .ProfileLink:focus .profileIcon {
   opacity: 0.5 !important; /* Ensure the icon's opacity is also full on hover */
-}
-
-.ProfileLink:hover,
-.ProfileLink:focus {
-  opacity: 1; /* Make sure both are fully visible on hover */
 }
 
 /* Snake logo animation stuff */
@@ -356,6 +351,7 @@ button:hover {
   display: flex;
   align-items: center;
   border-radius: 9999px;
+  color: #fca17d;
   padding: 4px;
   transition: background-color 0.3s;
 }
@@ -365,7 +361,7 @@ button:hover {
 }
 
 .toggleBtnUI.off {
-  background-color: #9ca3af; /* Green */
+  background-color: #ff0000; /* RED */
 }
 
 .toggleCircleUI {
@@ -396,7 +392,7 @@ button:hover {
 
 /* Section Title */
 .section-title {
-  font-size: 1.25rem;
+  font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: 600;
   color: #fca17d; /* Orange color */
   margin-bottom: 1rem; /* Space below the title */
@@ -444,15 +440,16 @@ button:hover {
 
 /* Device Icon */
 .device-icon {
-  color: #000000; /* Black color */
+  color: #0d0628; /* Black color */
   font-size: 3rem; /* Large icon size */
   margin-bottom: 0.5rem; /* Space below the icon */
 }
 
 /* Device Status */
 .device-status {
+  margin-top: 0.2rem; /* Slight shift down */
   font-size: 0.875rem; /* Small text size */
-  color: #000000; /* Black text */
+  color: #0d0628; /* Black text */
 }
 
 /* Settings Button */
@@ -465,7 +462,7 @@ button:hover {
 
 /* Add Device Card */
 .add-device-card {
-  padding: 1rem;
+  padding: clamp(1rem, 5vw, 3rem); /* dynamic width */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -488,7 +485,7 @@ button:hover {
 
 /* Add Icon */
 .add-icon {
-  color: #000000; /* Black color */
+  color: #0d0628; /* Black color */
   font-size: 3rem; /* Large icon size */
   margin-bottom: 0.5rem; /* Space below the icon */
 }
@@ -496,7 +493,7 @@ button:hover {
 /* Add Text */
 .add-text {
   font-size: 0.875rem; /* Small text size */
-  color: #000000; /* Black text */
+  color: #0d0628; /* Black text */
 }
 
 /*  Modal Overlay */
