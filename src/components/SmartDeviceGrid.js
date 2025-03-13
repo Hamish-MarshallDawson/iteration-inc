@@ -342,14 +342,11 @@ export default function SmartDeviceGrid({ roomId }) {
             </div>
 
             <Button onClick={updateDeviceName}>Save</Button>
-            <Button onClick={updateDeviceName}>Save</Button>
 
             <Button onClick={removeDevice} className="bg-red-500">
               Remove
-              Remove
             </Button>
 
-            <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
             <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
           </div>
         </div>
