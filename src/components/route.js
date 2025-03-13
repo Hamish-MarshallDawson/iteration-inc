@@ -59,7 +59,10 @@ function MainContent() {
             <Route path="/filling-information" element={<FillInfo />} />
             <Route path="/testdb" element={<TestDB />} />
             <Route path="/updateEmail" element={<UpdateEmail />} />
-            <Route path="/confirmUpdateEmail" element={<ConfirmUpdateEmail />} />
+            <Route
+              path="/confirmUpdateEmail"
+              element={<ConfirmUpdateEmail />}
+            />
           </Routes>
         </div>
       </div>
