@@ -1,99 +1,52 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import axios from "axios"; 
-import { jwtDecode } from "jwt-decode"; 
-import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
+import axios from "axios";
 import "../App.css";
-import sha256 from "js-sha256";
+import Spinner from "../components/Spinner.js"; 
 
-function Login() {
-  // These are state variables
+export default function PasswordReset() {
+  // State variables
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [machineSerialCode, setMachineSerialCode] = useState("");
-  const [machineName, setmachineName] = useState("");
-
-  // Use to navigate to different pages
   const navigate = useNavigate();
-  const getBrowserName = () => {
-    if (navigator.userAgent.includes("Chrome")) return "Chrome";
-    if (navigator.userAgent.includes("Firefox")) return "Firefox";
-    if (navigator.userAgent.includes("Safari")) return "Safari";
-    if (navigator.userAgent.includes("Edge")) return "Edge";
-    return "Unknown Browser";
-  };
-
-
-  useEffect(() => {
-    const userAgent = navigator.userAgent; // Device info
-    const screenRes = `${window.screen.width}x${window.screen.height}`; // Screen resolution
-    const os = navigator.platform; // OS info
-    const browser = getBrowserName();
-    setmachineName(`${browser}`);
-    setMachineSerialCode(sha256(userAgent + screenRes + os)); // Generate unique machine ID
-  }, []);
-
-
-  // Check if user already logged in when page load
-  useEffect(() => {
-    try {
-      // Fetch n decode token
-      const token = localStorage.getItem("token");
-      const decoded = jwtDecode(token);
-        // Redirect to profile page if already logged in
-        navigate("/profile"); 
-    } catch (error) {
-      console.error("Invalid token");
-      // Remove invalid token
-      localStorage.removeItem("token"); 
-    }
-  }, [navigate]);
+  const [isLoading, setIsLoading] = useState(false);
 
 
   // Function to handle form submission
-  const handleLogin = async (e) => {
-    // Prevent default form submission behavior
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Set state of spinner to true as the form is submitting
     setIsLoading(true);
 
+    // Ensure the user enters an email before proceeding anything
+    if (!email) {
+      alert("Please enter your email.");
+      setIsLoading(false);
+      return;
+    }
+    
     try {
-      // Make a POST request to check if the email exist and compare password in the database (through api route)
-      const response = await axios.post(`${window.location.origin}/api/login`, {
-        email,
-        password,
-        machineSerialCode, 
-        machineName
+      // Make a POST request to check if the email already exists in the database (through api route)
+      const response = await axios.post(`${window.location.origin}/api/user`, {
+        action: "checkEmail", 
+        email 
       });
 
+      // Checkemail api succeeds when email dont exist
+      alert("Email is not registered.");
       setIsLoading(false);
-
-      // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
-      if (response.status === 200) {
-        // Store jwt to local 
-        localStorage.setItem("token", response.data.token);
-        alert("User registered, " + response.data.message);
-        // Redirect to the Profile Page as they alreay logedin
-        navigate("/profile"); 
-      }
 
     } catch (error) {
       setIsLoading(false);
 
-      // Otherwise, if user entered wrong login credentials, it will display error message
-      if (error.response && error.response.status === 401) {
-        // Show error message for invalid credentials
-        alert(error.response.data.message);
-        alert("Invalid email or password");
-      } else  {
-        // If the error is unknown, show a generic message
-        alert(error.response.data.message);
+      if (error.response && error.response.status === 400) {
+        // If API returns a 400 error, it means the email exists
+        alert("Email exist, proceeding to verification.");
+        navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
+      } else {
+        // If an unknown error occurs, show a general message
         alert("Something went wrong. Please try again.");
       }
     }
+
   };
 
   return (
@@ -103,8 +56,10 @@ function Login() {
         alt="Snake logo"
         className="snake-logo"
       />
+
       <div className="login">
-        <form onSubmit={handleLogin}>
+        <h2 style={{ textAlign: "center" }}>Reset Password</h2>
+        <form onSubmit={handleSubmit}>
           <div className="inputFields">
             <div className="input">
               <label>Email:</label>
@@ -115,32 +70,21 @@ function Login() {
                 required
               />
             </div>
-            <div className="input">
-              <label>Password:</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
           </div>
+
           <button type="submit" className="submit-button" disabled={isLoading}>
-            {isLoading ? "Loading..." : "Login"}
+          {isLoading ? "Loading..." : "Next"}
           </button>
           {isLoading && <Spinner />}
-        </form>
 
-        <div className="helper-text">
-          <p>
-            <Link to="/passwordReset">Forgot Password?</Link>
-          </p>
-          <p>
-            Don't have an account? <Link to="/sign-up">Sign Up</Link>
-          </p>
-        </div>
+          <button
+            onClick={() => navigate("/")}
+            className="submit-button"
+          >
+            Go Back
+          </button>
+        </form>
       </div>
     </div>
   );
 }
-export default Login;
