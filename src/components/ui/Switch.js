@@ -1,23 +1,16 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect } from "react";
 
-const Switch = ({ isOn, onToggle  }) => {
-  const [state, setState] = useState(isOn);
-
+const Switch = ({ isOn, onToggle }) => {
   useEffect(() => {
-    setState(isOn); 
+    // If needed, handle any side effects when the isOn prop changes.
   }, [isOn]);
 
   const toggle = () => {
-    const newState = !state;
-    setState(newState);
-    if (onToggle) onToggle(newState); 
+    if (onToggle) onToggle(!isOn); // Toggle the state and notify parent.
   };
 
   return (
-    <button
-      onClick={toggle}
-      className={`toggleBtnUI ${isOn ? "on" : "off"}`}
-    >
+    <button onClick={toggle} className={`toggleBtnUI ${isOn ? "on" : "off"}`}>
       <div className="toggleCircleUI"></div>
     </button>
   );

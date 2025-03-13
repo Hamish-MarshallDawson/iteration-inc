@@ -21,14 +21,13 @@ export default function SmartDeviceGrid({ roomId }) {
   const [userID, setUserID] = useState(null);
   const [roomID, setRoomID] = useState(null);
 
-
   // State variable for setting modal
-  const [showSettingsModal, setShowSettingsModal] = useState(false); 
-  const [currentDevice, setCurrentDevice] = useState(null); 
-  const [updatedName, setUpdatedName] = useState(""); 
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [currentDevice, setCurrentDevice] = useState(null);
+  const [updatedName, setUpdatedName] = useState("");
 
-// Page auto loading content
-//----------------------------------------------------------------------------------------------------------------------------------------
+  // Page auto loading content
+  //----------------------------------------------------------------------------------------------------------------------------------------
   // This part responsible for get room ID and decode JWT to get user ID
   // useEffect(() => {
   //   // Get the room id
@@ -56,28 +55,29 @@ export default function SmartDeviceGrid({ roomId }) {
   useEffect(() => {
     if (userID && roomID) {
       alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
-  
-      axios.post(`${window.location.origin}/api/getDevices`, {
-        userID: userID,
-        roomID: roomID,
-      })
-      .then(response => {
-        alert("Response Received");
-        setDevices(response.data.devices || []);
-      })
-      .catch(error => {
-        console.error("Error fetching devices:", error);
-        alert("Failed to fetch devices.");
-      });
+
+      axios
+        .post(`${window.location.origin}/api/getDevices`, {
+          userID: userID,
+          roomID: roomID,
+        })
+        .then((response) => {
+          alert("Response Received");
+          setDevices(response.data.devices || []);
+        })
+        .catch((error) => {
+          console.error("Error fetching devices:", error);
+          alert("Failed to fetch devices.");
+        });
     }
-  }, [userID, roomID]); 
+  }, [userID, roomID]);
 
   // This part is for debugg purpose only
   useEffect(() => {
     console.log("Updated Devices List:", devices);
   }, [devices]);
 
-//----------------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
   // This function responsible for add device
   const addDevice = async () => {
@@ -110,17 +110,22 @@ export default function SmartDeviceGrid({ roomId }) {
 
   // This function responsible for change device status
   const toggleDeviceStatus = async (deviceID, currentStatus) => {
-    const newStatus = (currentStatus === "Online" ? "Offline" : "Online");
+    const newStatus = currentStatus === "Online" ? "Offline" : "Online";
     try {
-      const response = await axios.post(`${window.location.origin}/api/updateDeviceStatus`, {
-        deviceID,
-        newStatus
-      });
-  
+      const response = await axios.post(
+        `${window.location.origin}/api/updateDeviceStatus`,
+        {
+          deviceID,
+          newStatus,
+        }
+      );
+
       if (response.status === 200) {
         setDevices((prevDevices) =>
           prevDevices.map((device) =>
-            device.DeviceID === deviceID ? { ...device, Status: newStatus } : device
+            device.DeviceID === deviceID
+              ? { ...device, Status: newStatus }
+              : device
           )
         );
       }
@@ -137,18 +142,20 @@ export default function SmartDeviceGrid({ roomId }) {
     setShowSettingsModal(true);
   };
 
-
   // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
-      const response = await axios.post(`${window.location.origin}/api/updateDeviceName`, {
-        deviceID: currentDevice.DeviceID,
-        newDeviceName: updatedName,
-      });
+      const response = await axios.post(
+        `${window.location.origin}/api/updateDeviceName`,
+        {
+          deviceID: currentDevice.DeviceID,
+          newDeviceName: updatedName,
+        }
+      );
 
       if (response.status === 200) {
-        setDevices(prevDevices =>
-          prevDevices.map(device =>
+        setDevices((prevDevices) =>
+          prevDevices.map((device) =>
             device.DeviceID === currentDevice.DeviceID
               ? { ...device, DeviceName: updatedName }
               : device
@@ -159,7 +166,7 @@ export default function SmartDeviceGrid({ roomId }) {
       alert(response.data.message);
     } catch (error) {
       console.error("Error updating device name:", error);
-     
+
       alert("Failed to update device name.");
     }
   };
@@ -167,13 +174,18 @@ export default function SmartDeviceGrid({ roomId }) {
   // This function responsible for remove a device
   const removeDevice = async () => {
     try {
-      const response = await axios.post(`${window.location.origin}/api/removeDevice`, {
-        deviceID: currentDevice.DeviceID,
-      });
+      const response = await axios.post(
+        `${window.location.origin}/api/removeDevice`,
+        {
+          deviceID: currentDevice.DeviceID,
+        }
+      );
 
       if (response.status === 200) {
-        setDevices(prevDevices =>
-          prevDevices.filter(device => device.DeviceID !== currentDevice.DeviceID)
+        setDevices((prevDevices) =>
+          prevDevices.filter(
+            (device) => device.DeviceID !== currentDevice.DeviceID
+          )
         );
         setShowSettingsModal(false);
       }
@@ -182,32 +194,25 @@ export default function SmartDeviceGrid({ roomId }) {
       alert("Failed to remove device.");
     }
   };
-//----------------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
   // This part is rendering part
   return (
     <div className="smart-device-grid-container">
-
-      <h2 className="section-title">
-        Smart devices
-      </h2>
+      <h2 className="section-title">Smart devices</h2>
 
       <div className="device-grid">
         {devices.map((device) => (
-          <Card
-            key={device.DeviceName}
-            className="device-card"
-          >
+          <Card key={device.DeviceName} className="device-card">
             <h2>{device.DeviceName}</h2>
             <CardContent className="device-card-content">
-              <DeviceIcon
-                type={device.DeviceType}
-                className="device-icon"
-              />
+              <DeviceIcon type={device.DeviceType} className="device-icon" />
 
               <Switch
-                checked={device.Status === "Online"}
-                onToggle={() => toggleDeviceStatus(device.DeviceID, device.Status)}
+                isOn={device.Status === "Online"} // Pass the correct status
+                onToggle={() =>
+                  toggleDeviceStatus(device.DeviceID, device.Status)
+                } // Handle toggle
                 className="device-switch"
               />
 
@@ -222,17 +227,12 @@ export default function SmartDeviceGrid({ roomId }) {
               >
                 <Settings size={16} /> Settings
               </Button>
-
             </CardContent>
           </Card>
         ))}
 
-
-
         {/* Add Device cARD */}
-        <div onClick={() => setShowAddModal(true)}
-          className="add-device-card"
-        >
+        <div onClick={() => setShowAddModal(true)} className="add-device-card">
           <CardContent className="device-card-content">
             <Plus className="add-icon" />
             <p className="add-text">Add Device</p>
@@ -287,12 +287,13 @@ export default function SmartDeviceGrid({ roomId }) {
         </div>
       )}
 
-
-       {/* Settings Modal */}
-       {showSettingsModal && (
-        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowSettingsModal(false)}
+        >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
             <h3>Edit Device</h3>
 
             <div className="inputFields">
@@ -307,18 +308,13 @@ export default function SmartDeviceGrid({ roomId }) {
               </div>
             </div>
 
-            <Button onClick={updateDeviceName}>
-              Save
-            </Button>
+            <Button onClick={updateDeviceName}>Save</Button>
 
             <Button onClick={removeDevice} className="bg-red-500">
-               Remove
+              Remove
             </Button>
 
-            <Button onClick={() => setShowSettingsModal(false)}>
-              Cancel
-            </Button>
-
+            <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
           </div>
         </div>
       )}
@@ -346,5 +342,3 @@ function DeviceIcon({ type, className }) {
       return <span className={`${className}`}>❓</span>;
   }
 }
-
-
