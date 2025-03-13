@@ -331,6 +331,56 @@ button:hover {
   }
 }
 
+/* Device ui components */
+.buttonUI {
+  padding: 8px 16px;
+  background-color: #0d0628;
+  color: white;
+  border-radius: 4px;
+}
+
+.cardUI {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fdba74;
+}
+
+.cardContentUI {
+  padding: 8px;
+}
+
+.toggleBtnUI {
+  width: 40px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 4px;
+  transition: background-color 0.3s;
+}
+
+.toggleBtnUI.on {
+  background-color: #22c55e; /* Green */
+}
+
+.toggleBtnUI.off {
+  background-color: #9ca3af; /* Green */
+}
+
+.toggleCircleUI {
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.toggleBtnUI.on .toggleCircleUI {
+  transform: translateX(20px);
+}
+
 /*  ADDING DEVICE SECTION 
 .
 .

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { Plus, Settings } from "lucide-react";
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 import Card from "./ui/card.js";
 import Button from "./ui/button.js";
@@ -11,21 +11,19 @@ import CardContent from "./ui/cardContent";
 
 import "../App.css";
 
-
 export default function SmartDeviceGrid({ roomId }) {
   const navigate = useNavigate();
-  
-  const [devices, setDevices] = useState([]);               
+
+  const [devices, setDevices] = useState([]);
   const [deviceName, setDeviceName] = useState("");
   const [deviceType, setDeviceType] = useState("lightbulb");
   const [showAddModal, setShowAddModal] = useState(false);
   const [userID, setUserID] = useState(null);
   const [roomID, setRoomID] = useState(null);
 
-
   useEffect(() => {
     // Get the room id
-    setRoomID(roomId)
+    setRoomID(roomId);
 
     // Extrat userid from jwt
     try {
@@ -42,11 +40,7 @@ export default function SmartDeviceGrid({ roomId }) {
       localStorage.removeItem("token");
       navigate("/");
     }
-
-
-
   }, [navigate]);
-
 
   // For add device
   const addDevice = async () => {
@@ -55,12 +49,15 @@ export default function SmartDeviceGrid({ roomId }) {
       return;
     }
     try {
-      const response = await axios.post(`${window.location.origin}/api/addDevice`, {
-        deviceName,
-        deviceType,
-        roomID,
-        userID
-      });
+      const response = await axios.post(
+        `${window.location.origin}/api/addDevice`,
+        {
+          deviceName,
+          deviceType,
+          roomID,
+          userID,
+        }
+      );
 
       if (response.status === 201) {
         setDevices([...devices, response.data.device]);
@@ -118,9 +115,7 @@ export default function SmartDeviceGrid({ roomId }) {
         ))}
 
         {/* Add Device cARD */}
-        <div onClick={() => setShowAddModal(true)}
-          className="add-device-card"
-        >
+        <div onClick={() => setShowAddModal(true)} className="add-device-card">
           <CardContent className="add-device-card-contentr">
             <Plus className="add-icon" />
             <p className="add-text">Add Device</p>
@@ -128,11 +123,10 @@ export default function SmartDeviceGrid({ roomId }) {
         </div>
       </div>
 
-     {/* When clicked add device, modal window show up allow user to fill the form */}
-     {showAddModal && (
+      {/* When clicked add device, modal window show up allow user to fill the form */}
+      {showAddModal && (
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
             <h3>Add New Device</h3>
 
             {/* Input device name*/}
@@ -158,7 +152,7 @@ export default function SmartDeviceGrid({ roomId }) {
                   onChange={(e) => setDeviceType(e.target.value)}
                   className="input-select"
                 >
-                 <option value="coffee">Coffee Maker</option>
+                  <option value="coffee">Coffee Maker</option>
                   <option value="speaker">Speaker</option>
                   <option value="lightbulb">Lightbulb</option>
                   <option value="thermostat">Thermostat</option>
@@ -179,7 +173,6 @@ export default function SmartDeviceGrid({ roomId }) {
   );
 }
 
-
 function DeviceIcon({ type, className }) {
   switch (type) {
     case "coffee":
@@ -198,5 +191,3 @@ function DeviceIcon({ type, className }) {
       return <span className={`${className}`}>❓</span>;
   }
 }
-
-

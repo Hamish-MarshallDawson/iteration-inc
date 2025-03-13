@@ -2,10 +2,7 @@ import React from "react";
 
 const button = ({ children, onClick, className }) => {
   return (
-    <button
-      className={`px-4 py-2 bg-blue-500 text-white rounded ${className}`}
-      onClick={onClick}
-    >
+    <button className={`buttonUI ${className}`} onClick={onClick}>
       {children}
     </button>
   );
