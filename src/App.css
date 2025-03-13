@@ -307,6 +307,7 @@ button:hover {
 
 /* Snake logo animation stuff */
 .snake {
+  display: block;
   height: 12vmin;
   margin-bottom: clamp(20px, 3rem, 30px); /* Extra space below */
 }
@@ -323,6 +324,108 @@ button:hover {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* .navbar.mobile-visible {
+  transform: translateX(-100%); /* Hide navbar off-screen */
+/* } */
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .structure {
+    display: flex;
+    flex-direction: column; /* Stack navbar and content */
+    flex: 1; /* Ensures it takes the full available space */
+    width: 100dvh;
+    height: 100dvh; /* Full viewport height */
+    overflow: hidden; /* Prevent scrolling issues */
+  }
+
+  .hamburger-menu {
+    display: block;
+    background: transparent;
+    border: none;
+    font-size: 30px;
+    color: #fca17d;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 1rem;
+  }
+
+  .navbar {
+    position: relative; /* Fixed position for mobile */
+    width: 100%;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the links horizontally */
+    justify-content: center; /* Centers the links vertically */
+    text-align: center;
+    height: auto;
+    z-index: 1;
+    transform: translateX(0); /* Start with navbar visible */
+    overflow-y: auto;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 1rem;
+    align-items: center;
+    text-align: center; /* Ensure text stays centered */
+  }
+
+  .nav-links a {
+    display: inline-block; /* Helps with centering */
+    color: #fca17d;
+    text-decoration: none;
+    font-size: clamp(15px, 5rem, 45px);
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+  }
+
+  .nav-links.show {
+    display: block;
+  }
+
+  .ProfileLink {
+    display: flex;
+    align-items: center;
+  }
+
+  .profileIcon {
+    width: 2rem;
+    height: 2rem;
+    margin-left: 0.5rem;
+  }
+  /* Main Content Style */
+
+  /* Optional: If content requires scrolling */
+  .MainContent {
+    overflow-y: auto;
+    height: 100%; /* Allow content to scroll if needed */
+  }
+
+  /* Snake logo animation stuff */
+  .snake {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .snake {
+      animation: snake-logo-spin infinite 15s linear;
+    }
+  }
+
+  @keyframes snake-logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
 
