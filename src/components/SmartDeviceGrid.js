@@ -207,18 +207,19 @@ export default function SmartDeviceGrid({ roomId }) {
             <h2>{device.DeviceName}</h2>
             <CardContent className="device-card-content">
               <DeviceIcon type={device.DeviceType} className="device-icon" />
+              <div className="device-status-wrapper">
+                <Switch
+                  isOn={device.Status === "Online"} // Pass the correct status
+                  onToggle={() =>
+                    toggleDeviceStatus(device.DeviceID, device.Status)
+                  } // Handle toggle
+                  className="device-switch"
+                />
 
-              <Switch
-                isOn={device.Status === "Online"} // Pass the correct status
-                onToggle={() =>
-                  toggleDeviceStatus(device.DeviceID, device.Status)
-                } // Handle toggle
-                className="device-switch"
-              />
-
-              <p className="device-status">
-                {device.Status === "Online" ? "On" : "Off"}
-              </p>
+                <p className="device-status">
+                  {device.Status === "Online" ? "On" : "Off"}
+                </p>
+              </div>
 
               <Button
                 variant="ghost"
