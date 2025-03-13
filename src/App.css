@@ -624,3 +624,124 @@ button:hover {
   z-index: 1001;
   position: relative;
 }
+
+.awards-container {
+  text-align: center;
+  padding: 40px; /* Increase padding */
+  max-width: 1200px; /* Increase width */
+  margin: auto;
+}
+.page-title {
+  font-size: 32px;
+  color: #fca17d;
+  margin-bottom: 20px;
+}
+
+
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Increase card size */
+  gap: 30px; /* Add more spacing between cards */
+  justify-content: center;
+  max-width: 1100px; /* Adjust width for better alignment */
+  margin: auto;
+}
+
+.award-card {
+  background: linear-gradient(135deg, #1e1e3f, #2a2a60); /* Dark blue/purple gradient */
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+  position: relative; /* Needed for overlay */
+  transition: transform 0.3s ease-in-out;
+}
+.award-card:hover {
+  transform: scale(1.05);
+}
+/* Locked awards styling */
+.award-card.locked {
+  opacity: 0.5; /* Dim the award */
+  filter: grayscale(80%); /* Make it black & white */
+  position: relative;
+}
+/* Lock icon */
+.lock-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 25px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.lock-icon::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 12px;
+  height: 10px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  transform: translateX(-50%);
+}
+/* Locked label */
+.locked-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 5px;
+}
+.award-icon {
+  width: 100px; /* Make icons bigger */
+  height: 100px;
+  margin-bottom: 15px;
+  
+}
+
+.award-title {
+  font-size: 22px; /* Larger title */
+  font-weight: bold;
+  color: #fff;
+}
+
+.award-description {
+  font-size: 16px; /* Bigger text */
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.award-level {
+  font-size: 16px; /* Bigger badge text */
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.award-level.gold {
+  background-color: gold;
+  color: black;
+}
+
+.award-level.silver {
+  background-color: silver;
+  color: black;
+}
+
+.award-level.bronze {
+  background-color: #cd7f32;
+  color: white;
+}
+
+.award-level.platinum {
+  background-color: #e5e4e2;
+  color: black;
+}

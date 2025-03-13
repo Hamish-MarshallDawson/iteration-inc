@@ -94,13 +94,13 @@ model Users {
   EnergyGoal      Decimal?          @db.Decimal
   UserType        usertype?
   MachineID       Int?
-  Awards          Awards[]
   Devices         Devices[]
   EnergyUse       EnergyUse[]
   Recommendations Recommendations[]
   Schedules       Schedules[]
   SecurityLogs    SecurityLogs[]
   UserActivity    UserActivity[]
+  UserAwards_     UserAwards_[]
   Machines        Machines?         @relation(fields: [MachineID], references: [MachineID], onUpdate: NoAction, map: "fk_machine")
 }
 
@@ -109,17 +109,14 @@ model Usertest {
 }
 
 model Awards {
-  AwardID     Int        @id @default(autoincrement())
-  UserID      Int
-  Title       String     @db.VarChar(100)
+  AwardID     Int           @id @default(autoincrement())
+  Title       String        @db.VarChar(100)
   Description String?
-  Icon        String?    @db.VarChar(200)
-  IsUnlocked  Boolean?   @default(false)
-  DateEarned  DateTime?  @db.Timestamp(6)
-  Condition   Json       @db.Json
+  Icon        String?       @db.VarChar(200)
+  Condition   Json          @db.Json
   Type        awardtype
   Level       awardlevel
-  Users       Users      @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+  UserAwards_ UserAwards_[]
 }
 
 model Machines {
@@ -131,6 +128,19 @@ model Machines {
   SecurityLogs      SecurityLogs[]
   UserActivity      UserActivity[]
   Users             Users[]
+}
+
+model UserAwards_ {
+  UserAwardID_ Int       @id @unique(map: "index_1") @default(autoincrement()) @map("UserAwardID ")
+  UserID_      Int       @map("UserID ")
+  AwardID_     Int       @map("AwardID ")
+  IsUnlocked_  Boolean?  @default(false) @map("IsUnlocked ")
+  DateEarned_  DateTime? @map("DateEarned ") @db.Timestamp(6)
+  Awards       Awards    @relation(fields: [AwardID_], references: [AwardID], onDelete: NoAction, onUpdate: NoAction, map: "AwardID")
+  Users        Users     @relation(fields: [UserID_], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+
+  @@unique([UserID_, AwardID_], map: "constraint_3")
+  @@map("UserAwards ")
 }
 
 enum Action {
