@@ -15,7 +15,10 @@ export default function UpdateEmail() {
 
     try {
         // Call checkEmail API to verify if the email is already taken
-        const response = await axios.post(`${window.location.origin}/api/checkEmail`, { email: newEmail });
+        const response = await axios.post(`${window.location.origin}/api/user`, { 
+          action: "checkEmail",
+          email: newEmail 
+        });
         setIsLoading(false);
   
         if (response.status === 200) {

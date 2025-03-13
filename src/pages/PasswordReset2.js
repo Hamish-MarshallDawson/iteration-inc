@@ -38,9 +38,10 @@ export default function PasswordResetStep2() {
 
     try {
       // Send password reset request to the API
-      const response = await axios.post(`${window.location.origin}/api/resetPassword`, {
+      const response = await axios.post(`${window.location.origin}/api/user`, {
+        action: "resetPassword",
         email,
-        newPassword,
+        newPassword
       });
 
       setIsLoading(false);

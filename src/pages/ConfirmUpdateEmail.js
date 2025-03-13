@@ -24,8 +24,9 @@ export default function ConfirmUpdateEmail() {
   
         const updateEmail = async () => {   
             try {
-                const response = await axios.post(`${window.location.origin}/api/updateEmail`, {
-                    currentEmail,
+                const response = await axios.post(`${window.location.origin}/api/user`, {
+                    action: "updateEmail",
+                    oldEmail:currentEmail,
                     newEmail,
                 });
                 if (response.status === 200) {

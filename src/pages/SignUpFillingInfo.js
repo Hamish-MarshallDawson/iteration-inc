@@ -33,14 +33,12 @@ export default function SignUpStep2() {
     // Check if two entreis of passwords match
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
-      setIsLoading(false);
       return;
     }
 
     // Check if user's name is valid
     if (firstName.length < 2 || lastName.length < 2) {
       alert("First and Last Name must be at least 2 characters long.");
-      setIsLoading(false);
       return;
     }
 
@@ -49,7 +47,6 @@ export default function SignUpStep2() {
       alert(
         "Password must be at least 8 characters, contain a number, and an uppercase letter."
       );
-      setIsLoading(false);
       return;
     }
 
@@ -58,7 +55,8 @@ export default function SignUpStep2() {
     try {
 
       // Send user data to backend for database insertion
-      const response = await axios.post(`${window.location.origin}/api/registerUser`, {
+      const response = await axios.post(`${window.location.origin}/api/user`, {
+        action: "register",
         firstName,
         lastName,
         email,
