@@ -18,27 +18,27 @@ const ProfilePage = () => {
 
 
   // !!Extract email from JWT token when page is load
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
-    if (!token) {
-      navigate("/"); 
-      return;
-    }
-    try {
-      // !!Decode the jwt token and store to the variable
-      const decoded = jwtDecode(token);
-      setEmail(decoded.email);
-      setFirstName(decoded.firstName);
-      setLastName(decoded.lastName);
-      setUserType(decoded.userType);
-    } catch (error) {
-      console.error("Invalid token, logging out");
-      localStorage.removeItem("token");
-      // Redirect to login if token is invalid
-      navigate("/");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
+  //   if (!token) {
+  //     navigate("/"); 
+  //     return;
+  //   }
+  //   try {
+  //     // !!Decode the jwt token and store to the variable
+  //     const decoded = jwtDecode(token);
+  //     setEmail(decoded.email);
+  //     setFirstName(decoded.firstName);
+  //     setLastName(decoded.lastName);
+  //     setUserType(decoded.userType);
+  //   } catch (error) {
+  //     console.error("Invalid token, logging out");
+  //     localStorage.removeItem("token");
+  //     // Redirect to login if token is invalid
+  //     navigate("/");
+  //   }
+  // }, [navigate]);
 
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {

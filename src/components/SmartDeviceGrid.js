@@ -31,27 +31,27 @@ export default function SmartDeviceGrid({ roomId }) {
 // Page auto loading content
 //----------------------------------------------------------------------------------------------------------------------------------------
   // This part responsible for get room ID and decode JWT to get user ID
-  useEffect(() => {
-    // Get the room id
-    setRoomID(roomId)
+  // useEffect(() => {
+  //   // Get the room id
+  //   setRoomID(roomId)
 
-    // Extrat userid from jwt
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in again");
-        navigate("/");
-        return;
-      }
-      const decoded = jwtDecode(token);
-      setUserID(decoded.userId);
-    } catch (error) {
-      alert("Invalid token. Logging out.");
-      localStorage.removeItem("token");
-      navigate("/");
-    }
+  //   // Extrat userid from jwt
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       alert("Please log in again");
+  //       navigate("/");
+  //       return;
+  //     }
+  //     const decoded = jwtDecode(token);
+  //     setUserID(decoded.userId);
+  //   } catch (error) {
+  //     alert("Invalid token. Logging out.");
+  //     localStorage.removeItem("token");
+  //     navigate("/");
+  //   }
 
-  }, [navigate]);
+  // }, [navigate]);
 
   // This part fetch devices when page load
   useEffect(() => {

@@ -50,19 +50,19 @@ function Login() {
 
 
   // Check if user already logged in when page load
-  useEffect(() => {
-    try {
-      // Fetch n decode token
-      const token = localStorage.getItem("token");
-      const decoded = jwtDecode(token);
-        // Redirect to profile page if already logged in
-        navigate("/profile"); 
-    } catch (error) {
-      console.error("Invalid token");
-      // Remove invalid token
-      localStorage.removeItem("token"); 
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   try {
+  //     // Fetch n decode token
+  //     const token = localStorage.getItem("token");
+  //     const decoded = jwtDecode(token);
+  //       // Redirect to profile page if already logged in
+  //       navigate("/profile"); 
+  //   } catch (error) {
+  //     console.error("Invalid token");
+  //     // Remove invalid token
+  //     localStorage.removeItem("token"); 
+  //   }
+  // }, [navigate]);
 
 
   // Function to handle form submission
