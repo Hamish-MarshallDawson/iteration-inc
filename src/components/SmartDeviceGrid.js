@@ -29,48 +29,48 @@ export default function SmartDeviceGrid({ roomId }) {
   // Page auto loading content
   //----------------------------------------------------------------------------------------------------------------------------------------
   // This part responsible for get room ID and decode JWT to get user ID
-  // useEffect(() => {
-  //   // Get the room id
-  //   setRoomID(roomId)
+  useEffect(() => {
+    // Get the room id
+    setRoomID(roomId)
 
-  //   // Extrat userid from jwt
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       alert("Please log in again");
-  //       navigate("/");
-  //       return;
-  //     }
-  //     const decoded = jwtDecode(token);
-  //     setUserID(decoded.userId);
-  //   } catch (error) {
-  //     alert("Invalid token. Logging out.");
-  //     localStorage.removeItem("token");
-  //     navigate("/");
-  //   }
+    // Extrat userid from jwt
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in again");
+        navigate("/");
+        return;
+      }
+      const decoded = jwtDecode(token);
+      setUserID(decoded.userId);
+    } catch (error) {
+      alert("Invalid token. Logging out.");
+      localStorage.removeItem("token");
+      navigate("/");
+    }
 
-  // }, [navigate]);
+  }, [navigate]);
 
   // This part fetch devices when page load
   useEffect(() => {
     if (userID && roomID) {
       alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
-
-      axios
-        .post(`${window.location.origin}/api/getDevices`, {
-          userID: userID,
-          roomID: roomID,
-        })
-        .then((response) => {
-          alert("Response Received");
-          setDevices(response.data.devices || []);
-        })
-        .catch((error) => {
-          console.error("Error fetching devices:", error);
-          alert("Failed to fetch devices.");
-        });
+  
+      axios.post(`${window.location.origin}/api/device`, {
+        action: "get",
+        userID: userID,
+        roomID: roomID
+      })
+      .then(response => {
+        alert("Response Received");
+        setDevices(response.data.devices || []);
+      })
+      .catch(error => {
+        console.error("Error fetching devices:", error);
+        alert("Failed to fetch devices.");
+      });
     }
-  }, [userID, roomID]);
+  }, [userID, roomID]); 
 
   // This part is for debugg purpose only
   useEffect(() => {
@@ -86,15 +86,13 @@ export default function SmartDeviceGrid({ roomId }) {
       return;
     }
     try {
-      const response = await axios.post(
-        `${window.location.origin}/api/addDevice`,
-        {
-          deviceName,
-          deviceType,
-          roomID,
-          userID,
-        }
-      );
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "add",
+        deviceName,
+        deviceType,
+        roomID,
+        userID
+      });
 
       if (response.status === 201) {
         setDevices([...devices, response.data.device]);
@@ -110,22 +108,18 @@ export default function SmartDeviceGrid({ roomId }) {
 
   // This function responsible for change device status
   const toggleDeviceStatus = async (deviceID, currentStatus) => {
-    const newStatus = currentStatus === "Online" ? "Offline" : "Online";
+    const newStatus = (currentStatus === "Online" ? "Offline" : "Online");
     try {
-      const response = await axios.post(
-        `${window.location.origin}/api/updateDeviceStatus`,
-        {
-          deviceID,
-          newStatus,
-        }
-      );
-
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "updateStatus",
+        deviceID,
+        newStatus
+      });
+  
       if (response.status === 200) {
         setDevices((prevDevices) =>
           prevDevices.map((device) =>
-            device.DeviceID === deviceID
-              ? { ...device, Status: newStatus }
-              : device
+            device.DeviceID === deviceID ? { ...device, Status: newStatus } : device
           )
         );
       }
@@ -145,17 +139,15 @@ export default function SmartDeviceGrid({ roomId }) {
   // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
-      const response = await axios.post(
-        `${window.location.origin}/api/updateDeviceName`,
-        {
-          deviceID: currentDevice.DeviceID,
-          newDeviceName: updatedName,
-        }
-      );
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "updateName",
+        deviceID: currentDevice.DeviceID,
+        newDeviceName: updatedName,
+      });
 
       if (response.status === 200) {
-        setDevices((prevDevices) =>
-          prevDevices.map((device) =>
+        setDevices(prevDevices =>
+          prevDevices.map(device =>
             device.DeviceID === currentDevice.DeviceID
               ? { ...device, DeviceName: updatedName }
               : device
@@ -166,7 +158,7 @@ export default function SmartDeviceGrid({ roomId }) {
       alert(response.data.message);
     } catch (error) {
       console.error("Error updating device name:", error);
-
+     
       alert("Failed to update device name.");
     }
   };
@@ -174,18 +166,14 @@ export default function SmartDeviceGrid({ roomId }) {
   // This function responsible for remove a device
   const removeDevice = async () => {
     try {
-      const response = await axios.post(
-        `${window.location.origin}/api/removeDevice`,
-        {
-          deviceID: currentDevice.DeviceID,
-        }
-      );
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "remove",
+        deviceID: currentDevice.DeviceID,
+      });
 
       if (response.status === 200) {
-        setDevices((prevDevices) =>
-          prevDevices.filter(
-            (device) => device.DeviceID !== currentDevice.DeviceID
-          )
+        setDevices(prevDevices =>
+          prevDevices.filter(device => device.DeviceID !== currentDevice.DeviceID)
         );
         setShowSettingsModal(false);
       }
@@ -194,6 +182,7 @@ export default function SmartDeviceGrid({ roomId }) {
       alert("Failed to remove device.");
     }
   };
+
   //----------------------------------------------------------------------------------------------------------------------------------------
 
   // This part is rendering part

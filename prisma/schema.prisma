@@ -85,6 +85,7 @@ model Users {
   Password        String?           @db.VarChar(100)
   EnergyGoal      Decimal?          @db.Decimal
   UserType        usertype?
+  MachineID       Int?
   Awards          Awards[]
   Devices         Devices[]
   EnergyUse       EnergyUse[]
@@ -92,6 +93,7 @@ model Users {
   Schedules       Schedules[]
   SecurityLogs    SecurityLogs[]
   UserActivity    UserActivity[]
+  Machines        Machines?         @relation(fields: [MachineID], references: [MachineID], onUpdate: NoAction, map: "fk_machine")
 }
 
 model Usertest {
@@ -110,6 +112,13 @@ model Awards {
   Type        awardtype
   Level       awardlevel
   Users       Users      @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Machines {
+  MachineID         Int     @id @default(autoincrement())
+  MachineSerialCode String  @unique @db.VarChar(255)
+  MachineName       String  @db.VarChar(255)
+  Users             Users[]
 }
 
 enum Action {

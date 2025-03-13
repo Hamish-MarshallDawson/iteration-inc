@@ -24,7 +24,10 @@ export default function SignUp() {
 
     try {
       // Make a POST request to check if the email already exists in the database (through api route)
-      const response = await axios.post(`${window.location.origin}/api/checkEmail`, { email });
+      const response = await axios.post(`${window.location.origin}/api/user`, { 
+        action: "checkEmail",
+        email 
+      });
       setIsLoading(false);
 
       // Receive response after request
