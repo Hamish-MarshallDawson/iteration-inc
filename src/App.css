@@ -423,6 +423,23 @@ button:hover {
 /* Device Card Content */
 .device-card-content {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* Adds spacing between items */
+}
+
+/* Align Switch and Status Text */
+.device-status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Adds spacing between the switch and status text */
+}
+
+/* Device Switch */
+.device-switch {
+  margin-bottom: 0; /* Remove bottom margin to avoid extra spacing */
 }
 
 /* Device Icon */
@@ -430,11 +447,6 @@ button:hover {
   color: #000000; /* Black color */
   font-size: 3rem; /* Large icon size */
   margin-bottom: 0.5rem; /* Space below the icon */
-}
-
-/* Device Switch */
-.device-switch {
-  margin-bottom: 0.5rem; /* Space below the switch */
 }
 
 /* Device Status */
