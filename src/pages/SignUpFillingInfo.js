@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
 import Spinner from "../components/Spinner.js"; 
+import sha256 from "js-sha256";
 
 export default function SignUpStep2() {
   const location = useLocation();
@@ -16,6 +17,8 @@ export default function SignUpStep2() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState(""); 
+  const [machineSerialCode, setMachineSerialCode] = useState("");
+  const [machineName, setmachineName] = useState("");
 
   // State for spinner
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +27,22 @@ export default function SignUpStep2() {
   const isValidPassword = (password) => {
     return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password); // At least 8 characters, 1 uppercase letter, 1 number
   };
+  const getBrowserName = () => {
+    if (navigator.userAgent.includes("Chrome")) return "Chrome";
+    if (navigator.userAgent.includes("Firefox")) return "Firefox";
+    if (navigator.userAgent.includes("Safari")) return "Safari";
+    if (navigator.userAgent.includes("Edge")) return "Edge";
+    return "Unknown Browser";
+  };
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent; // Device info
+    const screenRes = `${window.screen.width}x${window.screen.height}`; // Screen resolution
+    const os = navigator.platform; // OS info
+    const browser = getBrowserName();
+    setmachineName(`${browser}`);
+    setMachineSerialCode(sha256(userAgent + screenRes + os)); // Generate unique machine ID
+  }, []);
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
@@ -61,6 +80,8 @@ export default function SignUpStep2() {
         lastName,
         email,
         password,
+        machineSerialCode,
+        machineName
       });
 
       setIsLoading(false);

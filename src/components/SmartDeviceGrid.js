@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 import { Plus, Settings } from "lucide-react";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; 
 
 import Card from "./ui/card.js";
 import Button from "./ui/button.js";
@@ -11,24 +11,25 @@ import CardContent from "./ui/cardContent";
 
 import "../App.css";
 
+
 export default function SmartDeviceGrid({ roomId }) {
   const navigate = useNavigate();
-
-  const [devices, setDevices] = useState([]);
+  
+  const [devices, setDevices] = useState([]);               
   const [deviceName, setDeviceName] = useState("");
   const [deviceType, setDeviceType] = useState("lightbulb");
   const [showAddModal, setShowAddModal] = useState(false);
   const [userID, setUserID] = useState(null);
   const [roomID, setRoomID] = useState(null);
+  const [machineID, setmachineID] = useState();   
+
 
   // State variable for setting modal
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [currentDevice, setCurrentDevice] = useState(null);
-  const [updatedName, setUpdatedName] = useState("");
+  const [showSettingsModal, setShowSettingsModal] = useState(false); 
+  const [currentDevice, setCurrentDevice] = useState(null); 
+  const [updatedName, setUpdatedName] = useState(""); 
 
-  // Page auto loading content
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  // This part responsible for get room ID and decode JWT to get user ID
+
   useEffect(() => {
     // Get the room id
     setRoomID(roomId)
@@ -43,6 +44,7 @@ export default function SmartDeviceGrid({ roomId }) {
       }
       const decoded = jwtDecode(token);
       setUserID(decoded.userId);
+      setmachineID(decoded.machineId);
     } catch (error) {
       alert("Invalid token. Logging out.");
       localStorage.removeItem("token");
@@ -51,7 +53,7 @@ export default function SmartDeviceGrid({ roomId }) {
 
   }, [navigate]);
 
-  // This part fetch devices when page load
+  // Fetch devices 
   useEffect(() => {
     if (userID && roomID) {
       alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
@@ -59,7 +61,8 @@ export default function SmartDeviceGrid({ roomId }) {
       axios.post(`${window.location.origin}/api/device`, {
         action: "get",
         userID: userID,
-        roomID: roomID
+        roomID: roomID,
+        machineID
       })
       .then(response => {
         alert("Response Received");
@@ -72,14 +75,11 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   }, [userID, roomID]); 
 
-  // This part is for debugg purpose only
   useEffect(() => {
     console.log("Updated Devices List:", devices);
   }, [devices]);
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
-
-  // This function responsible for add device
+  // For add device
   const addDevice = async () => {
     if (!deviceName.trim()) {
       alert("Device name cannot be empty.");
@@ -91,7 +91,8 @@ export default function SmartDeviceGrid({ roomId }) {
         deviceName,
         deviceType,
         roomID,
-        userID
+        userID,
+        machineID
       });
 
       if (response.status === 201) {
@@ -106,14 +107,15 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  // This function responsible for change device status
   const toggleDeviceStatus = async (deviceID, currentStatus) => {
     const newStatus = (currentStatus === "Online" ? "Offline" : "Online");
     try {
       const response = await axios.post(`${window.location.origin}/api/device`, {
         action: "updateStatus",
         deviceID,
-        newStatus
+        newStatus,
+        userID,
+        machineID
       });
   
       if (response.status === 200) {
@@ -129,20 +131,19 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  // This function responsible for pop up setting widow
   const openSettingsModal = (device) => {
     setCurrentDevice(device);
     setUpdatedName(device.DeviceName);
     setShowSettingsModal(true);
   };
-
-  // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
       const response = await axios.post(`${window.location.origin}/api/device`, {
         action: "updateName",
         deviceID: currentDevice.DeviceID,
         newDeviceName: updatedName,
+        userID,
+        machineID
       });
 
       if (response.status === 200) {
@@ -162,13 +163,13 @@ export default function SmartDeviceGrid({ roomId }) {
       alert("Failed to update device name.");
     }
   };
-
-  // This function responsible for remove a device
   const removeDevice = async () => {
     try {
       const response = await axios.post(`${window.location.origin}/api/device`, {
         action: "remove",
         deviceID: currentDevice.DeviceID,
+        userID,
+        machineID
       });
 
       if (response.status === 200) {
@@ -183,32 +184,36 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
 
-  // This part is rendering part
   return (
     <div className="smart-device-grid-container">
-      <h2 className="section-title">Smart devices</h2>
+
+      <h2 className="section-title">
+        Smart devices
+      </h2>
 
       <div className="device-grid">
         {devices.map((device) => (
-          <Card key={device.DeviceName} className="device-card">
+          <Card
+            key={device.DeviceName}
+            className="device-card"
+          >
             <h2>{device.DeviceName}</h2>
             <CardContent className="device-card-content">
-              <DeviceIcon type={device.DeviceType} className="device-icon" />
-              <div className="device-status-wrapper">
-                <Switch
-                  isOn={device.Status === "Online"} // Pass the correct status
-                  onToggle={() =>
-                    toggleDeviceStatus(device.DeviceID, device.Status)
-                  } // Handle toggle
-                  className="device-switch"
-                />
+              <DeviceIcon
+                type={device.DeviceType}
+                className="device-icon"
+              />
 
-                <p className="device-status">
-                  {device.Status === "Online" ? "On" : "Off"}
-                </p>
-              </div>
+              <Switch
+                checked={device.Status === "Online"}
+                onToggle={() => toggleDeviceStatus(device.DeviceID, device.Status)}
+                className="device-switch"
+              />
+
+              <p className="device-status">
+                {device.Status === "Online" ? "On" : "Off"}
+              </p>
 
               <Button
                 variant="ghost"
@@ -217,12 +222,17 @@ export default function SmartDeviceGrid({ roomId }) {
               >
                 <Settings size={16} /> Settings
               </Button>
+
             </CardContent>
           </Card>
         ))}
 
+
+
         {/* Add Device cARD */}
-        <div onClick={() => setShowAddModal(true)} className="add-device-card">
+        <div onClick={() => setShowAddModal(true)}
+          className="add-device-card"
+        >
           <CardContent className="device-card-content">
             <Plus className="add-icon" />
             <p className="add-text">Add Device</p>
@@ -230,10 +240,11 @@ export default function SmartDeviceGrid({ roomId }) {
         </div>
       </div>
 
-      {/* When clicked add device, modal window show up allow user to fill the form */}
-      {showAddModal && (
+     {/* When clicked add device, modal window show up allow user to fill the form */}
+     {showAddModal && (
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
             <h3>Add New Device</h3>
 
             {/* Input device name*/}
@@ -259,7 +270,7 @@ export default function SmartDeviceGrid({ roomId }) {
                   onChange={(e) => setDeviceType(e.target.value)}
                   className="input-select"
                 >
-                  <option value="coffee">Coffee Maker</option>
+                 <option value="coffee">Coffee Maker</option>
                   <option value="speaker">Speaker</option>
                   <option value="lightbulb">Lightbulb</option>
                   <option value="thermostat">Thermostat</option>
@@ -277,13 +288,12 @@ export default function SmartDeviceGrid({ roomId }) {
         </div>
       )}
 
-      {/* Settings Modal */}
-      {showSettingsModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowSettingsModal(false)}
-        >
+
+       {/* Settings Modal */}
+       {showSettingsModal && (
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
             <h3>Edit Device</h3>
 
             <div className="inputFields">
@@ -298,13 +308,18 @@ export default function SmartDeviceGrid({ roomId }) {
               </div>
             </div>
 
-            <Button onClick={updateDeviceName}>Save</Button>
-
-            <Button onClick={removeDevice} className="bg-red-500">
-              Remove
+            <Button onClick={updateDeviceName}>
+              Save
             </Button>
 
-            <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
+            <Button onClick={removeDevice} className="bg-red-500">
+               Remove
+            </Button>
+
+            <Button onClick={() => setShowSettingsModal(false)}>
+              Cancel
+            </Button>
+
           </div>
         </div>
       )}
@@ -332,3 +347,4 @@ function DeviceIcon({ type, className }) {
       return <span className={`${className}`}>❓</span>;
   }
 }
+
