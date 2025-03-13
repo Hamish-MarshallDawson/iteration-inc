@@ -20,15 +20,13 @@ export default function SmartDeviceGrid({ roomId }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [userID, setUserID] = useState(null);
   const [roomID, setRoomID] = useState(null);
+  const [machineID, setmachineID] = useState();
 
   // State variable for setting modal
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [currentDevice, setCurrentDevice] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
 
-  // Page auto loading content
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  // This part responsible for get room ID and decode JWT to get user ID
   useEffect(() => {
     // Get the room id
     setRoomID(roomId);
@@ -43,6 +41,7 @@ export default function SmartDeviceGrid({ roomId }) {
       }
       const decoded = jwtDecode(token);
       setUserID(decoded.userId);
+      setmachineID(decoded.machineId);
     } catch (error) {
       alert("Invalid token. Logging out.");
       localStorage.removeItem("token");
@@ -50,7 +49,7 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   }, [navigate]);
 
-  // This part fetch devices when page load
+  // Fetch devices
   useEffect(() => {
     if (userID && roomID) {
       alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
@@ -60,6 +59,7 @@ export default function SmartDeviceGrid({ roomId }) {
           action: "get",
           userID: userID,
           roomID: roomID,
+          machineID,
         })
         .then((response) => {
           alert("Response Received");
@@ -72,14 +72,11 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   }, [userID, roomID]);
 
-  // This part is for debugg purpose only
   useEffect(() => {
     console.log("Updated Devices List:", devices);
   }, [devices]);
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
-
-  // This function responsible for add device
+  // For add device
   const addDevice = async () => {
     if (!deviceName.trim()) {
       alert("Device name cannot be empty.");
@@ -94,6 +91,7 @@ export default function SmartDeviceGrid({ roomId }) {
           deviceType,
           roomID,
           userID,
+          machineID,
         }
       );
 
@@ -109,7 +107,6 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  // This function responsible for change device status
   const toggleDeviceStatus = async (deviceID, currentStatus) => {
     const newStatus = currentStatus === "Online" ? "Offline" : "Online";
     try {
@@ -119,6 +116,8 @@ export default function SmartDeviceGrid({ roomId }) {
           action: "updateStatus",
           deviceID,
           newStatus,
+          userID,
+          machineID,
         }
       );
 
@@ -137,14 +136,11 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  // This function responsible for pop up setting widow
   const openSettingsModal = (device) => {
     setCurrentDevice(device);
     setUpdatedName(device.DeviceName);
     setShowSettingsModal(true);
   };
-
-  // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
       const response = await axios.post(
@@ -153,6 +149,8 @@ export default function SmartDeviceGrid({ roomId }) {
           action: "updateName",
           deviceID: currentDevice.DeviceID,
           newDeviceName: updatedName,
+          userID,
+          machineID,
         }
       );
 
@@ -224,9 +222,6 @@ export default function SmartDeviceGrid({ roomId }) {
     }
   };
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
-
-  // This part is rendering part
   return (
     <div className="smart-device-grid-container">
       <h2 className="section-title">Smart devices</h2>
@@ -237,19 +232,18 @@ export default function SmartDeviceGrid({ roomId }) {
             <h2>{device.DeviceName}</h2>
             <CardContent className="device-card-content">
               <DeviceIcon type={device.DeviceType} className="device-icon" />
-              <div className="device-status-wrapper">
-                <Switch
-                  isOn={device.Status === "Online"} // Pass the correct status
-                  onToggle={() =>
-                    toggleDeviceStatus(device.DeviceID, device.Status)
-                  } // Handle toggle
-                  className="device-switch"
-                />
 
-                <p className="device-status">
-                  {device.Status === "Online" ? "On" : "Off"}
-                </p>
-              </div>
+              <Switch
+                checked={device.Status === "Online"}
+                onToggle={() =>
+                  toggleDeviceStatus(device.DeviceID, device.Status)
+                }
+                className="device-switch"
+              />
+
+              <p className="device-status">
+                {device.Status === "Online" ? "On" : "Off"}
+              </p>
 
               <Button
                 variant="ghost"
@@ -338,10 +332,6 @@ export default function SmartDeviceGrid({ roomId }) {
                 />
               </div>
             </div>
-
-            <Button onClick={energyUse} className="bg-red-500">
-              Energy Use
-            </Button>
 
             <Button onClick={updateDeviceName}>Save</Button>
 

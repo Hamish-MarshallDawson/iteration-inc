@@ -28,19 +28,23 @@ model EnergyUse {
   UserID      Int?
   Timestamp   DateTime? @db.Timestamp(6)
   EnergyUsed  Decimal?  @db.Decimal
+  MachineID   Int?
   Devices     Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Machines    Machines? @relation(fields: [MachineID], references: [MachineID], onDelete: NoAction, onUpdate: NoAction)
   Users       Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
 }
 
 model Recommendations {
-  RecID            Int      @id @default(autoincrement())
+  RecID            Int       @id @default(autoincrement())
   UserID           Int?
   DeviceID         Int?
   DeviceConditions String?
   EnvConditions    String?
   SuggestedAction  String?
-  Devices          Devices? @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
-  Users            Users?   @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+  MachineID        Int?
+  Devices          Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
+  Machines         Machines? @relation(fields: [MachineID], references: [MachineID], onDelete: NoAction, onUpdate: NoAction)
+  Users            Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
 }
 
 model Rooms {
@@ -65,6 +69,8 @@ model SecurityLogs {
   UserID           Int?
   EventDescription String?
   Timestamp        DateTime? @db.Timestamp(6)
+  MachineID        Int?
+  Machines         Machines? @relation(fields: [MachineID], references: [MachineID], onDelete: NoAction, onUpdate: NoAction)
   Users            Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "constraint_1")
 }
 
@@ -74,6 +80,8 @@ model UserActivity {
   DeviceID   String?
   Timestamp  DateTime? @db.Timestamp(6)
   Action     action?
+  MachineID  Int?
+  Machines   Machines? @relation(fields: [MachineID], references: [MachineID], onDelete: NoAction, onUpdate: NoAction)
   Users      Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
 }
 
@@ -115,9 +123,13 @@ model Awards {
 }
 
 model Machines {
-  MachineID         Int     @id @default(autoincrement())
-  MachineSerialCode String  @unique @db.VarChar(255)
-  MachineName       String  @db.VarChar(255)
+  MachineID         Int               @id @default(autoincrement())
+  MachineSerialCode String            @unique @db.VarChar(255)
+  MachineName       String            @db.VarChar(255)
+  EnergyUse         EnergyUse[]
+  Recommendations   Recommendations[]
+  SecurityLogs      SecurityLogs[]
+  UserActivity      UserActivity[]
   Users             Users[]
 }
 

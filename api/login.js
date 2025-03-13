@@ -6,13 +6,23 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 // Use Jwt key stored in .env or default hello (test purporse, might removed later)
 const SECRET_KEY = process.env.JWT_SECRET || "hello";
+import sha256 from "js-sha256";
+
+const getBrowserName = (userAgent) => {
+  if (userAgent.includes("Chrome")) return "Chrome";
+  if (userAgent.includes("Firefox")) return "Firefox";
+  if (userAgent.includes("Safari")) return "Safari";
+  if (userAgent.includes("Edge")) return "Edge";
+  return "Unknown Browser";
+};
+
 
 
 export default async function handler(req, res) {
 
   try {
     // Extract email and password from the request body
-    const { email, password } = req.body;
+    const { email, password, machineSerialCode, machineName } = req.body;
 
     // Search for a user in the "Users" table by the email they inputted
     const user = await prisma.Users.findFirst({
@@ -44,6 +54,31 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    let machine = await prisma.Machines.findFirst({
+      where: { MachineSerialCode: machineSerialCode },
+    });
+    if (!machine) {
+      machine = await prisma.Machines.create({
+        data: {
+          MachineSerialCode: machineSerialCode,
+          MachineName: `${user.firstName}'s ${machineName}` || "Unknown Device",
+        },
+      });
+    }
+    if (user.MachineID !== machine.MachineID) {
+      await prisma.Users.update({
+        where: { UserID: user.UserID },
+        data: { MachineID: machine.MachineID },
+      });
+    }
+    await prisma.SecurityLogs.create({
+      data: {
+        UserID: user.UserID,
+        EventDescription: `User logged in from ${machine.MachineName}`,
+        Timestamp: new Date(),
+      },
+    });
+
     // Generate jwt token (just like session)
     const token = jwt.sign(
       { 
@@ -51,7 +86,8 @@ export default async function handler(req, res) {
         userId: user.UserID, 
         firstName: user.FirstName, 
         lastName: user.LastName, 
-        userType: user.UserType 
+        userType: user.UserType,
+        machineId: machine.MachineID 
       }, 
       SECRET_KEY, 
       { expiresIn: "1h" } // Token expires in 1 hour

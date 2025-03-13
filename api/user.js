@@ -9,6 +9,19 @@ export default async function handler(req, res) {
 
       case "register":
         const hashedPassword = await bcrypt.hash(data.password, 10);
+
+        let machine = await prisma.Machines.findFirst({
+          where: { MachineSerialCode: data.machineSerialCode },
+        });
+        if (!machine) {
+          machine = await prisma.Machines.create({
+            data: {
+              MachineSerialCode: data.machineSerialCode,
+              MachineName: `${data.firstName}'s ${data.machineName}` || "Unknown Device",
+            },
+          });
+        }
+
         const newUser = await prisma.Users.create({
           data: { 
             FirstName: data.firstName,
@@ -17,8 +30,19 @@ export default async function handler(req, res) {
             Password: hashedPassword,
             EnergyGoal: 100,
             UserType: "Home_Dweller", 
+            MachineID: machine.MachineID
         },
         });
+
+        await prisma.SecurityLogs.create({
+          data: {
+            UserID: newUser.UserID,
+            EventDescription: `New user registered (${newUser.Email})`,
+            Timestamp: new Date(),
+            MachineID: machine.MachineID
+          },
+        });
+
         return res.status(201).json({ message: "User registered successfully", user: newUser });
 
       case "checkEmail":
@@ -39,6 +63,15 @@ export default async function handler(req, res) {
           where: { UserID: user.UserID },
           data: { Password: hashedNewPassword },
         });
+
+        await prisma.SecurityLogs.create({
+          data: {
+            UserID: user.UserID,
+            EventDescription: `User reset password (${user.Email})`,
+            Timestamp: new Date(),
+            MachineID: user.MachineID
+          },
+        });
         return res.status(200).json({ message: "Password reset successfully" });
 
       case "updateEmail":
@@ -48,6 +81,14 @@ export default async function handler(req, res) {
         await prisma.Users.update({
           where: { UserID: user2.UserID  },
           data: { Email: data.newEmail },
+        });
+        await prisma.SecurityLogs.create({
+          data: {
+            UserID: user2.UserID,
+            EventDescription: `User updated email from ${data.oldEmail} to ${data.newEmail}`,
+            Timestamp: new Date(),
+            MachineID: user2.MachineID
+          },
         });
         return res.status(200).json({ message: "Email updated successfully" });
 
