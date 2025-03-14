@@ -33,10 +33,10 @@ ChartJS.register(
 );
 
 
-const useEnergyData = (userEmail) => {
+const useEnergyData = () => {
   //const [deviceData, setDeviceData] = useState([]);
-  const [totalData, setTotalData] = useState([]);
-  const [userData, setUserData] = useState([]);
+  //const [totalData, setTotalData] = useState([]);
+  //const [userData, setUserData] = useState([]);
 
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const useEnergyData = (userEmail) => {
         //const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
         //setDeviceData(deviceResponse.data);
 
-        const data = await axios.post(`${window.location.origin}/api/query`); // Replace with your API endpoint
+        const data = await axios.post(`${window.location.origin}/api/query`);
         
         /*
         const userResponse = await axios.post(`${window.location.origin}/api/query`, { query : query_user }); // Replace with your API endpoint
@@ -104,15 +104,15 @@ const useEnergyData = (userEmail) => {
     };
 
     fetchData();
-  }, [userEmail]);
+  }, []);
 
-  return { totalData, userData };
+  return { data };
 };
 
 
 const BarGraph = () => {
 
-  const { totalData, userData } = useEnergyData("ldd1999@outlook.com")
+  const { totalData, userData } = useEnergyData()
 
   // Sample data for the chart
   const data = {
