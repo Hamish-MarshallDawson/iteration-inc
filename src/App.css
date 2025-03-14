@@ -3,7 +3,6 @@ html {
   /* Might replace with JS later */
   scroll-behavior: smooth;
 }
-//making changes
 *,
 *:before,
 *:after {
@@ -564,6 +563,7 @@ button:hover {
 }
 
 /* Add Device Card */
+/* smooth animation */
 .add-device-card {
   padding: clamp(1rem, 5vw, 3rem); /* dynamic width */
   display: flex;
