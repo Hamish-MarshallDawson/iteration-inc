@@ -575,9 +575,11 @@ button:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
   cursor: pointer;
   transition: background-color 0.3s;
+  transition: all 0.3s;
 }
 
 .add-device-card:hover {
+  transform: scale(1.05);
   background-color: rgba(197, 107, 71, 0.774); /* Darker orange on hover */
 }
 
