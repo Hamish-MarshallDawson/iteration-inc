@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Email do not exist" });
     }
 
-    // Retrieve the stored password from the database
+    // Retrieve the stored password from the database 
     const storedPassword = user.Password;
     // Boolean flag to check if password match
     let isMatch = false;
@@ -76,6 +76,7 @@ export default async function handler(req, res) {
         UserID: user.UserID,
         EventDescription: `User logged in from ${machine.MachineName}`,
         Timestamp: new Date(),
+        MachineID: machine.MachineID
       },
     });
 

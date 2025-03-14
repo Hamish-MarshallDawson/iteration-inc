@@ -44,6 +44,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userID, setUserID] = useState();
+  const [machineID, setmachineID] = useState();
 
   // Use to navigate to different pages
   const navigate = useNavigate();
@@ -55,14 +57,34 @@ function Login() {
       // Fetch n decode token
       const token = localStorage.getItem("token");
       const decoded = jwtDecode(token);
-        // Redirect to profile page if already logged in
-        navigate("/profile"); 
+      // Redirect to profile page if already logged in
+      navigate("/profile"); 
     } catch (error) {
       console.error("Invalid token");
       // Remove invalid token
       localStorage.removeItem("token"); 
     }
   }, [navigate]);
+
+  const simulateEnergyUsage = async () => {
+    const token = localStorage.getItem("token");
+    const decoded2 = jwtDecode(token);
+    setUserID(decoded2.userId);
+    setmachineID(decoded2.machineId);
+    alert(userID);
+    alert(machineID);
+  
+    // try {
+    //   const response = await axios.post(`${window.location.origin}/api/energy`, {
+    //     action: "simulateWeeklyUsage",
+    //     userID,
+    //     machineID,
+    //   });
+    //   console.log("Energy API Response:", response.data);
+    // } catch (error) {
+    //   console.error("Failed to call energy API:", error);
+    // }
+  };
 
 
   // Function to handle form submission
@@ -86,6 +108,8 @@ function Login() {
       if (response.status === 200) {
         // Store jwt to local 
         localStorage.setItem("token", response.data.token);
+        simulateEnergyUsage();
+
         alert("User registered, " + response.data.message);
         // Redirect to the Profile Page as they alreay logedin
         navigate("/profile"); 

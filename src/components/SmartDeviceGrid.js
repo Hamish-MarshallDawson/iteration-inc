@@ -196,23 +196,21 @@ export default function SmartDeviceGrid({ roomId }) {
   };
 
     // This function responsible for incrementing a devices energy amount
-    const energyUse = async () => {
+    const energyUse = async (device) => {
       try {
         const response = await axios.post(
-          `${window.location.origin}/api/device`,
+          `${window.location.origin}/api/energy`,
           {
             action: "increment",
-            deviceID: currentDevice.DeviceID,
+            deviceID: device.DeviceID,
+            userID,
+            machineID,
+            deviceType: device.DeviceType,
           }
         );
   
         if (response.status === 200) {
-          setDevices((prevDevices) =>
-            prevDevices.filter(
-              (device) => device.DeviceID !== currentDevice.DeviceID
-            )
-          );
-          setShowSettingsModal(false);
+          alert("Energy Logged Successfully!");
         }
       } catch (error) {
         console.error("Error incrementing energy:", error);
@@ -346,7 +344,8 @@ export default function SmartDeviceGrid({ roomId }) {
             <Button onClick={removeDevice} className="bg-red-500">
               Remove
             </Button>
-
+           
+            <Button onClick={() => energyUse(currentDevice)}>Log Energy Use</Button>
             <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
           </div>
         </div>
