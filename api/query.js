@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     // Fetch all awards
 
     
-    const { UserID, machineID} = req.body;
+    // const { UserID, machineID} = req.body;
 
 
     const energy = await prisma.EnergyUse.findMany({
