@@ -21,9 +21,6 @@ import {
 } from 'chart.js';
 
 
-const [userID, setUserID] = useState(null);
-const [machineID, setmachineID] = useState("");
-
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
