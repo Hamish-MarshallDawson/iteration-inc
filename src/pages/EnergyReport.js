@@ -41,19 +41,19 @@ const useEnergyData = (userEmail) => {
 
   useEffect(() => {
     
-    const token = localStorage.getItem("token");
-    // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
-    if (!token) {
-      navigate("/"); 
-      return;
-    } try {
-      // !!Decode the jwt token and store to the variable
-      const decoded = jwtDecode(token);
-      setUserID(decoded.userId);
-      setmachineID(decoded.machineId);
-    } catch (error) {
-      console.error("Invalid token, logging out");
-    }
+    // const token = localStorage.getItem("token");
+    // // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
+    // if (!token) {
+    //   navigate("/"); 
+    //   return;
+    // } try {
+    //   // !!Decode the jwt token and store to the variable
+    //   // const decoded = jwtDecode(token);
+    //   // setUserID(decoded.userId);
+    //   // setmachineID(decoded.machineId);
+    // } catch (error) {
+    //   console.error("Invalid token, logging out");
+    // }
 
 
     const fetchData = async () => {
