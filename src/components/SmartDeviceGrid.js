@@ -35,21 +35,21 @@ export default function SmartDeviceGrid({ roomId }) {
     setRoomID(roomId);
 
     // // Extrat userid from jwt
-    // try {
-    //   const token = localStorage.getItem("token");
-    //   if (!token) {
-    //     alert("Please log in again");
-    //     navigate("/");
-    //     return;
-    //   }
-    //   const decoded = jwtDecode(token);
-    //   setUserID(decoded.userId);
-    //   setmachineID(decoded.machineId);
-    // } catch (error) {
-    //   alert("Invalid token. Logging out.");
-    //   localStorage.removeItem("token");
-    //   navigate("/");
-    // }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in again");
+        navigate("/");
+        return;
+      }
+      const decoded = jwtDecode(token);
+      setUserID(decoded.userId);
+      setmachineID(decoded.machineId);
+    } catch (error) {
+      alert("Invalid token. Logging out.");
+      localStorage.removeItem("token");
+      navigate("/");
+    }
   }, [navigate]);
 
   // This part fetch devices when page load
