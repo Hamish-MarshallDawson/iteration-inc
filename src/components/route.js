@@ -24,6 +24,11 @@ import ConfirmUpdateEmail from "../pages/ConfirmUpdateEmail.js";
 
 import Navbar from "./nav.js"; // Ensure correct import
 
+// TESTING, remove later
+// also remove the associated route
+import DeviceTest from "../pages/DeviceTest.js";
+
+
 function MainContent() {
   const location = useLocation(); // Get current route
 
@@ -63,6 +68,7 @@ function MainContent() {
               path="/confirmUpdateEmail"
               element={<ConfirmUpdateEmail />}
             />
+            <Route path="/DeviceTest" element={<DeviceTest />} />
           </Routes>
         </div>
       </div>

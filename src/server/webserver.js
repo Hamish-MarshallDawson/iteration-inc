@@ -59,16 +59,22 @@ class serverDeviceManager {
         this.initTime = Date.now()
     }
 
-    // slighlty janky way of adding a device to the psuedo-hashmap
+    // slighlty janky way of adding a device to the pseudo-hashmap
     // returns true and adds the device if it doesn't already exist
     // returns false otherwise 
     // STRONGLY COUPLES this class to the "device" class
     addDevice(device) {
-        if (!this.devices[""+device.id]) {
-            this.devices[""+device.id] = device
+        // NOTE: code marked with "TESTING" may be removed once working
+        console.log("addDevice: ADDING DEVICE:")//TESTING
+        console.log(device)//TESTING
+        console.log("USING KEY: " + (""+(device.ID)))//TESTING
+        if (this.devices[""+(device.ID)] == undefined) {
+            console.log("addDevice: NEW DEVICE ID - SUCCESS")//TESTING
+            this.devices[""+device.ID] = device
             return true
         }
         else {
+            console.log("addDevice: CONFLICTING DEVICE ID - FAILURE")//TESTING
             return false
         }
     }
@@ -180,10 +186,11 @@ class simDevice extends device {
     
     constructor(ID, name, type, location, simulator) {
         // see "device" class decleration for comments
-        this.ID = ID
-        this.name = name
-        this.deviceType = type
-        this.location = location
+        super(ID,name,type,location)
+        // this.ID = ID
+        // this.name = name
+        // this.deviceType = type
+        // this.location = location
 
         // the simulator object responsible for generating data for this device
         // simulator object must be delcared first
@@ -224,11 +231,13 @@ class simulator {
         // a decimal representation of the time. used in calculations
         // may also be used as a timestamp of when a fake reading is "taken"
         // eg: 6:30 PM = 18.30
+        // 0.0 is default value
         this.timeInDay = 0.0
 
         // a completely random multiplier value to give more variance to generated data
         // only used in calculations
         // should range between 0.85 - 1.15
+        // 1 is default value
         this.dayMult = 1
 
         // an object linking types (deviceType) to a function that will generate a single data point
@@ -255,6 +264,10 @@ class simulator {
         if (typeMap[""+device.deviceType] != undefined) {
             return this.typeMap[""+device.deviceType](device, this)
         }
+        else {
+            console.log("ATTEMPTED TO GENERATE DATA FOR INVALID deviceType: "+device.deviceType)
+            return null
+        }
     }
 }
 
@@ -274,10 +287,39 @@ class networkDataInterface {
 
 */
 
+
+// actually use the great wall
+var SDM = new serverDeviceManager()
+var SIM = new simulator(1)
+
+// premade devices to be used for testing and bodging
+var testDeviceLightbulb = new simDevice(10, "Test Device - Lightbulb", "lightbulb", "living room", SIM)
+var testDeviceCoffee = new simDevice(11, "Test Device - Coffee", "coffee", "living room", SIM)
+var testDeviceSpeaker = new simDevice(12, "Test Device - Speaker", "speaker", "living room", SIM)
+
+SDM.addDevice(testDeviceLightbulb)
+
+console.log("SDM DEVICES:")//TESTING
+console.log(SDM.devices)//TESTING
+
+SDM.addDevice(testDeviceCoffee)
+
+console.log("SDM DEVICES:")//TESTING
+console.log(SDM.devices)//TESTING
+
+SDM.addDevice(testDeviceSpeaker)
+
+console.log("SDM DEVICES:")//TESTING
+console.log(SDM.devices)//TESTING
+
+
+
 /*
 API ROUTES
 ----------
 A route will be needed for:
+
+- testing (DONE)
 
 - getting all devices
 
@@ -289,19 +331,37 @@ A route will be needed for:
 
 */
 
+// get all devices
+// TODO: don't send the simulator object with it
+// would need to itterate through devices and "delete(device.simulator)"
+app.post('/api/allDevices', (req, res) => {
+    // log request
+    console.log("REQUEST RECIEVED: allDevices")
+
+    // send response object with all the devices
+    // TODO: error checking
+    console.log("SENDING OBJECT:")
+    console.log(SDM.devices)
+    res.json(JSON.stringify(SDM.devices))
+    return res.status(200)
+});
+
 
 // Testing route
 app.post('/api/deviceReq', (req, res) => {
     // just make sure it works
-    console.log("deviceReq recieved");
+    console.log("REQUEST RECIEVED: deviceReq")
 
     // create a sample device for testing purposes
     var sampleDevice = new simDevice(123,"sample device","lightswitch","living room",null);
-    sampleDevice.data["on/off"] = "on";
-    sampleDevice.data["colour"] = "red;"
+    sampleDevice.data["on/off"] = "on"
+    sampleDevice.data["colour"] = "red"
+
+    console.log("SENDING OBJECT:")
+    console.log(sampleDevice)
 
     res.json(JSON.stringify(sampleDevice))
-    return res.status(200);
+    return res.status(200)
 });
 
 
