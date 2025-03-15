@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       select: {
         Timestamp: true,
         EnergyUsed: true,
-        userID: true,
+        UserID: true,
       }
     });
 
