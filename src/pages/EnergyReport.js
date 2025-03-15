@@ -34,8 +34,6 @@ const useEnergyData = () => {
 
   useEffect(() => {
 
-    const [totalData, setTotalData] = useState({});
-
     const fetchData = async () => {
 
       try {
@@ -148,6 +146,11 @@ const BarGraph = () => {
 
 
 const EnergyReport = () => {
+
+  
+  const [totalData, setTotalData] = useState({});
+
+  
   return (
     <div className="profile-container">
 
