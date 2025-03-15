@@ -61,7 +61,7 @@ const BarGraph = () => {
   const { totalData } = useEnergyData()
 
   
-  console.log("B - ", totalData)
+  console.log("B - ", totalData["groupedData"])
 
   console.log("C - ", Object.keys(totalData))
   console.log("D - ", Object.values(totalData))
