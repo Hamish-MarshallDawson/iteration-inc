@@ -34,7 +34,7 @@ const useEnergyData = () => {
 
   useEffect(() => {
 
-    const fetchData = async () => {
+    const FetchData = async () => {
 
       const [totalData, setTotalData] = useState({});
       try {
@@ -46,7 +46,7 @@ const useEnergyData = () => {
       }
     };
 
-    fetchData();
+    FetchData();
   }, []);
 
   return { totalData };
