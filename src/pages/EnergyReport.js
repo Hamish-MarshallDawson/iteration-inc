@@ -60,11 +60,11 @@ const BarGraph = () => {
 
   // data for the chart
   const data = {
-    labels: ["10/03", "11/03", "12/03", "13/03", "14/03", "15/03", "16/03",], //Object.keys(totalData),
+    labels:  Object.keys(totalData), //["10/03", "11/03", "12/03", "13/03", "14/03", "15/03", "16/03",],
     datasets: [
       {
         label: 'Total Energy Used',
-        data: [16, 6, 21, 9, 12, 8, 5], // Object.values(totalData), // totalData.map((row) => row.TotalEnergyUsed),    
+        data: Object.values(totalData), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
         fill: true,
         backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
