@@ -35,7 +35,7 @@ ChartJS.register(
 
 const useEnergyData = () => {
   //const [deviceData, setDeviceData] = useState([]);
-  const [totalData, setTotalData] = useState([]);
+  const [totalData, setTotalData] = useState({});
   //const [userData, setUserData] = useState([]);
 
 
@@ -114,13 +114,13 @@ const BarGraph = () => {
 
   const { totalData } = useEnergyData()
 
-  // Sample data for the chart
+  // data for the chart
   const data = {
-    labels: totalData.keys(),
+    labels: Object.keys(totalData),
     datasets: [
       {
         label: 'Total Energy Used',
-        data: totalData.values(), // totalData.map((row) => row.TotalEnergyUsed),    // [16, 4, 21, 9],
+        data: Object.values(totalData), // totalData.map((row) => row.TotalEnergyUsed),    // [16, 4, 21, 9],
         fill: true,
         backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
