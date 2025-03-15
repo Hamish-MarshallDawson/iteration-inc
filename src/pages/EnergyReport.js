@@ -58,7 +58,7 @@ const useEnergyData = () => {
 
 const BarGraph = () => {
 
-  const { totalData } = useEnergyData()[0]
+  const { totalData } = useEnergyData()
 
   
   console.log("B - ", totalData)
