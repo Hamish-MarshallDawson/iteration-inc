@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const energy = await prisma.EnergyUse.findMany({
       select: {
         Timestamp: true,
-        EnergyUse: true,
+        EnergyUsed: true,
       },
     });
 
