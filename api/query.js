@@ -2,11 +2,6 @@ import { prisma } from "./globalPrisma.js";
 
 export default async function handler(req, res) {
   try {
-    // Fetch all awards
-
-    
-    // const { UserID, machineID} = req.body;
-
 
     const energy = await prisma.EnergyUse.findMany({
       select: {
@@ -21,7 +16,7 @@ export default async function handler(req, res) {
       if (!acc[date]) {
         acc[date] = 0;
       }
-      acc[date] += row.EnergyUsed;
+      acc[date] += row.EnergyUse;
       return acc;
     }, {});
 

@@ -91,7 +91,8 @@ const useEnergyData = () => {
         //const deviceResponse = await axios.post('/api/query', { query_device }); // Replace with your API endpoint
         //setDeviceData(deviceResponse.data);
 
-        setTotalData(await axios.post(`${window.location.origin}/api/query`));
+        const response = await axios.post(`${window.location.origin}/api/query`);
+        setTotalData(response.data);
         
         /*
         const userResponse = await axios.post(`${window.location.origin}/api/query`, { query : query_user }); // Replace with your API endpoint
@@ -230,14 +231,14 @@ const EnergyReport = () => {
         textAlign: "center",
       }}>
         <BarGraph />
-        <h3>Insert random latin text that probably means something, idk, i dont speak dead roman</h3>
+        <h3>For more information, you may download the full energy report.</h3>
       
         <button style = {{
           width: "16rem",
           height: "2rem",
           fontSize: 12
         }}>
-          Download summary...
+          Download report...
         </button>
       </div>
     </div>
