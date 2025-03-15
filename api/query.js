@@ -13,10 +13,11 @@ export default async function handler(req, res) {
     // Group by date and sum energy usage
     const groupedData = energy.reduce((acc, row) => {
       const date = new Date(row.Timestamp).toISOString().split('T')[0]; // Extract YYYY-MM-DD
-      if (!acc[date]) {
-        acc[date] = 0;
+      const dayMonth = date.split("-")[-1] + "/" + date.split("-")[1];
+      if (!acc[dayMonth]) {
+        acc[dayMonth] = 0;
       }
-      acc[date] += parseFloat(row.EnergyUsed);
+      acc[dayMonth] += parseFloat(row.EnergyUsed);
       return acc;
     }, {});
 
