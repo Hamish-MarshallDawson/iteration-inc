@@ -33,14 +33,16 @@ ChartJS.register(
 const useEnergyData = () => {
 
   const [totalData, setTotalData] = useState({});
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
 
     const fetchData = async () => {
 
       try {
-        const response = await axios.post(`${window.location.origin}/api/query`);
-        setTotalData(response.data["groupedData"]);
+        const [ totalDataresponse, userDataResponse ] = await axios.post(`${window.location.origin}/api/query`);
+        setTotalData(totalDataresponse.data["totalData"]);
+        setUserData(userDataResponse.data["userData"]);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -56,7 +58,7 @@ const useEnergyData = () => {
 
 const BarGraph = () => {
 
-  const { totalData } = useEnergyData();
+  const { totalData, userData } = useEnergyData();
   
   
   // data for the chart
@@ -66,6 +68,14 @@ const BarGraph = () => {
       {
         label: 'Total Energy Used',
         data: Object.values(totalData), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
+        fill: true,
+        backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
+        borderRadius: 10, // Rounded corners for the bars
+        tension: 0.1,
+      },
+      {
+        label: 'Your Energy Used',
+        data: Object.values(userData), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
         fill: true,
         backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
