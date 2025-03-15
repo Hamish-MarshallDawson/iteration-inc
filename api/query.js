@@ -26,17 +26,17 @@ export default async function handler(req, res) {
     }, {});
 
     // Convert to the desired format
-    const totalData = Object.keys(groupedData).map(date => {
-      const [year, month, day] = date.split('-'); // Split the date string into year, month, and day
-      return {
-        year: parseInt(year, 10), // Convert to number
-        month: parseInt(month, 10), // Convert to number
-        day: parseInt(day, 10), // Convert to number
-        totalEnergyUsed: groupedData[date],
-      };
-    });
+    // const totalData = Object.keys(groupedData).map(date => {
+      // const [year, month, day] = date.split('-'); // Split the date string into year, month, and day
+      // return {
+      //   year: parseInt(year, 10), // Convert to number
+      //   month: parseInt(month, 10), // Convert to number
+      //   day: parseInt(day, 10), // Convert to number
+      //   totalEnergyUsed: groupedData[date],
+      // };
+    //  });
 
-    return res.status(200).json({ totalData });
+    return res.status(200).json({ groupedData });
     
   } catch (error) {
     console.error("Database Error:", error);
