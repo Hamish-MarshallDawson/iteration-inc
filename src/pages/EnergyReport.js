@@ -29,14 +29,12 @@ ChartJS.register(
   Legend
 );
 
+const [totalData, setTotalData] = useState({});
+
 
 const useEnergyData = () => {
 
-  const [totalData, setTotalData] = useState({});
-
-
   useEffect(() => {
-
 
     const fetchData = async () => {
 
