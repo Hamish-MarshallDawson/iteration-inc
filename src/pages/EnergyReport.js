@@ -63,16 +63,16 @@ const BarGraph = () => {
   
   console.log("B - ", totalData)
 
-  console.log("C - ", Object.keys(totalData[0]))
-  console.log("D - ", Object.values(totalData[0]))
+  console.log("C - ", Object.keys(totalData))
+  console.log("D - ", Object.values(totalData))
   
   // data for the chart
   const data = {
-    labels:  Object.keys(totalData[0]), //["10/03", "11/03", "12/03", "13/03", "14/03", "15/03", "16/03",],
+    labels:  Object.keys(totalData), //["10/03", "11/03", "12/03", "13/03", "14/03", "15/03", "16/03",],
     datasets: [
       {
         label: 'Total Energy Used',
-        data: Object.values(totalData[0]), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
+        data: Object.values(totalData), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
         fill: true,
         backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
