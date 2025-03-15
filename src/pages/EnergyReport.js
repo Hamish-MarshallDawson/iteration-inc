@@ -34,9 +34,10 @@ const useEnergyData = () => {
 
   useEffect(() => {
 
-    const FetchData = async () => {
+    const [totalData, setTotalData] = useState({});
 
-      const [totalData, setTotalData] = useState({});
+    const fetchData = async () => {
+
       try {
         const response = await axios.post(`${window.location.origin}/api/query`);
         setTotalData(response.data);
@@ -46,7 +47,7 @@ const useEnergyData = () => {
       }
     };
 
-    FetchData();
+    fetchData();
   }, []);
 
   return { totalData };
