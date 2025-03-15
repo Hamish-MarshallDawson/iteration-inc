@@ -32,9 +32,9 @@ ChartJS.register(
 
 const useEnergyData = () => {
 
-  useEffect(() => {
+  const [totalData, setTotalData] = useState({});
 
-    const [totalData, setTotalData] = useState({});
+  useEffect(() => {
 
     const fetchData = async () => {
 
