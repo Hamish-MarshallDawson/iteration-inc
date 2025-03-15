@@ -91,6 +91,20 @@ export default async function handler(req, res) {
           },
         });
         return res.status(200).json({ message: "Email updated successfully" });
+      case "getEnergyGoal":
+        // Fetch the user's energy goal
+        const user3 = await prisma.Users.findUnique({
+          where: { UserID: data.userID },
+          select: { EnergyGoal: true }
+        });
+        return res.status(200).json({ energyGoal: user3.EnergyGoal });
+
+      case "updateEnergyGoal":
+        await prisma.users.update({
+          where: { UserID: data.userID },
+          data: { EnergyGoal: data.newEnergyGoal },
+        });
+        return res.status(200).json({ message: "Energy goal updated successfully" });
 
       default:
         return res.status(400).json({ message: "Invalid action" });

@@ -26,6 +26,7 @@ export default async function handler(req, res) {
 
 
     switch (action){
+ //-------------------------------------------------------------------------------------------------------------------
         case "increment":
             // Get energy use based on device type
             const energyUsed = energyUsageMap[data.deviceType.toLowerCase()];
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
                 },
             });
             return res.status(200).json({ message: "Energy Logged Successfully" });
-        
+//-------------------------------------------------------------------------------------------------------------------       
         case "simulateWeeklyUsage":
         //-------------------------------------------------------------------------------------------------------------------
         // First get all the online devices that belong to this user, store in the onlineDevices list
@@ -110,7 +111,7 @@ export default async function handler(req, res) {
               console.log("No valid energy logs to insert.");
               return res.status(200).json({ message: "No energy logs to insert" });
           };
-
+//-------------------------------------------------------------------------------------------------------------------
         case "simulateDailyUsage":
           const onlineDevices2 = await prisma.Devices.findMany({
             where: {
@@ -171,7 +172,7 @@ export default async function handler(req, res) {
               return res.status(200).json({ message: "No energy logs to insert" });
           };
       
-
+//-------------------------------------------------------------------------------------------------------------------
         default:
                 return res.status(400).json({ message: "Invalid action" });
 

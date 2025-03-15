@@ -17,6 +17,9 @@ const ProfilePage = () => {
   const [userType, setUserType] = useState("");
   const [userID, setUserID] = useState(null);
   const [machineID, setmachineID] = useState("");
+  const [energyGoal, setEnergyGoal] = useState(null);
+  const [newEnergyGoal, setNewEnergyGoal] = useState("");
+  const [showEnergyGoalModal, setShowEnergyGoalModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -78,7 +81,47 @@ const ProfilePage = () => {
 
     return () => clearInterval(interval);
   }, [userID, machineID]);
+
+  useEffect(() => {
+    if (userID) {
+      fetchEnergyGoal();
+    }
+  }, [userID]);
 //----------------------------------------------------------------------------------------------------------------------------------------  
+
+  const updateEnergyGoal = async () => {
+    try {
+      const response = await axios.post(`${window.location.origin}/api/user`, {
+        action: "updateEnergyGoal",
+        userID,
+        newEnergyGoal: parseFloat(newEnergyGoal),
+      });
+
+      if (response.status === 200) {
+        alert("Energy goal updated successfully");
+        setEnergyGoal(newEnergyGoal); 
+        setShowEnergyGoalModal(false);
+        setNewEnergyGoal(""); 
+      }
+    } catch (error) {
+      alert("Failed to update energy goal. Please try again.");
+    }
+  };
+
+  const fetchEnergyGoal = async () => {
+    try {
+      const response = await axios.post(`${window.location.origin}/api/user`, {
+        action: "getEnergyGoal",
+        userID,
+      });
+
+      if (response.status === 200) {
+        setEnergyGoal(response.data.energyGoal);
+      }
+    } catch (error) {
+      console.error("Failed to fetch energy goal:", error);
+    }
+  };
 
   const simulateEnergyUsage = async () => {
     console.log("Simulating weekly energy usage for user:", userID, "machine:", machineID);
@@ -199,8 +242,31 @@ const ProfilePage = () => {
         <h3>{email}</h3>
         <h3>User Type: {userType}</h3>
 
+        <div>
+          <h3>Monthly Energy Saving Goal:</h3>
+          <p>{energyGoal !== null ? `${energyGoal} kWh` : "Not set"}</p>
+          <button onClick={() => setShowEnergyGoalModal(true)}>Change Energy Goal</button>
+        </div>
+
 
       </div>
+
+      {showEnergyGoalModal && (
+        <div className="modal-overlay" onClick={() => setShowEnergyGoalModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Set New Energy Goal</h3>
+            <input
+              type="number"
+              placeholder="Enter energy goal (kWh)"
+              value={newEnergyGoal}
+              onChange={(e) => setNewEnergyGoal(e.target.value)}
+              required
+            />
+            <button onClick={updateEnergyGoal}>Save</button>
+            <button onClick={() => setShowEnergyGoalModal(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
 
     {/* Manager Only Buttons */}
     {(userType === "Home_Manager" || userType === "Admin") && (
