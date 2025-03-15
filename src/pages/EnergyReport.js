@@ -52,7 +52,7 @@ const useEnergyData = () => {
     fetchData();
   }, []);
 
-  return { totalData };
+  return { totalData, userData };
 };
 
 

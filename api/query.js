@@ -29,10 +29,9 @@ export default async function handler(req, res) {
       acc[dayMonth] += parseFloat(row.EnergyUsed);
 
       // userData
-      if (row.userID == USERID) {
-        if (!userData[dayMonth]) {
-          userData[dayMonth] = 0;
-        }
+      if (!userData[dayMonth]) {
+        userData[dayMonth] = 0;
+      } if (row.userID == USERID) {
         userData[dayMonth] += parseFloat(row.EnergyUsed);
       }
 
