@@ -1,7 +1,7 @@
 import { prisma } from "./globalPrisma.js";
 
 
-const USERID = "6";
+const USERID = 6;
 
 
 
