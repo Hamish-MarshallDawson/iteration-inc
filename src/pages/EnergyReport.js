@@ -126,14 +126,14 @@ const BarGraph = () => {
         borderRadius: 10, // Rounded corners for the bars
         tension: 0.1,
       },
-      {
-        label: "Your Energy Used",
-        data: userData.map((row) => row.TotalEnergyUsed), // [12,2,17,4],
-        fill: true,
-        backgroundColor: 'rgba(75,196,196,1)',
-        borderRadius: 10,
-        tension: 0.1,
-      }
+      // {
+      //   label: "Your Energy Used",
+      //   data: userData.map((row) => row.TotalEnergyUsed), // [12,2,17,4],
+      //   fill: true,
+      //   backgroundColor: 'rgba(75,196,196,1)',
+      //   borderRadius: 10,
+      //   tension: 0.1,
+      // }
     ],
   };
 
