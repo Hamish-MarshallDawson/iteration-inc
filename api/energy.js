@@ -69,37 +69,41 @@ export default async function handler(req, res) {
               select: { Timestamp: true }
             });
 
-            let newTimestamp = new Date();
+            let startTimestamp  = new Date();
             if (lastLog && lastLog.Timestamp) {
-              newTimestamp = new Date(lastLog.Timestamp);
-              newTimestamp.setDate(newTimestamp.getDate() + 7); // Add 7 days
+              startTimestamp  = new Date(lastLog.Timestamp);
+              startTimestamp .setDate(startTimestamp .getDate() + 1); // Add 1 days
             }
       
 
         //-------------------------------------------------------------------------------------------------------------------
         // Generate the simulated energy logs for the week for all online devices
-            const energyLogs = onlineDevices.map((device) => {
-
-                console.log("Processing device:", device);
+            const energyLogs = [];
+            for (let i = 0; i < 7; i++) {
+              const currentTimestamp = new Date(startTimestamp);
+              currentTimestamp.setDate(startTimestamp.getDate() + i);
+          
+              onlineDevices.forEach((device) => {
                 const deviceTypeKey = device.DeviceType.toLowerCase();
-
+          
                 if (!energyUsageMap[deviceTypeKey] || !dailyUsagePatternMap[deviceTypeKey]) {
                   console.error(`Device type ${device.DeviceType} is missing in energy usage maps.`);
-                  return null; // Skip if type is not found in the map
+                  return; // Skip if type is not found
                 }
-
-                const energyUsed = energyUsageMap[device.DeviceType.toLowerCase()];
-                const dailyUsage = dailyUsagePatternMap[device.DeviceType.toLowerCase()];
-                const weeklyEnergyUsed = energyUsed * dailyUsage * 7;
-      
-                return {
+          
+                const energyUsed = energyUsageMap[deviceTypeKey];
+                const dailyUsage = dailyUsagePatternMap[deviceTypeKey];
+                const dailyEnergyUsed = energyUsed * dailyUsage;
+          
+                energyLogs.push({
                   DeviceID: device.DeviceID,
                   UserID: data.userID,
                   MachineID: data.machineID,
-                  Timestamp: newTimestamp,
-                  EnergyUsed: weeklyEnergyUsed,
-                };
-          });
+                  Timestamp: currentTimestamp,
+                  EnergyUsed: dailyEnergyUsed,
+                });
+              });
+            }
 
           console.log("Generated Energy Logs:", energyLogs);
 

@@ -28,7 +28,7 @@ export default async function handler(req, res) {
             LastName: data.lastName,
             Email: data.email,
             Password: hashedPassword,
-            EnergyGoal: 30000,
+            EnergyGoal: 15,
             UserType: "Home_Dweller", 
             MachineID: machine.MachineID
         },
