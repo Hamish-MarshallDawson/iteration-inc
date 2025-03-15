@@ -29,11 +29,14 @@ const ProfilePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
 
+
 //----------------------------------------------------------------------------------------------------------------------------------------
 // Auto load content
   // !!Extract email from JWT token when page is load
   useEffect(() => {
     const token = localStorage.getItem("token");
+
+
     // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
     if (!token) {
       navigate("/"); 
@@ -55,7 +58,55 @@ const ProfilePage = () => {
       navigate("/");
     }
   }, [navigate]);
+
+
+  // Simulate weekly energy usage for the user every time they logged in
+  useEffect(() => {
+    const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
+    if (userID && machineID && hasSimulated === "false") {
+      simulateEnergyUsage();
+    }
+  }, [userID, machineID]); 
+
+  // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
+  useEffect(() => {
+    if (!userID || !machineID) return;
+
+    const interval = setInterval(() => {
+      simulateDailyUsage();
+    }, 300000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, [userID, machineID]);
 //----------------------------------------------------------------------------------------------------------------------------------------  
+
+  const simulateEnergyUsage = async () => {
+    console.log("Simulating weekly energy usage for user:", userID, "machine:", machineID);
+    localStorage.setItem("hasSimulatedEnergy", "true");
+
+    try {
+      const response = await axios.post(`${window.location.origin}/api/energy`, {
+        action: "simulateWeeklyUsage",
+        userID,
+        machineID,
+      });
+      console.log("returned from response::: --->", response.data);
+    } catch (error) {
+      console.error("Failed to call energy api:", error);
+    }
+  };
+
+  const simulateDailyUsage = async () => {
+    try {
+      await axios.post(`${window.location.origin}/api/energy`, {
+        action: "simulateDailyUsage",
+        userID,
+        machineID,
+      });
+    } catch (error) {
+      console.error("Failed to call energy api:", error);
+    }
+  };
 
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {

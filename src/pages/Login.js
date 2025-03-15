@@ -5,6 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode"; 
 import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
 import "../App.css";
+import sha256 from "js-sha256";
 
 /*
 ⡴⠒⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠉⠳⡆⠀
@@ -44,11 +45,30 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [userID, setUserID] = useState();
-  const [machineID, setmachineID] = useState();
+
+  const [machineSerialCode, setMachineSerialCode] = useState("");
+  const [machineName, setmachineName] = useState("");
 
   // Use to navigate to different pages
   const navigate = useNavigate();
+
+  // Get machine code and name for the current device that user is lopgging in
+  const getBrowserName = () => {
+    if (navigator.userAgent.includes("Chrome")) return "Chrome";
+    if (navigator.userAgent.includes("Firefox")) return "Firefox";
+    if (navigator.userAgent.includes("Safari")) return "Safari";
+    if (navigator.userAgent.includes("Edge")) return "Edge";
+    return "Unknown Browser";
+  };
+  useEffect(() => {
+    const userAgent = navigator.userAgent; // Device info
+    const screenRes = `${window.screen.width}x${window.screen.height}`; // Screen resolution
+    const os = navigator.platform; // OS info
+    const browser = getBrowserName();
+    setmachineName(`${browser}`);
+    setMachineSerialCode(sha256(userAgent + screenRes + os)); // Generate unique machine ID
+  }, []);
+  
 
 
   // Check if user already logged in when page load
@@ -66,26 +86,6 @@ function Login() {
     }
   }, [navigate]);
 
-  const simulateEnergyUsage = async () => {
-    const token = localStorage.getItem("token");
-    const decoded2 = jwtDecode(token);
-    setUserID(decoded2.userId);
-    setmachineID(decoded2.machineId);
-    alert(userID);
-    alert(machineID);
-  
-    // try {
-    //   const response = await axios.post(`${window.location.origin}/api/energy`, {
-    //     action: "simulateWeeklyUsage",
-    //     userID,
-    //     machineID,
-    //   });
-    //   console.log("Energy API Response:", response.data);
-    // } catch (error) {
-    //   console.error("Failed to call energy API:", error);
-    // }
-  };
-
 
   // Function to handle form submission
   const handleLogin = async (e) => {
@@ -100,16 +100,20 @@ function Login() {
       const response = await axios.post(`${window.location.origin}/api/login`, {
         email,
         password,
+        machineSerialCode,
+        machineName
       });
 
       setIsLoading(false);
 
       // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
       if (response.status === 200) {
+        const flag = false;
         // Store jwt to local 
         localStorage.setItem("token", response.data.token);
-        simulateEnergyUsage();
 
+        localStorage.setItem("hasSimulatedEnergy", "false");
+        
         alert("User registered, " + response.data.message);
         // Redirect to the Profile Page as they alreay logedin
         navigate("/profile"); 

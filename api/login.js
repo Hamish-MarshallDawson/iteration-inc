@@ -6,17 +6,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 // Use Jwt key stored in .env or default hello (test purporse, might removed later)
 const SECRET_KEY = process.env.JWT_SECRET || "hello";
-import sha256 from "js-sha256";
-
-const getBrowserName = (userAgent) => {
-  if (userAgent.includes("Chrome")) return "Chrome";
-  if (userAgent.includes("Firefox")) return "Firefox";
-  if (userAgent.includes("Safari")) return "Safari";
-  if (userAgent.includes("Edge")) return "Edge";
-  return "Unknown Browser";
-};
-
-
 
 export default async function handler(req, res) {
 
@@ -61,7 +50,7 @@ export default async function handler(req, res) {
       machine = await prisma.Machines.create({
         data: {
           MachineSerialCode: machineSerialCode,
-          MachineName: `${user.firstName}'s ${machineName}` || "Unknown Device",
+          MachineName: `${user.FirstName}'s ${machineName}` || "Unknown Device",
         },
       });
     }
@@ -70,11 +59,15 @@ export default async function handler(req, res) {
         where: { UserID: user.UserID },
         data: { MachineID: machine.MachineID },
       });
+      await prisma.Machines.update({
+        where: { MachineID: machine.MachineID },
+        data: { MachineName: `${user.FirstName}'s ${machineName}`|| "Unknown Device"},
+      });
     }
     await prisma.SecurityLogs.create({
       data: {
         UserID: user.UserID,
-        EventDescription: `User logged in from ${machine.MachineName}`,
+        EventDescription: `User logged in from ${user.FirstName}'s ${machineName}`,
         Timestamp: new Date(),
         MachineID: machine.MachineID
       },
