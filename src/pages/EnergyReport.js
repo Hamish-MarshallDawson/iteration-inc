@@ -36,6 +36,7 @@ const useEnergyData = () => {
 
     const fetchData = async () => {
 
+      const [totalData, setTotalData] = useState({});
       try {
         const response = await axios.post(`${window.location.origin}/api/query`);
         setTotalData(response.data);
@@ -146,11 +147,6 @@ const BarGraph = () => {
 
 
 const EnergyReport = () => {
-
-  
-  const [totalData, setTotalData] = useState({});
-
-  
   return (
     <div className="profile-container">
 
