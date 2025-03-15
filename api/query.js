@@ -20,6 +20,8 @@ export default async function handler(req, res) {
       return acc;
     }, {});
 
+    console.log(energy)
+
     return res.status(200).json({ groupedData });
     
   } catch (error) {
