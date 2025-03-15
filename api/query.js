@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       if (!acc[date]) {
         acc[date] = 0;
       }
-      acc[date] += row.EnergyUse;
+      acc[date] += row.EnergyUsed;
       return acc;
     }, {});
 
