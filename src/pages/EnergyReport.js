@@ -42,6 +42,8 @@ const useEnergyData = () => {
         const response = await axios.post(`${window.location.origin}/api/query`);
         setTotalData(response.data);
 
+        console.log("A - ",response.data)
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -58,6 +60,12 @@ const BarGraph = () => {
 
   const { totalData } = useEnergyData()
 
+  
+  console.log("B - ", totalData)
+
+  console.log("C - ", Object.keys(totalData))
+  console.log("D - ", Object.values(totalData))
+  
   // data for the chart
   const data = {
     labels:  Object.keys(totalData), //["10/03", "11/03", "12/03", "13/03", "14/03", "15/03", "16/03",],
