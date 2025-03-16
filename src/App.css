@@ -226,7 +226,7 @@ button:hover {
   left: 0;
   top: 0;
   height: 100dvh; /* Full height */
-  width: clamp (10rem, 20rem, 10vw); /* Fixed width */
+  width: clamp(10rem, 20rem, 15vw); /* Fixed width */
   background-color: rgba(13, 6, 40, 0.9);
   color: #fca17d;
   display: flex;
@@ -262,18 +262,31 @@ button:hover {
   /* margin-bottom: 5rem; Space between links */
   padding-bottom: -5rem;
   text-align: left; /* Ensure text is aligned to the left */
+  transition: all 0.3s ease-in-out;
 }
 
 .nav-links a {
   color: #fca17d;
   text-decoration: none;
-  font-size: clamp(15px, 5rem, 45px); /* Make text bigger */
+  font-size: clamp(10px, 5rem, 45px); /* Make text bigger */
   font-weight: bold;
-  transition: color 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.nav-links li:hover {
+  transform: scale(1.05);
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a:focus {
   color: #fca17d86; /* Highlight color */
+}
+
+.nav-links a {
+  transition: transform 0.3s ease-in-out;
+}
+
+.nav-links a:active {
+  transform: scale(1.05);
 }
 
 /* Ensure that the Profile link and icon are inline and styled the same */
@@ -297,6 +310,7 @@ button:hover {
 .ProfileLink:hover,
 .ProfileLink:focus {
   opacity: 0.5 !important; /* Full opacity on hover */
+  transform: scale(1.05);
 }
 
 .ProfileLink:hover .profileIcon,
@@ -363,7 +377,8 @@ button:hover {
     text-align: center;
     height: auto;
     z-index: 1;
-    transform: translateX(0); /* Start with navbar visible */
+    transform: translateY(0); /* Start with navbar visible */
+    transition: transform 0.4s ease-in-out;
     overflow-y: auto;
   }
 
@@ -374,6 +389,11 @@ button:hover {
     padding-top: 1rem;
     align-items: center;
     text-align: center; /* Ensure text stays centered */
+    transition: all 0.3s ease-in-out;
+  }
+  .nav-links li:hover,
+  .nav-links li:focus {
+    transform: scale(1.05);
   }
 
   .nav-links a {
@@ -387,6 +407,7 @@ button:hover {
 
   .nav-links.show {
     display: block;
+    transform: translateY(1);
   }
 
   .ProfileLink {
@@ -410,21 +431,6 @@ button:hover {
   /* Snake logo animation stuff */
   .snake {
     display: none;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .snake {
-      animation: snake-logo-spin infinite 15s linear;
-    }
-  }
-
-  @keyframes snake-logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
   }
 }
 
