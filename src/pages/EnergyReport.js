@@ -40,10 +40,11 @@ const useEnergyData = () => {
     const fetchData = async () => {
 
       try {
-        const [ totalDataresponse, userDataResponse ] = await axios.post(`${window.location.origin}/api/query`);
-        setTotalData(totalDataresponse.data["totalData"]);
-        setUserData(userDataResponse.data["userData"]);
-
+        const response = await axios.post(`${window.location.origin}/api/query`);
+        const { totalData, userData } = response.data;        
+        setTotalData(totalData);
+        setUserData(userData);
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
