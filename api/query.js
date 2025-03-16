@@ -13,8 +13,8 @@ export default async function handler(req, res) {
     });
 
     // Group by date and sum energy usage
-    const userData = {};
-    const totalData = energy.reduce((acc, row) => {
+    let userData = {};
+    let totalData = energy.reduce((acc, row) => {
       const date = new Date(row.Timestamp).toISOString().split("T")[0]; // Extract YYYY-MM-DD
 
       // totalData
@@ -34,19 +34,15 @@ export default async function handler(req, res) {
       return acc;
     }, {});
 
-    // Sort totalData and userData by date (newest to oldest)
-    const sortedTotalData = sortDataByDate(totalData, "desc");
-    const sortedUserData = sortDataByDate(userData, "desc");
-
-    // Extract the 7 most recent entries
-    const recentTotalData = Object.fromEntries(
-      Object.entries(sortedTotalData).slice(0, 7)
+    // Sort and extract the 7 most recent entries
+    totalData = Object.fromEntries(
+      Object.entries(sortDataByDate(totalData, "desc")).slice(0, 7)
     );
-    const recentUserData = Object.fromEntries(
-      Object.entries(sortedUserData).slice(0, 7)
+    userData = Object.fromEntries(
+      Object.entries(sortDataByDate(userData, "desc")).slice(0, 7)
     );
 
-    return res.status(200).json({ totalData: recentTotalData, userData: recentUserData });
+    return res.status(200).json({ totalData, userData });
   } catch (error) {
     console.error("Database Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -56,14 +52,13 @@ export default async function handler(req, res) {
 // Helper function to sort data by date
 const sortDataByDate = (data, order = "asc") => {
   // Sort the data by date
-  const sortedEntries = Object.entries(data).sort(([dateA], [dateB]) => {
-    if (order === "asc") {
-      return dateA.localeCompare(dateB); // Sort in ascending order
-    } else {
-      return dateB.localeCompare(dateA); // Sort in descending order
-    }
-  });
+  return Object.fromEntries(
+    Object.entries(data).sort(([dateA], [dateB]) => {
+      if (order === "asc") {
+        return dateA.localeCompare(dateB); // Sort in ascending order
+      } else {
+        return dateB.localeCompare(dateA); // Sort in descending order
+      }
+  }));
 
-  // Convert back to an object
-  return Object.fromEntries(sortedEntries);
 };
