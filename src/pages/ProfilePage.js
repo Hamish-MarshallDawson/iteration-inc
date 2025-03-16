@@ -21,6 +21,9 @@ const ProfilePage = () => {
   const [newEnergyGoal, setNewEnergyGoal] = useState("");
   const [showEnergyGoalModal, setShowEnergyGoalModal] = useState(false);
 
+  const [recommendations, setRecommendations] = useState([]); 
+  const [showRecModal, setShowRecModal] = useState(false);
+
   const navigate = useNavigate();
 
   // State for role base ui
@@ -63,7 +66,7 @@ const ProfilePage = () => {
   }, [navigate]);
 
 
-  // Simulate weekly energy usage for the user every time they logged in
+  // //Simulate weekly energy usage for the user every time they logged in
   useEffect(() => {
     const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
     if (userID && machineID && hasSimulated === "false") {
@@ -87,7 +90,40 @@ const ProfilePage = () => {
       fetchEnergyGoal();
     }
   }, [userID]);
+
+  useEffect(() => {
+    if (!userID) return;
+    const interval = setInterval(() => {
+      checkRecommendations(userID);
+    }, 1 * 60 * 1000); // Every 5 minutes
+
+    return () => clearInterval(interval); 
+  }, [userID]);
 //----------------------------------------------------------------------------------------------------------------------------------------  
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await axios.post(`${window.location.origin}/api/recommendation`, {
+        userID,
+        action: "fetch",
+      });
+
+      setRecommendations(response.data.recommendations);
+      setShowRecModal(true);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    }
+  };
+  const checkRecommendations = async (userID) => {
+    try {
+      await axios.post(`${window.location.origin}/api/recommendation`, {
+        userID,
+        action: "check",
+      });
+    } catch (error) {
+      console.error("Recommendation check failed:", error);
+    }
+  };
 
   const updateEnergyGoal = async () => {
     try {
@@ -248,8 +284,31 @@ const ProfilePage = () => {
           <button onClick={() => setShowEnergyGoalModal(true)}>Change Energy Goal</button>
         </div>
 
+        <div>
+          <button onClick={fetchRecommendations}> View Recommendations</button>
+        </div>
 
       </div>
+
+      {/* 🔹 Recommendations Modal */}
+      {showRecModal && (
+        <div className="modal-overlay" onClick={() => setShowRecModal(false)}>
+          <div className="modal-content">
+            <h3>Device Recommendations</h3>
+            <ul>
+              {recommendations.length > 0 ? (
+                recommendations.map((rec) => (
+                  <li key={rec.RecID}>{rec.SuggestedAction}</li>
+                ))
+              ) : (
+                <p>No recommendations at this time.</p>
+              )}
+            </ul>
+            <button onClick={() => setShowRecModal(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
 
       {showEnergyGoalModal && (
         <div className="modal-overlay" onClick={() => setShowEnergyGoalModal(false)}>

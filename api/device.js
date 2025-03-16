@@ -86,6 +86,12 @@ export default async function handler(req, res) {
         return res.status(200).json({ message: "Device name updated successfully" });
 
       case "remove":
+
+        await prisma.EnergyUse.deleteMany({ where: { DeviceID: data.deviceID } });
+        await prisma.UserActivity.deleteMany({ where: { DeviceID: data.deviceID.toString() } }); 
+        await prisma.Recommendations.deleteMany({ where: { DeviceID: data.deviceID } });
+        await prisma.Schedules.deleteMany({ where: { DeviceID: data.deviceID } });
+
         await prisma.Devices.delete({
           where: { DeviceID: data.deviceID },
         });
