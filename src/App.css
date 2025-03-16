@@ -752,3 +752,7 @@ button:hover {
   background-color: #e5e4e2;
   color: black;
 }
+.unlocked-award {
+  background: linear-gradient(135deg, #1e3f1e, #2a602a); 
+  border: 2px solid #4CAF50; 
+}
