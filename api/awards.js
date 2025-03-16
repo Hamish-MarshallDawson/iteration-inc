@@ -66,8 +66,23 @@ export default async function handler(req, res) {
     // Fetch all unlocked awards
     const unlockedAwards = await prisma.UserAwards_.findMany({
       where: { UserID_: userID },
-      select: { AwardID_: true },
+      select: { 
+        AwardID_: true,
+        DateEarned_: true,  
+        IsUnlocked_: true,
+        Awards: {           
+          select: {
+            AwardID: true,
+            Title: true,
+            Description: true,
+            Icon: true,
+            Type: true,
+            Level: true,
+          },
+        },
+      },
     });
+    console.log("Unlocked Awards:", unlockedAwards);
 
     // Fetch all awards
     const awards = await prisma.Awards.findMany({
@@ -81,6 +96,7 @@ export default async function handler(req, res) {
         Level: true,
       },
     });
+    console.log("All Awards:", awards);
 
     // Check the id of awards that user already unlocked
     const unlockedAwardIDs = new Set(unlockedAwards.map((award) => award.AwardID));
@@ -121,8 +137,10 @@ export default async function handler(req, res) {
             AwardID_: award.AwardID,
           },
         });
-
-        if (!existingAward) {
+        
+        if (existingAward) {
+          continue;
+        } else {
           await prisma.UserAwards_.create({
             data: {
               UserID_: userID,
@@ -131,23 +149,34 @@ export default async function handler(req, res) {
               DateEarned_: new Date(),
             },
           });
+          newlyUnlocked.push({ ...award, IsUnlocked: true, DateEarned_: new Date() });
+          unlockedAwardIDs.add(award.AwardID);
         }
 
-        newlyUnlocked.push({ ...award, IsUnlocked: true });
+        
       }
     }
 
+    console.log("Newly Unlocked Awards:", newlyUnlocked);
+
 
     //----------------------------------------------------------------------------------------------------------------------------
+    const unlockedAwardMap = new Map(
+      unlockedAwards.map((ua) => [ua.AwardID_, { ...ua.Awards, DateEarned: ua.DateEarned_, IsUnlocked: ua.IsUnlocked_ }])
+    );
 
     const awardsWithStatus = awards.map((award) => ({
       ...award,
-      IsUnlocked: 
-        unlockedAwardIDs.has(award.AwardID) || 
-        newlyUnlocked.some((a) => a.AwardID === award.AwardID),
+      IsUnlocked: unlockedAwardMap.has(award.AwardID),
+      DateEarned: unlockedAwardMap.get(award.AwardID)?.DateEarned || null,
     }));
 
-    return res.status(200).json({ awards: awardsWithStatus,unlockedAwards,newlyUnlocked });
+    console.log("Awards with Status:", awardsWithStatus);
+    console.log("Unlocked Awards:", unlockedAwards);
+    console.log("Newly Unlocked Awards:", newlyUnlocked);
+    return res.status(200).json({ awards: awardsWithStatus,
+                                  unlockedAwards: unlockedAwardMap,
+                                  newlyUnlocked });
 
 
   } catch (error) {

@@ -68,7 +68,7 @@ export default function SmartDeviceGrid({ roomId, allowedDeviceTypes = ["lightbu
         machineID
       })
       .then(response => {
-        alert("Response Received");
+        //alert("Response Received");
         setDevices(response.data.devices || []);
       })
       .catch(error => {

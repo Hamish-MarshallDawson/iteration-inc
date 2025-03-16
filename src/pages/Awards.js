@@ -10,7 +10,6 @@ const AwardsPage = () => {
   const [unlockedAwards, setUnlockedAwards] = useState([]);
   const [newUnlockedAwards, setNewUnlockedAwards] = useState([]);
 
-  const alertedAwardsRef = useRef(new Set());
 
   const [userID, setUserID] = useState(null);
 
@@ -35,12 +34,12 @@ const AwardsPage = () => {
   }, [userID]);
 
   useEffect(() => {
-    newUnlockedAwards.forEach((award) => {
-      if (!alertedAwardsRef.current.has(award.AwardID)) { 
+    if (newUnlockedAwards.length > 0) {
+      newUnlockedAwards.forEach((award) => {
         alert(`🎉 Congratulations! You've unlocked the "${award.Title}" award!`);
-        alertedAwardsRef.current.add(award.AwardID); 
-      }
-    });
+      });
+      setNewUnlockedAwards([]);  
+    }
   }, [newUnlockedAwards]);
 
 
@@ -50,6 +49,8 @@ const AwardsPage = () => {
       setAwards(response.data.awards);
       setUnlockedAwards(response.data.unlockedAwards);
       setNewUnlockedAwards(response.data.newlyUnlocked);
+
+      
     } catch (error) {
       console.error("Error fetching awards:", error);
     }
@@ -78,6 +79,11 @@ const AwardsPage = () => {
             <h2 className="award-title">{award.Title}</h2>
 
             <p className="award-description">{award.Description}</p>
+
+            {/* Show "Earned On" for unlocked awards */}
+            {award.IsUnlocked && (
+              <p className="award-earned">🏆 Earned On: {new Date(award.DateEarned).toLocaleDateString()}</p>
+            )}
 
             {!award.IsUnlocked && <div className="locked-label">Locked</div>}
 
