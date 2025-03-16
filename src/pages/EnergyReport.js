@@ -78,7 +78,7 @@ const BarGraph = () => {
         label: 'Your Energy Used',
         data: Object.values(userData), // [16, 6, 21, 9, 12, 8, 5], // totalData.map((row) => row.TotalEnergyUsed),    
         fill: true,
-        backgroundColor: 'rgba(13, 6, 40, 1)', // Last one is transparency
+        backgroundColor: 'rgba(75, 196, 196, 1)', // Last one is transparency
         borderRadius: 10, // Rounded corners for the bars
         tension: 0.1,
       },
