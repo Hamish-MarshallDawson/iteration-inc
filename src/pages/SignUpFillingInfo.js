@@ -25,8 +25,12 @@ export default function SignUpStep2() {
 
   // Validation function for passwords
   const isValidPassword = (password) => {
-    return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password); // At least 8 characters, 1 uppercase letter, 1 number
+    return /^(?=.*[A-Z])(?=.*\d).{8,30}$/.test(password); // At least 8 characters, 30 chars max, 1 uppercase letter, 1 number
   };
+  const isValidName = (name) => {
+    return /^[A-Za-z'-]{2,25}$/.test(name); // Allows letters, hyphen -, and apostrophe ’, min 2, max 25 chars
+  };
+  
   const getBrowserName = () => {
     if (navigator.userAgent.includes("Chrome")) return "Chrome";
     if (navigator.userAgent.includes("Firefox")) return "Firefox";
@@ -57,8 +61,10 @@ export default function SignUpStep2() {
     }
 
     // Check if user's name is valid
-    if (firstName.length < 2 || lastName.length < 2) {
-      alert("First and Last Name must be at least 2 characters long.");
+    if (!isValidName(firstName) || !isValidName(lastName)) {
+      alert(
+        "First and Last Name must be between 2 and 25 characters long and contain only letters, hyphens, or apostrophes."
+      );
       setIsLoading(false);
       return;
     }
@@ -66,7 +72,7 @@ export default function SignUpStep2() {
     // Check if password is valid by call validation function 
     if (!isValidPassword(password)) {
       alert(
-        "Password must be at least 8 characters, contain a number, and an uppercase letter."
+        "Password must be between 8 and 30 characters long, contain a number, and an uppercase letter."
       );
       setIsLoading(false);
       return;
