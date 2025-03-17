@@ -100,35 +100,6 @@ class clientDevice {
 }
 // End of Massive javascript
 
-// MY STUFF
-async function setupClient() {
-  var CD = {}
-  console.log("MY SETUP CODE RUNNING")
-  // get devices from the server
-  var response = await axios.post("http://localhost:5000/api/allDevices")
-  if (response.status === 200) {
-    console.log("REQUEST: getAllDevices SUCCESS");
-    console.log("Response: "+JSON.stringify(response))
-    console.log("Parsing JSON: "+response.data)
-    console.log("parsed data: ")
-    console.log(JSON.parse(response.data))// needs to be on a new line to format correctly
-    // actual code
-    // turn response into actual devices again
-    for (let device in JSON.parse(response.data)) {
-        // needs device and dom
-        console.log("RECIEVED DEVICE:")
-        console.log(device)
-        console.log(new clientDevice( (JSON.parse(response.data))[""+device],null))
-        CD[""+(JSON.parse(response.data))[""+device].ID] = (JSON.parse(response.data))[""+device]
-
-    }
-    console.log("ADDED DEVICES. \nDEVICE:")
-    console.log(CD)
-    return CD
-  }
-}
-
-
 export default function SmartDeviceGrid({ roomId }) {
   const navigate = useNavigate();
 
@@ -148,30 +119,6 @@ export default function SmartDeviceGrid({ roomId }) {
 
   // MY STUFF
   const [clientDevices, setClientDevices] = useState([])
-  // object to contain client devices 
-  //var clientDevices = {}
-
-  // try my own useEffect
-  // useEffect( () => {
-  //   console.log("CHECKNG CLIENTDEVICES")
-  //   console.log(clientDevices.toString())
-  //   if (Object.entries(clientDevices).length == 0) {
-  //     console.log("CLIENTDEVICES EMPTY: GETTING DEVICES")
-      
-  //     console.log("USEEFFECT: BEFORE")
-  //     console.log(clientDevices)
-  //     setupClient().then( function(value) {
-  //       clientDevices = value
-  //       console.log("PROMISE FUFILLED\nCLIENTDEVICES:")
-  //       console.log(clientDevices)
-  //     } )
-  //     console.log("USEEFFECT: AFTER")
-  //     console.log(clientDevices)
-  //   }
-  //   else {
-  //     console.log("CLIENTDEVICES OCCUPIED")
-  //   }
-  // })
 
   useEffect( () => {
     async function getDevicesFromServer() {
