@@ -5,9 +5,13 @@ import "../App.css";
 import Spinner from "../components/Spinner.js"; 
 
 export default function UpdateEmail() {
+
+//----------------------------------------State variables------------------------------------------------------
   const [newEmail, setNewEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+//----------------------------------------Form submission handling------------------------------------------------------
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +25,9 @@ export default function UpdateEmail() {
           return;
         }
 
-        // Test
-        if (newEmail.length > 100) {
-          alert("Your email has length > 100, please enter again.");
+        // Email length validation
+        if (email.length > 50) {
+          alert("Your email has length greater than 50 characters, please enter a valid email.");
           setIsLoading(false);
           return;
         }
@@ -37,6 +41,8 @@ export default function UpdateEmail() {
   
         if (response.status === 200) {
           // If email is available, redirect to verification page
+          // Also pass along the email and the page to redirect to after verification
+          alert("Email is available, please verify your new email.");
           navigate("/verify", { state: { email: newEmail, redirectTo: "/confirmUpdateEmail" } });
         }
   
@@ -51,7 +57,7 @@ export default function UpdateEmail() {
           }
     }
 };
-
+//-------------------------------------------------------------------------------------------------------
   return (
     <div className="login-container">
       <img 

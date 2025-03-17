@@ -11,6 +11,8 @@ export default function ConfirmUpdateEmail() {
   const newEmail = location.state?.email || "";  
   const navigate = useNavigate();
 
+//----------------------------------------Page auto loading contents------------------------------------------------------
+  // Check if user already logged in when page load
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -19,37 +21,44 @@ export default function ConfirmUpdateEmail() {
         return;
     }
     try {
+        // Decode the token
         const decoded = jwtDecode(token);
+        // Get the current email from the token
         const currentEmail = decoded.email;
-  
+
+        // Update the email in the database
         const updateEmail = async () => {   
             try {
-                const response = await axios.post(`${window.location.origin}/api/user`, {
-                    action: "updateEmail",
-                    oldEmail:currentEmail,
-                    newEmail,
-                });
-                if (response.status === 200) {
-                    alert("Email updated successfully");
-                    alert("Please Log in again with the new email");
-                    localStorage.removeItem("token");  
-                    navigate("/"); 
-                }
+              // Make a POST request to update the email in the database
+              const response = await axios.post(`${window.location.origin}/api/user`, {
+                  action: "updateEmail",
+                  oldEmail:currentEmail,
+                  newEmail,
+              });
+              // If the email is updated successfully, alert the user and redirect to the login page
+              if (response.status === 200) {
+                  alert("Email updated successfully");
+                  alert("Please Log in again with the new email");
+                  // Remove the old token from local storage
+                  localStorage.removeItem("token");  
+                  navigate("/"); 
+              }
             } catch (error) {
-                    alert("Failed to update email. Try again.");
-                    navigate("/profile");
+                  alert("Failed to update email. Try again.");
+                  navigate("/profile");
             }
         };
         updateEmail();
 
     ;}catch (error) {
-        console.error("Invalid token, logging out");
+        alert("Invalid token, logging out");
         localStorage.removeItem("token");
         navigate("/");
     }
 
-
   }, [navigate, newEmail]);
+
+//------------------------------------------------------------------------------------------------------
 
   return (
     <div className="login-container">

@@ -230,6 +230,7 @@ const ProfilePage = () => {
   
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {
+    alert("Successfully log out.");
     localStorage.removeItem("token");
     navigate("/"); 
   };
@@ -247,12 +248,14 @@ const ProfilePage = () => {
       return;
     }
     // Redirect to verify page and pass email and next redirect page
+    alert("Please verify your current email first.");
     navigate("/verify", { state: { email, redirectTo: "/updateEmail" } });
   };
 
   // Handle password reset, by redirect to password reset page
   const handleUpdatePassword = () => {
     // Redirect to verify page and pass email and next redirect page
+    alert("Navigate to password reset page.");
     navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
   };
 
