@@ -65,8 +65,6 @@ export default function SmartDeviceGrid({
   // This part fetch devices when page load
   useEffect(() => {
     if (userID && roomID) {
-      alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
-
       axios
         .post(`${window.location.origin}/api/device`, {
           action: "get",
