@@ -297,6 +297,11 @@ var testDeviceLightbulb = new simDevice(10, "Test Device - Lightbulb", "lightbul
 var testDeviceCoffee = new simDevice(11, "Test Device - Coffee", "coffee", "living room", SIM)
 var testDeviceSpeaker = new simDevice(12, "Test Device - Speaker", "speaker", "living room", SIM)
 
+testDeviceLightbulb.data["status"] = "Online"
+testDeviceCoffee.data["status"] = "Online"
+testDeviceSpeaker.data["status"] = "Online"
+
+
 SDM.addDevice(testDeviceLightbulb)
 
 console.log("SDM DEVICES:")//TESTING
