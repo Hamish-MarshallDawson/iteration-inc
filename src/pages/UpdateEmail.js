@@ -14,6 +14,20 @@ export default function UpdateEmail() {
     setIsLoading(true);
 
     try {
+        // Ensure the user enters an email before proceeding anything
+        if (!newEmail) {
+          alert("Please enter your email.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Test
+        if (newEmail.length > 100) {
+          alert("Your email has length > 100, please enter again.");
+          setIsLoading(false);
+          return;
+        }
+      
         // Call checkEmail API to verify if the email is already taken
         const response = await axios.post(`${window.location.origin}/api/user`, { 
           action: "checkEmail",

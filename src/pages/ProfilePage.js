@@ -10,8 +10,6 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode"; 
 
 /*
-Device name character limit
-email name constrain
 user name constrain
 password constrain
 device type constrain - not null	
@@ -217,6 +215,15 @@ const ProfilePage = () => {
 
   // Handle email update, by redirect to verify page and further update-email page
   const handleUpdateEmail = () => {
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+    // Test
+    if (email.length > 100) {
+      alert("Your email has length > 100, please enter again.");
+      return;
+    }
     navigate("/verify", { state: { email, redirectTo: "/updateEmail" } });
   };
 

@@ -19,6 +19,14 @@ export default function SignUp() {
     // Ensure the user enters an email before proceeding anything
     if (!email) {
       alert("Please enter your email.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Test
+    if (email.length > 100) {
+      alert("Your email has length > 100, please enter again.");
+      setIsLoading(false);
       return;
     }
 
