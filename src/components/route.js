@@ -5,6 +5,8 @@ import {
   useLocation,
 } from "react-router-dom";
 
+import { useEffect } from "react";
+
 import Login from "../pages/Login.js";
 import Bedroom from "../pages/Bedroom.js";
 import Kitchen from "../pages/Kitchen.js";
@@ -28,7 +30,6 @@ import Navbar from "./nav.js"; // Ensure correct import
 // also remove the associated route
 import DeviceTest from "../pages/DeviceTest.js";
 
-
 function MainContent() {
   const location = useLocation(); // Get current route
 
@@ -41,7 +42,13 @@ function MainContent() {
     "/verify",
     "/filling-information",
   ];
-  // routes were refactored to this file for conviences
+
+  // Automatically replace the URL if navigating to the hidden route
+  // Hide every route in the address bar
+  useEffect(() => {
+    window.history.replaceState({}, "", "/");
+  }, [location.pathname]);
+
   return (
     <>
       <div className="structure">
@@ -51,24 +58,25 @@ function MainContent() {
         <div className="MainContent">
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/Bedroom" element={<Bedroom />} />
-            <Route path="/Kitchen" element={<Kitchen />} />
-            <Route path="/Livingroom" element={<LivingRoom />} />
-            <Route path="/Energyreport" element={<EnergyReport />} />
-            <Route path="/Awards" element={<Awards />} />
+            <Route path="/bedroom" element={<Bedroom />} />
+            <Route path="/kitchen" element={<Kitchen />} />
+            <Route path="/livingroom" element={<LivingRoom />} />
+            <Route path="/energyreport" element={<EnergyReport />} />
+            <Route path="/awards" element={<Awards />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/passwordReset" element={<PasswordReset />} />
             <Route path="/passwordReset2" element={<PasswordReset2 />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/filling-information" element={<FillInfo />} />
-            <Route path="/testdb" element={<TestDB />} />
             <Route path="/updateEmail" element={<UpdateEmail />} />
             <Route
               path="/confirmUpdateEmail"
               element={<ConfirmUpdateEmail />}
             />
-            <Route path="/DeviceTest" element={<DeviceTest />} />
+            <Route path="/deviceTest" element={<DeviceTest />} />
+            {/* Hidden route that automatically disappears from the URL */}
+            <Route path="/hidden" element={<h1>Hidden Route</h1>} />
           </Routes>
         </div>
       </div>
