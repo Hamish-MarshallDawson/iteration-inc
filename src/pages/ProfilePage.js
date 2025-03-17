@@ -13,6 +13,8 @@ import { jwtDecode } from "jwt-decode";
 user name constrain
 password constrain
 device type constrain - not null	
+recoms - match energy goal
+awards - match energy goal
 */
 
 
