@@ -245,7 +245,7 @@ export default function SmartDeviceGrid({
   // This part is rendering part
   return (
     <div className="smart-device-grid-container">
-      <h2 className="section-title">Smart devices</h2>
+      <h2 className="section-title">Smart Devices</h2>
 
       <div className="device-grid">
         {devices.map((device) => (
