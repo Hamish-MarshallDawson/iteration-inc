@@ -9,6 +9,16 @@ import axios from "axios";
 // !!Import jwtDecode to decode jwt
 import { jwtDecode } from "jwt-decode"; 
 
+/*
+Device name character limit
+email name constrain
+user name constrain
+password constrain
+device type constrain - not null	
+*/
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------------
 const ProfilePage = () => {
   const [email, setEmail] = useState("");
@@ -127,18 +137,18 @@ const ProfilePage = () => {
 
   const updateEnergyGoal = async () => {
     try {
-
       if (newEnergyGoal< 0){
         alert("Energy goal can not be negative number");
         setShowEnergyGoalModal(false);
         return;
       }
 
-      if (newEnergyGoal.length > 4){
+      if (newEnergyGoal > 1000){
         alert("Energy goal can not be larger than 1000");
         setShowEnergyGoalModal(false);
         return;
       }
+
       const response = await axios.post(`${window.location.origin}/api/user`, {
         action: "updateEnergyGoal",
         userID,

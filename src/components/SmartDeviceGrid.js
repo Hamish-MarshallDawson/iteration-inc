@@ -95,6 +95,11 @@ export default function SmartDeviceGrid({
       alert("Device name cannot be empty.");
       return;
     }
+    if (deviceName.length >= 30) {
+      alert("Device name cannot be longger than 30 characters.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${window.location.origin}/api/device`,
@@ -160,6 +165,14 @@ export default function SmartDeviceGrid({
   // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
+      if (!updatedName.trim()) {
+        alert("Device name cannot be empty.");
+        return;
+      }
+      if (updatedName.length >= 30) {
+        alert("Device name cannot be longger than 30 characters.");
+        return;
+      }
       const response = await axios.post(
         `${window.location.origin}/api/device`,
         {
