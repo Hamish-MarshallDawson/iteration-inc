@@ -44,7 +44,7 @@ function MainContent() {
   ];
 
   // Automatically replace the URL if navigating to the hidden route
-  // Hide every route in the address bar
+  // Hide every route in the address bar so we are sneaky
   useEffect(() => {
     window.history.replaceState({}, "", "/");
   }, [location.pathname]);
