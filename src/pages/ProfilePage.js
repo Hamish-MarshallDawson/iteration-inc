@@ -127,6 +127,18 @@ const ProfilePage = () => {
 
   const updateEnergyGoal = async () => {
     try {
+
+      if (newEnergyGoal< 0){
+        alert("Energy goal can not be negative number");
+        setShowEnergyGoalModal(false);
+        return;
+      }
+
+      if (newEnergyGoal.length > 4){
+        alert("Energy goal can not be larger than 1000");
+        setShowEnergyGoalModal(false);
+        return;
+      }
       const response = await axios.post(`${window.location.origin}/api/user`, {
         action: "updateEnergyGoal",
         userID,
