@@ -1,58 +1,32 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import axios from "axios"; 
-import { jwtDecode } from "jwt-decode"; 
+import axios from "axios";                    // Import axios for making HTTP requests    
+import { jwtDecode } from "jwt-decode";       // Import jwt-decode to decode JWT token
 import Spinner from "../components/Spinner.js"; // Import LoadingSpinner component
 import "../App.css";
-import sha256 from "js-sha256";
+import sha256 from "js-sha256";               // Import sha256 for hashing
 
-/*
-⡴⠒⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠉⠳⡆⠀
-⣇⠰⠉⢙⡄⠀⠀⣴⠖⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣆⠁⠙⡆
-⠘⡇⢠⠞⠉⠙⣾⠃⢀⡼⠀⠀⠀⠀⠀⠀⠀⢀⣼⡀⠄⢷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠰⠒⠲⡄⠀⣏⣆⣀⡍
-⠀⢠⡏⠀⡤⠒⠃⠀⡜⠀⠀⠀⠀⠀⢀⣴⠾⠛⡁⠀⠀⢀⣈⡉⠙⠳⣤⡀⠀⠀⠀⠘⣆⠀⣇⡼⢋⠀⠀⢱
-⠀⠘⣇⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⡴⢋⡣⠊⡩⠋⠀⠀⠀⠣⡉⠲⣄⠀⠙⢆⠀⠀⠀⣸⠀⢉⠀⢀⠿⠀⢸
-⠀⠀⠸⡄⠀⠈⢳⣄⡇⠀⠀⢀⡞⠀⠈⠀⢀⣴⣾⣿⣿⣿⣿⣦⡀⠀⠀⠀⠈⢧⠀⠀⢳⣰⠁⠀⠀⠀⣠⠃
-⠀⠀⠀⠘⢄⣀⣸⠃⠀⠀⠀⡸⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠈⣇⠀⠀⠙⢄⣀⠤⠚⠁⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⢹⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⢘⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⢰⣿⣿⣿⡿⠛⠁⠀⠉⠛⢿⣿⣿⣿⣧⠀⠀⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡀⣸⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⡀⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡇⠹⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⠁⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣤⣞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢢⣀⣠⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠲⢤⣀⣀⠀⢀⣀⣀⠤⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀
-
-⣿⣿⣿⣿⣿⣿⣿⠿⠿⢛⣋⣙⣋⣩⣭⣭⣭⣭⣍⣉⡛⠻⢿⣿⣿⣿⣿
-⣿⣿⣿⠟⣋⣥⣴⣾⣿⣿⣿⡆⣿⣿⣿⣿⣿⣿⡿⠟⠛⠗⢦⡙⢿⣿⣿
-⣿⡟⡡⠾⠛⠻⢿⣿⣿⣿⡿⠃⣿⡿⣿⠿⠛⠉⠠⠴⢶⡜⣦⡀⡈⢿⣿
-⡿⢀⣰⡏⣼⠋⠁⢲⡌⢤⣠⣾⣷⡄⢄⠠⡶⣾⡀⠀⣸⡷⢸⡷⢹⠈⣿
-⡇⢘⢿⣇⢻⣤⣠⡼⢃⣤⣾⣿⣿⣿⢌⣷⣅⡘⠻⠿⢛⣡⣿⠀⣾⢠⣿
-⣷⠸⣮⣿⣷⣨⣥⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢁⡼⠃⣼⣿
-⣿⡆⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⡞⣱⠆⣿⣿
-⣿⣿⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⣼⢸⡿⢸⣿⣿
-⣿⣿⡇⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢿⡌⠃⣿⣿⣿
-⣿⣿⣿⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣷⢸⣷⠀⣿⣿⣿
-⣿⣿⣿⡇⢻⣿⣿⣿⡿⠿⠿⣿⣿⣿⠿⠟⣡⡈⠻⣿⣿⣿⣿⢠⣿⣿⣿
-⣿⣿⣿⣿⠘⣿⣿⣿⣿⣦⣙⣛⣛⣛⣋⠷⠙⢿⣷⣌⠛⢿⡇⣼⣿⣿⣿
-⣿⣿⣿⡿⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⡙⢿⢗⣀⣁⠈⢻⣿⣿
-⣿⡿⢋⣴⣿⣎⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡉⣯⣿⣷⠆⠙⢿
-⣏⠀⠈⠧⢡⠉⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠉⢉⣁⣀⣀⣾⠀⠀⠀⠀⠀
-*/
 
 function Login() {
-  // These are state variables
+
+//----------------------------------------State variables and helper methods------------------------------------------------------
+
+  // These are state variables for the login form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // State variable to show loading spinner
   const [isLoading, setIsLoading] = useState(false);
 
+  // State variables for machine infos
   const [machineSerialCode, setMachineSerialCode] = useState("");
   const [machineName, setmachineName] = useState("");
 
   // Use to navigate to different pages
   const navigate = useNavigate();
 
-  // Get machine code and name for the current device that user is lopgging in
+  // Get browser name for the current device that user is lopgging in
   const getBrowserName = () => {
     if (navigator.userAgent.includes("Chrome")) return "Chrome";
     if (navigator.userAgent.includes("Firefox")) return "Firefox";
@@ -60,13 +34,17 @@ function Login() {
     if (navigator.userAgent.includes("Edge")) return "Edge";
     return "Unknown Browser";
   };
+
+//----------------------------------------Page auto loading contents------------------------------------------------------
+    
+  // Get the machine code based on device & browser details
   useEffect(() => {
-    const userAgent = navigator.userAgent; // Device info
+    const userAgent = navigator.userAgent;                              // Device info
     const screenRes = `${window.screen.width}x${window.screen.height}`; // Screen resolution
-    const os = navigator.platform; // OS info
+    const os = navigator.platform;                                      // OS info
     const browser = getBrowserName();
     setmachineName(`${browser}`);
-    setMachineSerialCode(sha256(userAgent + screenRes + os)); // Generate unique machine ID
+    setMachineSerialCode(sha256(userAgent + screenRes + os));           // Added up to generate unique machine ID
   }, []);
   
 
@@ -74,27 +52,24 @@ function Login() {
   // Check if user already logged in when page load
   useEffect(() => {
     try {
-      // Fetch n decode token
-      const token = localStorage.getItem("token");
-      const decoded = jwtDecode(token);
-      // Redirect to profile page if already logged in
-      navigate("/profile"); 
+      const token = localStorage.getItem("token");           // Get token from local storage
+      const decoded = jwtDecode(token);                      // Decode the token                 
+      navigate("/profile");                                  // If decode is successful, means user logged in, redirect to profile page
     } catch (error) {
-      console.error("Invalid token");
-      // Remove invalid token
-      localStorage.removeItem("token"); 
+      console.error("Invalid token");                        // If token is invalid, show error message   
+      localStorage.removeItem("token");                     // Remove invalid token
     }
   }, [navigate]);
 
+//----------------------------------------Form submission handling------------------------------------------------------
 
-  // Function to handle form submission
   const handleLogin = async (e) => {
     // Prevent default form submission behavior
     e.preventDefault();
 
-    // Set state of spinner to true as the form is submitting
+    // Set state of spinner to true (spinning) as the form is submitting
     setIsLoading(true);
-
+    
     try {
       // Make a POST request to check if the email exist and compare password in the database (through api route)
       const response = await axios.post(`${window.location.origin}/api/login`, {
@@ -104,47 +79,50 @@ function Login() {
         machineName
       });
 
+      // Set state of spinner to false (stop spinning) as the form is submitted
       setIsLoading(false);
 
-      // If Server received the request and found the user with matching email and password, it will return a success message and status code 200
-      if (response.status === 200) {
-        const flag = false;
-        // Store jwt to local 
-        localStorage.setItem("token", response.data.token);
-
+      // If Server received the request and found the user with matching email and password, it will return a success message, status code 200 and JWT token
+      if (response.status === 200) { 
+        localStorage.setItem("token", response.data.token);       // Store the token in local storage
         localStorage.setItem("hasSimulatedEnergy", "false");
         
         alert("User registered, " + response.data.message);
-        // Redirect to the Profile Page as they alreay logedin
-        navigate("/profile"); 
-      }
-
+        navigate("/verify", { state: { email, redirectTo: "/profile" } });     // Redirect to profile page after 2FA
+      } 
     } catch (error) {
+      // Set state of spinner to false (stop spinning) as the form is submitted
       setIsLoading(false);
 
-      // Otherwise, if user entered wrong login credentials, it will display error message
+      // If user entered wrong login credentials, it will display error message
       if (error.response && error.response.status === 401) {
         // Show error message for invalid credentials
         alert(error.response.data.message);
-        alert("Invalid email or password");
       } else  {
         // If the error is unknown, show a generic message
         alert(error.response.data.message);
-        alert("Something went wrong. Please try again.");
       }
     }
   };
 
   return (
+    
     <div className="login-container">
+
+      {/* Logo */}
       <img
         src="/images/iterationincv3.png"
         alt="Snake logo"
         className="snake-logo"
       />
+
+      {/* Login form */}
       <div className="login">
         <form onSubmit={handleLogin}>
+
+          {/* Login form input field: email and password*/}
           <div className="inputFields">
+
             <div className="input">
               <label>Email:</label>
               <input
@@ -154,6 +132,7 @@ function Login() {
                 required
               />
             </div>
+
             <div className="input">
               <label>Password:</label>
               <input
@@ -164,12 +143,17 @@ function Login() {
               />
             </div>
           </div>
+
+          {/* Submit button */}
           <button type="submit" className="submit-button" disabled={isLoading}>
             {isLoading ? "Loading..." : "Login"}
           </button>
+
+          {/* Loading spinner */} 
           {isLoading && <Spinner />}
         </form>
 
+        {/* Helper text: resset password and signup */}
         <div className="helper-text">
           <p>
             <Link to="/passwordReset">Forgot Password?</Link>
@@ -178,6 +162,7 @@ function Login() {
             Don't have an account? <Link to="/sign-up">Sign Up</Link>
           </p>
         </div>
+
       </div>
     </div>
   );

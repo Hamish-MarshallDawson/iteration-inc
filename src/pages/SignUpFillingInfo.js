@@ -6,6 +6,8 @@ import Spinner from "../components/Spinner.js";
 import sha256 from "js-sha256";
 
 export default function SignUpStep2() {
+
+//----------------------------------------State variables and helper methods------------------------------------------------------
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ export default function SignUpStep2() {
   // State for spinner
   const [isLoading, setIsLoading] = useState(false);
 
-  // Validation function for passwords
+  // Validation function for passwords and names
   const isValidPassword = (password) => {
     return /^(?=.*[A-Z])(?=.*\d).{8,30}$/.test(password); // At least 8 characters, 30 chars max, 1 uppercase letter, 1 number
   };
@@ -31,6 +33,7 @@ export default function SignUpStep2() {
     return /^[A-Za-z'-]{2,25}$/.test(name); // Allows letters, hyphen -, and apostrophe ’, min 2, max 25 chars
   };
   
+  // Function to get browser name
   const getBrowserName = () => {
     if (navigator.userAgent.includes("Chrome")) return "Chrome";
     if (navigator.userAgent.includes("Firefox")) return "Firefox";
@@ -39,6 +42,9 @@ export default function SignUpStep2() {
     return "Unknown Browser";
   };
 
+//----------------------------------------Page auto loading contents------------------------------------------------------
+
+  // Get the machine code based on device & browser details
   useEffect(() => {
     const userAgent = navigator.userAgent; // Device info
     const screenRes = `${window.screen.width}x${window.screen.height}`; // Screen resolution
@@ -47,6 +53,8 @@ export default function SignUpStep2() {
     setmachineName(`${browser}`);
     setMachineSerialCode(sha256(userAgent + screenRes + os)); // Generate unique machine ID
   }, []);
+
+//----------------------------------------Form submission handling------------------------------------------------------
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
@@ -69,7 +77,7 @@ export default function SignUpStep2() {
       return;
     }
 
-    // Check if password is valid by call validation function 
+    // Check if password is valid
     if (!isValidPassword(password)) {
       alert(
         "Password must be between 8 and 30 characters long, contain a number, and an uppercase letter."
@@ -79,10 +87,10 @@ export default function SignUpStep2() {
     }
 
 
-    // Everything is valid, then store them to database, and redirect to profile page
+    // Everything is valid, then store them to database, and redirect to login page
     try {
 
-      // Send user data to backend for database insertion
+      // Send user's data to backend for database record creation
       const response = await axios.post(`${window.location.origin}/api/user`, {
         action: "register",
         firstName,
@@ -97,16 +105,17 @@ export default function SignUpStep2() {
 
       // Receive response after request
       if (response.status === 201) {
-        // If insertion success, then prompt to user and redirect to profile page
+        // If insertion success, then prompt to user and redirect to log in page
         alert("Account successfully created!");
-        navigate("/profile");
+        navigate("/");
       }
     } catch (error) {
       setIsLoading(false);
-      // Else just show an error message
+      // Otherwise show an error message
       alert(error.response?.data?.message || "Something went wrong. Please try again.");
     }
   };
+//----------------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="login-container">

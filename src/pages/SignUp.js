@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "axios";                      // Import axios for making HTTP requests  
 import "../App.css";
-import Spinner from "../components/Spinner.js"; 
+import Spinner from "../components/Spinner.js";  // Import LoadingSpinner component
 
 export default function SignUp() {
+
+//----------------------------------------State variables------------------------------------------------------
+
   // State variables
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+//----------------------------------------Form submission handling------------------------------------------------------
 
   // Function to handle form submission
   const handleSubmit  = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault();   // Prevent default form submission behavior
+    setIsLoading(true);   // Set state of spinner to true (spinning) as the form is submitting
 
     // Ensure the user enters an email before proceeding anything
     if (!email) {
@@ -23,9 +27,9 @@ export default function SignUp() {
       return;
     }
 
-    // Test
-    if (email.length > 100) {
-      alert("Your email has length > 100, please enter again.");
+    // Email length validation
+    if (email.length > 50) {
+      alert("Your email has length greater than 50 characters, please enter a valid email.");
       setIsLoading(false);
       return;
     }
@@ -42,6 +46,8 @@ export default function SignUp() {
       if (response.status === 200) {
         // If email is available, alert the user and proceed to the verification page
         alert(response.data.message);
+        // Redirect to the verification page to simulate the process of email verification
+        // Also pass along the email and the page to redirect to after verification
         navigate("/verify", { state: { email, redirectTo: "/filling-information" } });
       }
 
@@ -51,16 +57,14 @@ export default function SignUp() {
       // If email is already in use, show an error message
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
-        alert("This email is already registered. Try logging in.");
       } else {
         // If the error is unknown, show a generic message
         alert(error.response.data.message);
-        alert("Something went wrong. Please try again.");
-      }
+      } 
     }
 
   };
-
+//--------------------------------------------------------------------------------------------------------------------------
   return (
     <div className="login-container">
       <img

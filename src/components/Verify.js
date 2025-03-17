@@ -3,18 +3,20 @@ import { useNavigate, useLocation  } from "react-router-dom";
 import "../App.css";
 
 export default function Verify() {
+
+//----------------------------------------State variables and helper methods------------------------------------------------------
   // State variablles
-  const [generatedCode, setGeneratedCode] = useState(null);
-  const [codeExpiration, setCodeExpiration] = useState(null);
-  const [inputCode, setInputCode] = useState("");
-  const [countdown, setCountdown] = useState(30);
+  const [generatedCode, setGeneratedCode] = useState(null);     // Stores the generated 4-digit verification code
+  const [codeExpiration, setCodeExpiration] = useState(null);   // Stores the expiration time (30s)
+  const [inputCode, setInputCode] = useState("");               // Stores user input for the verification code
+  const [countdown, setCountdown] = useState(30);               // Stores the countdown timer (in seconds)
 
-  const navigate = useNavigate(); 
-  const location = useLocation();
+  const navigate = useNavigate();         // React Router hook for navigation
+  const location = useLocation();         // React Router hook for getting passed state (email & redirectTo)
 
-  // Retrieve email that passed from last page 
+   // Retrieves email passed from the previous page 
   const email = location.state?.email || "";  
-  // Retrieve the target page that passed from last page, default to home if missing
+  // Retrieves target page after verification, default to log in if missing
   const redirectTo = location.state?.redirectTo || "/";
 
   // A boolean flag 
@@ -22,41 +24,26 @@ export default function Verify() {
 
   // Functiona that can generate a random 4-digit code
   const generateCode = () => {
+    // Math.random() generates a random number between 0 and 1 (e.g. 0.1111111)
+    // Multiply by 9000 to get a number between 0 and 9000 (e.g. 1111.111)
+    // Add 1000 to get a number between 1000 and 10000 (e.g. 2111.111), also ensured it is a 4-digit number
+    // Math.floor() rounds down to the nearest integer (e.g. 2111)
+    // toString() converts the number to a string (e.g. "2111")
     return Math.floor(1000 + Math.random() * 9000).toString();
   };
 
   // Function to generate and store the verification code & set expiration time to 30 second & set count down on the page & alert code to simulate it was send to the email
   const generateAndStoreCode = () => {
-    const code = generateCode();
-    setGeneratedCode(code);
-    setCodeExpiration(Date.now() + 30000);
-    setCountdown(30); 
-    alert(`Your verification code is: ${code}`);
+    const code = generateCode();                      // Generate a new verification code
+    setGeneratedCode(code);                           // Store the generated code in state
+    setCodeExpiration(Date.now() + 30000);            // Set expiration time to 30 seconds from now
+    setCountdown(30);                                 // Reset countdown timer
+    alert(`Your verification code is: ${code}`);      // Simulate sending the code via email
   };
 
-  // Automatically generate and send code when the page loads
-  useEffect(() => {
-    if (!flag) {
-        generateAndStoreCode();
-        flag = true;
-    }
-  }, []); 
-
-  //Display a count down of 30s on the page
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const remainingTime = Math.max(0, Math.floor((codeExpiration - Date.now()) / 1000));
-      setCountdown(remainingTime);
-      if (remainingTime === 0) {
-        clearInterval(interval);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval); 
-  }, [codeExpiration]);
-  
-
+  // Function to verify the input code against the generated code
   const verifyCode = () => {
+
     // Check if code is expired (date.now > date.then+30s) or not generated
     if (!generatedCode || Date.now() > codeExpiration) {
       alert("Code expired! Please generate a new one.");
@@ -74,6 +61,39 @@ export default function Verify() {
       alert("Incorrect code. Try again.");
     }
   };
+
+//----------------------------------------Page auto loading contents------------------------------------------------------
+
+  // Automatically generate and send code when the page loads
+  useEffect(() => {
+      generateAndStoreCode();
+  }, []); 
+
+  //Display a count down of 30s on the page
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      // Calculate the remaining time in seconds
+      // Math.max(0, ...) ensures the remaining time is never negative, minimum is 0, which means the code has expired
+      // Math.floor(...) rounds down to the nearest integer
+      // (codeExpiration - Date.now()) calculates the remaining time in milliseconds
+      // Divide by 1000 to convert milliseconds to seconds
+      const remainingTime = Math.max(0, Math.floor((codeExpiration - Date.now()) / 1000));
+
+      // Update the countdown timer on the page
+      setCountdown(remainingTime);
+
+      // If the remaining time is 0, clear the interval
+      if (remainingTime === 0) {
+        clearInterval(interval);
+      }
+    }, 1000);  // Checking the reamining time every 1s(1000ms)
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(interval); 
+  }, [codeExpiration]);
+
+//------------------------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="login-container"> {/* Reuse login container for same layout */}
