@@ -5,18 +5,21 @@ import "../App.css";
 import Spinner from "../components/Spinner.js"; 
 
 export default function PasswordResetStep2() {
+
+//----------------------------------------State variables and helper methods------------------------------------------------------
   const location = useLocation();
-  const email = location.state?.email || "";
+  const email = location.state?.email || "";        // Get email from previous page where it redirected from
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Function to check if password is valid, same as in SignUp2.js
+  // Function to check if password is valid, same as in sign up 
   const isValidPassword = (password) => {
-    return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+    return /^(?=.*[A-Z])(?=.*\d).{8,30}$/.test(password); // At least 8 characters, 30 chars max, 1 uppercase letter, 1 number
   };
 
+//----------------------------------------Form submission handling------------------------------------------------------
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +27,7 @@ export default function PasswordResetStep2() {
 
     // Check if password is valid
     if (!isValidPassword(newPassword)) {
-      alert("Password must be at least 8 characters, contain a number, and an uppercase letter.");
+      alert("Password must be between 8 and 30 characters long, contain a number, and an uppercase letter.");
       setIsLoading(false);
       return;
     }
@@ -57,7 +60,7 @@ export default function PasswordResetStep2() {
     }
   };
 
-
+//------------------------------------------------------------------------------------------------------------
   return (
     <div className="login-container">
       <img

@@ -19,9 +19,6 @@ export default function Verify() {
   // Retrieves target page after verification, default to log in if missing
   const redirectTo = location.state?.redirectTo || "/";
 
-  // A boolean flag 
-  let flag = false;
-
   // Functiona that can generate a random 4-digit code
   const generateCode = () => {
     // Math.random() generates a random number between 0 and 1 (e.g. 0.1111111)

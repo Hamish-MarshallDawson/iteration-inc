@@ -5,12 +5,14 @@ import "../App.css";
 import Spinner from "../components/Spinner.js"; 
 
 export default function PasswordReset() {
+
+//----------------------------------------State variables------------------------------------------------------
   // State variables
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-
+//----------------------------------------Form submission handling------------------------------------------------------
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ export default function PasswordReset() {
         email 
       });
 
-      // Checkemail api succeeds when email dont exist
+      // api succeeds when email dont exist, but we want to know if email exist, so we catch the error code 400 and proceed in the catch block
       alert("Email is not registered.");
       setIsLoading(false);
 
@@ -48,7 +50,7 @@ export default function PasswordReset() {
     }
 
   };
-
+//------------------------------------------------------------------------------------------------------------
   return (
     <div className="login-container">
       <img
