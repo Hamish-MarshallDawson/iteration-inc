@@ -10,8 +10,10 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode"; 
 
 
-//----------------------------------------------------------------------------------------------------------------------------------------
 const ProfilePage = () => {
+
+//----------------------------------------State variables------------------------------------------------------
+  // State variables for user info, energy goal and recommendations. Available for all user types
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -21,13 +23,12 @@ const ProfilePage = () => {
   const [energyGoal, setEnergyGoal] = useState(null);
   const [newEnergyGoal, setNewEnergyGoal] = useState("");
   const [showEnergyGoalModal, setShowEnergyGoalModal] = useState(false);
-
   const [recommendations, setRecommendations] = useState([]); 
   const [showRecModal, setShowRecModal] = useState(false);
 
   const navigate = useNavigate();
 
-  // State for role base ui
+  // State for role base ui. Available for manager and admin only
   const [loggedUsers, setLoggedUsers] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
   const [energyLogs, setEnergyLogs] = useState([]);
@@ -37,20 +38,18 @@ const ProfilePage = () => {
   const [modalType, setModalType] = useState("");
 
 
-//----------------------------------------------------------------------------------------------------------------------------------------
-// Auto load content
-  // !!Extract email from JWT token when page is load
+//--------------------------------------------------------Page auto loading contents--------------------------------------------------
+
+  // Extract email from JWT token when page is load
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-
-    // !!If it dont exist, means they exipired, then redirect them back to login, ask them to login again
+    // If it dont exist, means they exipired, then redirect them back to login, ask them to login again
     if (!token) {
       navigate("/"); 
       return;
     }
     try {
-      // !!Decode the jwt token and store to the variable
+      // Decode the jwt token and store to the variable
       const decoded = jwtDecode(token);
       setEmail(decoded.email);
       setFirstName(decoded.firstName);
@@ -69,54 +68,65 @@ const ProfilePage = () => {
 
   // //Simulate weekly energy usage for the user every time they logged in
   useEffect(() => {
+    // Extract the boolean flag from local storage to determine if the energy usage has been simulated
     const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
     if (userID && machineID && hasSimulated === "false") {
       simulateEnergyUsage();
     }
   }, [userID, machineID]); 
 
+
   // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
   useEffect(() => {
-    if (!userID || !machineID) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(() => { 
       simulateDailyUsage();
-    }, 300000); // 5 minutes
+    }, 300000); // Execute every 5 minutes
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval);   // Clear the interval when the component is unmounted
   }, [userID, machineID]);
 
+
+  // Fetch energy goal for the user when page is load
   useEffect(() => {
     if (userID) {
       fetchEnergyGoal();
     }
   }, [userID]);
 
+  // Check for available recommendations every 1 minutes
   useEffect(() => {
-    if (!userID) return;
     const interval = setInterval(() => {
       checkRecommendations(userID);
-    }, 1 * 60 * 1000); // Every 5 minutes
+    }, 1 * 60 * 1000); // Every 1 minutes
 
     return () => clearInterval(interval); 
   }, [userID]);
-//----------------------------------------------------------------------------------------------------------------------------------------  
 
+//----------------------------------------------Helper methods-----------------------------------------------------------------------  
+
+  //-----------------------------------------------Methods for recommendations feature------------------------------------------------
+
+  // Fetch recommendations manually when user requests
   const fetchRecommendations = async () => {
     try {
+      // Make a POST request to fetch recommendations
       const response = await axios.post(`${window.location.origin}/api/recommendation`, {
         userID,
         action: "fetch",
       });
-
+      // Set the recommendations and display the modal
       setRecommendations(response.data.recommendations);
       setShowRecModal(true);
     } catch (error) {
       console.error("Error fetching recommendations:", error);
     }
   };
+
+  // Automatically check for recommendations every 1 minute
   const checkRecommendations = async (userID) => {
     try {
+      // Make a POST request to check for recommendations
       await axios.post(`${window.location.origin}/api/recommendation`, {
         userID,
         action: "check",
@@ -126,44 +136,54 @@ const ProfilePage = () => {
     }
   };
 
+  //-----------------------------------------------Methods for energy goal feature------------------------------------------------
+
+  // Update energy goal for the user
   const updateEnergyGoal = async () => {
     try {
+      // Check if the energy goal is a valid number
       if (newEnergyGoal< 0){
         alert("Energy goal can not be negative number");
         setShowEnergyGoalModal(false);
         return;
       }
-
       if (newEnergyGoal > 1000){
         alert("Energy goal can not be larger than 1000");
         setShowEnergyGoalModal(false);
         return;
       }
 
+      // Make a POST request to update the energy goal
       const response = await axios.post(`${window.location.origin}/api/user`, {
         action: "updateEnergyGoal",
         userID,
-        newEnergyGoal: parseFloat(newEnergyGoal),
+        newEnergyGoal: newEnergyGoal,
       });
 
+      // If the request is successful, update the energy goal and display success message
       if (response.status === 200) {
         alert("Energy goal updated successfully");
+        // Update the energy goal and close the modal
         setEnergyGoal(newEnergyGoal); 
         setShowEnergyGoalModal(false);
+        // Reset the new energy goal
         setNewEnergyGoal(""); 
       }
     } catch (error) {
       alert("Failed to update energy goal. Please try again.");
     }
   };
-
+  
+  // Fetch energy goal for the user
   const fetchEnergyGoal = async () => {
     try {
+      // Make a POST request to fetch the energy goal
       const response = await axios.post(`${window.location.origin}/api/user`, {
         action: "getEnergyGoal",
         userID,
       });
 
+      // If the request is successful, set the energy goal 
       if (response.status === 200) {
         setEnergyGoal(response.data.energyGoal);
       }
@@ -172,11 +192,15 @@ const ProfilePage = () => {
     }
   };
 
+  //-----------------------------------------------Methods for energy usage simulation feature------------------------------------------------
+
+  // Simulate weekly energy usage for the user
   const simulateEnergyUsage = async () => {
-    console.log("Simulating weekly energy usage for user:", userID, "machine:", machineID);
+    //  Set the flag to true to indicate that the energy usage has been simulated
     localStorage.setItem("hasSimulatedEnergy", "true");
 
     try {
+      // Make a POST request to simulate weekly energy usage
       const response = await axios.post(`${window.location.origin}/api/energy`, {
         action: "simulateWeeklyUsage",
         userID,
@@ -188,8 +212,10 @@ const ProfilePage = () => {
     }
   };
 
+  // Simulate daily energy usage for the user
   const simulateDailyUsage = async () => {
     try {
+      // Make a POST request to simulate daily energy usage
       await axios.post(`${window.location.origin}/api/energy`, {
         action: "simulateDailyUsage",
         userID,
@@ -200,6 +226,8 @@ const ProfilePage = () => {
     }
   };
 
+  //-----------------------------------------------Methods for regular profile page------------------------------------------------
+  
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -208,26 +236,32 @@ const ProfilePage = () => {
 
   // Handle email update, by redirect to verify page and further update-email page
   const handleUpdateEmail = () => {
+    // Check if email is valid
     if (!email) {
       alert("Please enter your email.");
       return;
     }
-    // Test
-    if (email.length > 100) {
-      alert("Your email has length > 100, please enter again.");
+    if (email.length > 50) {
+      alert("Your email has length greater than 50 characters, please enter a valid email.");
+      setIsLoading(false);
       return;
     }
+    // Redirect to verify page and pass email and next redirect page
     navigate("/verify", { state: { email, redirectTo: "/updateEmail" } });
   };
 
-  // Handle password, by redirect to password reset page
+  // Handle password reset, by redirect to password reset page
   const handleUpdatePassword = () => {
+    // Redirect to verify page and pass email and next redirect page
     navigate("/verify", { state: { email, redirectTo: "/passwordReset2" } });
   };
+
+  //-----------------------------------------------Methods for manager/admin profile page------------------------------------------------
 
   // Fetch data for manager and admin, not for dweller
   const fetchData = async (action) => {
     try {
+      // Make a POST request to fetch data based on the action
       const response = await axios.post(`${window.location.origin}/api/profile`, {
         action,
         userID,
@@ -246,6 +280,7 @@ const ProfilePage = () => {
       // Show all devices added in this system
       if (action === "getDevicesInMachine") 
         setDevicesInMachine(response.data.devices);
+      // Show all security logs in this system
       if (action === "getSecurityLogs") 
         setSecurityLogs(response.data.logs);
 
@@ -264,7 +299,7 @@ const ProfilePage = () => {
       <h1 style={{
         fontSize: 40,
         fontStyle: "italic",
-        color: "#fca17d", /* Matches the card color */
+        color: "#fca17d",
         textAlign: "center",
         marginBottom: "2rem",
       }}>Profile</h1>
@@ -295,13 +330,12 @@ const ProfilePage = () => {
         </div>
 
 
-
         <h2>{firstName} {lastName}</h2>
         <h3>{email}</h3>
         <h3>User Type: {userType}</h3>
 
         <div>
-          <h3>Monthly Energy Saving Goal:</h3>
+          <h3>Monthly Energy Achieving  Goal:</h3>
           <p>{energyGoal !== null ? `${energyGoal} kWh` : "Not set"}</p>
           <button onClick={() => setShowEnergyGoalModal(true)}>Change Energy Goal</button>
         </div>
@@ -309,10 +343,11 @@ const ProfilePage = () => {
         <div>
           <button onClick={fetchRecommendations}> View Recommendations</button>
         </div>
+        {/* Profile Info end*/}
 
       </div>
 
-      {/* 🔹 Recommendations Modal */}
+      {/* Recommendations Modal */}
       {showRecModal && (
         <div className="modal-overlay" onClick={() => setShowRecModal(false)}>
           <div className="modal-content">
@@ -330,8 +365,10 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
+      {/* Recommendations Modal end*/}
 
 
+      {/* Energy Goal Modal */}
       {showEnergyGoalModal && (
         <div className="modal-overlay" onClick={() => setShowEnergyGoalModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -348,8 +385,10 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
+      {/* Energy Goal Modal end*/}
+      
 
-    {/* Manager Only Buttons */}
+    {/* Manager OR Admin Only Buttons */}
     {(userType === "Home_Manager" || userType === "Admin") && (
         <div className="profile-card" style={{ marginTop: "2rem" }}>
           <button onClick={() => fetchData("getLoggedUsers")}>View Logged-in Users</button>
@@ -358,12 +397,17 @@ const ProfilePage = () => {
           <button onClick={() => fetchData("getDevicesInMachine")}>View Devices</button>
         </div>
     )}
+    {/* Manager Only Buttons end */}
 
+
+    {/* Admin Only Button */}
     {userType === "Admin" && (
       <div className="profile-card" style={{ marginTop: "2rem" }}>
         <button onClick={() => fetchData("getSecurityLogs")}>View Security Logs</button>
       </div>
     )}
+    {/* Admin Only Button end*/}
+
 
     {/* Update Email & Password Buttons */}
     <div className="profile-card"
@@ -378,8 +422,10 @@ const ProfilePage = () => {
         Update Password
       </button>
     </div>
+    {/* Update Email & Password Buttons end*/}
 
-   {/* Profile Info */}
+
+    {/* Log out button */}
     <div>
       <Link to="/">
             <button onClick={handleLogout}>
@@ -387,6 +433,8 @@ const ProfilePage = () => {
             </button>
       </Link>
     </div>
+    {/* Log out button end*/}
+
 
     {/* Modal for manager only contents */}
     {showModal && (
@@ -432,6 +480,8 @@ const ProfilePage = () => {
         </div>
       </div>
     )}
+    {/* Modal for manager only contents end*/}
+
 
     {/* Modal for showing devices */}
     {showModal && modalType === "getDevicesInMachine" && (
@@ -461,8 +511,10 @@ const ProfilePage = () => {
         </div>
       </div>
     )}
+    {/* Modal for showing devices end*/}
 
-    {/* Modal for showing security log */}
+
+    {/* Modal for Admin only showing security log */}
     {showModal && modalType === "getSecurityLogs" && (
       <div className="modal-overlay" onClick={() => setShowModal(false)}>
         <div className="modal-content">
@@ -488,6 +540,7 @@ const ProfilePage = () => {
         </div>
       </div>
     )}
+    {/* Modal for Admin only showing security log end*/}
 
     </div>
   );
