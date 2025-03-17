@@ -11,8 +11,11 @@ import CardContent from "./ui/cardContent";
 
 import "../App.css";
 
+
 export default function SmartDeviceGrid({
+  // Room ID to fetch devices for
   roomId,
+  // List of allowed device types
   allowedDeviceTypes = [
     "lightbulb",
     "coffee",
@@ -22,6 +25,8 @@ export default function SmartDeviceGrid({
     "other",
   ],
 }) {
+
+//----------------------------------------State variables------------------------------------------------------
   const navigate = useNavigate();
 
   const [devices, setDevices] = useState([]);
@@ -37,13 +42,13 @@ export default function SmartDeviceGrid({
   const [currentDevice, setCurrentDevice] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
 
-  // Page auto loading content
-  //----------------------------------------------------------------------------------------------------------------------------------------
+  
+//------------------------------Page auto loading contents--------------------------------------------------------------------------------
+
   // This part responsible for get room ID and decode JWT to get user ID
   useEffect(() => {
     // Get the room id
     setRoomID(roomId);
-
     // Extrat userid from jwt
     try {
       const token = localStorage.getItem("token");
@@ -62,19 +67,20 @@ export default function SmartDeviceGrid({
     }
   }, [navigate]);
 
+
   // This part fetch devices when page load
   useEffect(() => {
     if (userID && roomID) {
-      axios
-        .post(`${window.location.origin}/api/device`, {
+      // Fetch devices for the room and user
+      axios.post(`${window.location.origin}/api/device`, {
           action: "get",
           userID: userID,
           roomID: roomID,
           machineID,
-        })
+      })
         .then((response) => {
           //alert("Response Received");
-          setDevices(response.data.devices || []);
+          setDevices(response.data.devices || []);  // Set the devices to the response data
         })
         .catch((error) => {
           console.error("Error fetching devices:", error);
@@ -83,24 +89,27 @@ export default function SmartDeviceGrid({
     }
   }, [userID, roomID]);
 
-  // This part is for debugg purpose only
-  useEffect(() => {
-    console.log("Updated Devices List:", devices);
-  }, [devices]);
+  
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------Helper methods-----------------------------------------------------------------------------
+
+  //-------------------------------------------For manage devices-----------------------------------------------
+
   // This function responsible for add device
   const addDevice = async () => {
+    // Check if device name is empty
     if (!deviceName.trim()) {
       alert("Device name cannot be empty.");
       return;
     }
+    // Check if device name is too long
     if (deviceName.length >= 30) {
       alert("Device name cannot be longger than 30 characters.");
       return;
     }
 
     try {
+      // Make a POST request to add a new device
       const response = await axios.post(
         `${window.location.origin}/api/device`,
         {
@@ -113,22 +122,27 @@ export default function SmartDeviceGrid({
         }
       );
 
+      // If the device is added successfully, add it to the list of devices that displays on the page
       if (response.status === 201) {
         setDevices([...devices, response.data.device]);
         setShowAddModal(false);
+        // Reset the device name and type
         setDeviceName("");
         setDeviceType("lightbulb");
+        alert("Device added successfully.");
       }
     } catch (error) {
-      console.error("Error adding device:", error);
       alert("Failed to add device.");
     }
   };
 
-  // This function responsible for change device status
+
+  // This function responsible for toggle device status
   const toggleDeviceStatus = async (deviceID, currentStatus) => {
+    // Toggle the status
     const newStatus = currentStatus === "Online" ? "Offline" : "Online";
     try {
+      // Make a POST request to update the device status
       const response = await axios.post(
         `${window.location.origin}/api/device`,
         {
@@ -140,39 +154,47 @@ export default function SmartDeviceGrid({
         }
       );
 
+      // If the status is updated successfully, find this devices in the list of devices that displays on the page, the update the status
       if (response.status === 200) {
         setDevices((prevDevices) =>
+          // Map through the devices and update the status of the device with the matching device ID
           prevDevices.map((device) =>
             device.DeviceID === deviceID
               ? { ...device, Status: newStatus }
               : device
           )
         );
+        alert(response.data.message);
       }
     } catch (error) {
-      console.error("Error updating device status:", error);
-      alert("Failed to update device status.");
+      alert("Failed to toggle device status.");
     }
   };
 
-  // This function responsible for pop up setting widow
+
+  // This function responsible for pop up setting modal widow
   const openSettingsModal = (device) => {
+    // Set the current device and show the settings modal
     setCurrentDevice(device);
     setUpdatedName(device.DeviceName);
     setShowSettingsModal(true);
   };
 
+
   // This function responsible for update device name
   const updateDeviceName = async () => {
     try {
+      // Check if the updated name is empty
       if (!updatedName.trim()) {
         alert("Device name cannot be empty.");
         return;
       }
+      // Check if the updated name is too long
       if (updatedName.length >= 30) {
         alert("Device name cannot be longger than 30 characters.");
         return;
       }
+      // Make a POST request to update the device name
       const response = await axios.post(
         `${window.location.origin}/api/device`,
         {
@@ -184,14 +206,17 @@ export default function SmartDeviceGrid({
         }
       );
 
+      // If the device name is updated successfully, find this device in the list of devices that displays on the page, then update the name
       if (response.status === 200) {
         setDevices((prevDevices) =>
+          // Map through the devices and update the name of the device with the matching device ID
           prevDevices.map((device) =>
             device.DeviceID === currentDevice.DeviceID
               ? { ...device, DeviceName: updatedName }
               : device
           )
         );
+        // Close the settings modal
         setShowSettingsModal(false);
       }
       alert(response.data.message);
@@ -205,6 +230,7 @@ export default function SmartDeviceGrid({
   // This function responsible for remove a device
   const removeDevice = async () => {
     try {
+      // Make a POST request to remove the device
       const response = await axios.post(
         `${window.location.origin}/api/device`,
         {
@@ -215,23 +241,49 @@ export default function SmartDeviceGrid({
         }
       );
 
+      // If the device is removed successfully, filter out the device from the list of devices that displays on the page
       if (response.status === 200) {
         setDevices((prevDevices) =>
+          // Filter out the device with the matching device ID
           prevDevices.filter(
             (device) => device.DeviceID !== currentDevice.DeviceID
           )
         );
         setShowSettingsModal(false);
+        alert(response.data.message);
       }
     } catch (error) {
-      console.error("Error removing device:", error);
       alert("Failed to remove device.");
     }
   };
 
+  // Function to return appropriate icon for device type
+  function DeviceIcon({ type, className }) {
+    console.log("Device Type Received:", type);
+    switch (type?.toLowerCase()) {
+      case "coffee_machine":
+        return <span className={`${className}`}>☕</span>;
+      case "speaker":
+        return <span className={`${className}`}>🔊</span>;
+      case "light":
+        return <span className={`${className}`}>💡</span>;
+      case "thermostat":
+        return <span className={`${className}`}>🌡️</span>;
+      case "robot":
+        return <span className={`${className}`}>🤖</span>;
+      case "other":
+        return <span className={`${className}`}>🐱</span>;
+      default:
+        return <span className={`${className}`}>❓</span>;
+    }
+  }
+
+  //-------------------------------------------For simulate energy usage-----------------------------------------------
+
   // This function responsible for incrementing a devices energy amount
   const energyUse = async (device) => {
     try {
+      // Make a POST request to increment the energy amount
       const response = await axios.post(
         `${window.location.origin}/api/energy`,
         {
@@ -252,8 +304,8 @@ export default function SmartDeviceGrid({
     }
   };
 
-  //----------------------------------------------------------------------------------------------------------------------------------------
-  // This part is rendering part
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+  
   return (
     <div className="smart-device-grid-container">
       <h2 className="section-title">Smart Devices</h2>
@@ -390,25 +442,4 @@ export default function SmartDeviceGrid({
       )}
     </div>
   );
-}
-
-// Function to return appropriate icon for device type
-function DeviceIcon({ type, className }) {
-  console.log("Device Type Received:", type);
-  switch (type?.toLowerCase()) {
-    case "coffee_machine":
-      return <span className={`${className}`}>☕</span>;
-    case "speaker":
-      return <span className={`${className}`}>🔊</span>;
-    case "light":
-      return <span className={`${className}`}>💡</span>;
-    case "thermostat":
-      return <span className={`${className}`}>🌡️</span>;
-    case "robot":
-      return <span className={`${className}`}>🤖</span>;
-    case "other":
-      return <span className={`${className}`}>🐱</span>;
-    default:
-      return <span className={`${className}`}>❓</span>;
-  }
 }
