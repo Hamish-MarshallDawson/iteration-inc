@@ -430,7 +430,7 @@ const ProfilePage = () => {
     {/* Log out button */}
     <div>
       <Link to="/">
-            <button onClick={handleLogout}>
+            <button onClick={handleLogout} >
               Log Out
             </button>
       </Link>

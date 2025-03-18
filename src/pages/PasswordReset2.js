@@ -50,7 +50,7 @@ export default function PasswordResetStep2() {
       setIsLoading(false);
 
       if (response.status === 200) {
-        alert("Password reset successful! Redirecting to Login");
+        alert("Password reset successful! Redirecting to Profile");
         navigate("/"); 
       }
 

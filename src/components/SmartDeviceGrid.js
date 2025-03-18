@@ -429,13 +429,13 @@ export default function SmartDeviceGrid({
 
             <Button onClick={updateDeviceName}>Save</Button>
 
-            <Button onClick={removeDevice} className="bg-red-500">
+            <button onClick={removeDevice} style={{ backgroundColor: "#f44336"}}>
               Remove
-            </Button>
+            </button>
 
-            <Button onClick={() => energyUse(currentDevice)}>
+            <button onClick={() => energyUse(currentDevice)} style={{ backgroundColor: "#008CBA"}}>
               Log Energy Use
-            </Button>
+            </button>
             <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
           </div>
         </div>
