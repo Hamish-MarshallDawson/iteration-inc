@@ -11,9 +11,10 @@ export default async function handler(req, res) {
 
   try {
     // Extract email and password from the request body
+    // Extract machineSerialCode and machineName from the request body
     const { email, password, machineSerialCode, machineName } = req.body;
 
-    // Search for a user in the "Users" table by the email they inputted
+    // Search for a user in the "Users" table by the email
     const user = await prisma.Users.findFirst({
       where: { Email: email }, 
     });
@@ -43,9 +44,11 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Check if the machine user logged in from already exists
     let machine = await prisma.Machines.findFirst({
       where: { MachineSerialCode: machineSerialCode },
     });
+    // If the machine does not exist, create a new machine
     if (!machine) {
       machine = await prisma.Machines.create({
         data: {
@@ -54,16 +57,21 @@ export default async function handler(req, res) {
         },
       });
     }
+    
+    // If the user is logging in from a different machine compare to last time logged in, update the machine ID
     if (user.MachineID !== machine.MachineID) {
       await prisma.Users.update({
         where: { UserID: user.UserID },
         data: { MachineID: machine.MachineID },
       });
+      // Update the machine name
       await prisma.Machines.update({
         where: { MachineID: machine.MachineID },
         data: { MachineName: `${user.FirstName}'s ${machineName}`|| "Unknown Device"},
       });
     }
+
+    // Log the user login event
     await prisma.SecurityLogs.create({
       data: {
         UserID: user.UserID,

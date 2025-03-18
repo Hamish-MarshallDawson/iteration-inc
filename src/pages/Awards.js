@@ -6,13 +6,18 @@ import { jwtDecode } from "jwt-decode";
 import "../App.css"; 
 
 const AwardsPage = () => {
-  const [awards, setAwards] = useState([]);
-  const [unlockedAwards, setUnlockedAwards] = useState([]);
-  const [newUnlockedAwards, setNewUnlockedAwards] = useState([]);
 
+//----------------------------------------State variables------------------------------------------------------
 
+  const [awards, setAwards] = useState([]);                        // List of all available awards
+  const [unlockedAwards, setUnlockedAwards] = useState([]);         // List of all unlocked awards
+  const [newUnlockedAwards, setNewUnlockedAwards] = useState([]);   // List of newly unlocked awards
   const [userID, setUserID] = useState(null);
 
+
+//----------------------------------------Page auto loading contents------------------------------------------------------
+
+  // Get the user ID from the token when the page loads
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -27,12 +32,15 @@ const AwardsPage = () => {
     }
   }, []);
 
+
   // Fetch awards when the page loads
   useEffect(() => {
     if (!userID) return; 
     fetchAwards();
   }, [userID]);
 
+
+  // Alert the user when they unlock a new award
   useEffect(() => {
     if (newUnlockedAwards.length > 0) {
       newUnlockedAwards.forEach((award) => {
@@ -42,28 +50,33 @@ const AwardsPage = () => {
     }
   }, [newUnlockedAwards]);
 
+//----------------------------------------Helper methods------------------------------------------------------
 
+  // Fetch awards from the server
   const fetchAwards = async () => {
     try {
+      //  Make a POST request to fetch awards
       const response = await axios.post(`${window.location.origin}/api/awards`,{userID: userID});
-      setAwards(response.data.awards);
-      setUnlockedAwards(response.data.unlockedAwards);
-      setNewUnlockedAwards(response.data.newlyUnlocked);
-
-      
+      setAwards(response.data.awards);                    // Set the list of all available awards
+      setUnlockedAwards(response.data.unlockedAwards);    // Set the list of all unlocked awards
+      setNewUnlockedAwards(response.data.newlyUnlocked);  // Set the list of newly unlocked awards
     } catch (error) {
-      console.error("Error fetching awards:", error);
+      alert("Error fetching awards:", error);
     }
   };
 
+//-----------------------------------------------------------------------------------------------------------------------
   return (
     <div className="awards-container">
       <h1 className="page-title">🏆 Awards & Achievements</h1>
 
       {/* Grid of Awards */}
       <div className="awards-grid">
+
+        {/* Display each award */}
         {awards.map((award) => (
           <div 
+            
             key={award.AwardID} 
             className={`award-card ${award.IsUnlocked ? "unlocked-award" : ""}`}
           >

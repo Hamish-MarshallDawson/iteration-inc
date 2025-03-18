@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
     const { action, ...data} = req.body;
 
-
+    //
     const energyUsageMap = {
         coffee_machine: 100, //30s consumption
         speaker: 50,        //1h consumption
@@ -14,6 +14,7 @@ export default async function handler(req, res) {
         robot: 80,         //1h consumption
         other: 50,         //1h consumption
       };
+
       const dailyUsagePatternMap = {
         coffee_machine: 0.5, //30m usage per day
         speaker: 3,        //3h usage per day
