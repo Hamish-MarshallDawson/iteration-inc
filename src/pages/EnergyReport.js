@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 
+import { jwtDecode } from "jwt-decode"; 
 import "../App.css";
 
 import {
@@ -34,13 +35,25 @@ const useEnergyData = () => {
 
   const [totalData, setTotalData] = useState({});
   const [userData, setUserData] = useState({});
+  const [userID, setUserID] = useState(null);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    }
+    // get userID
+    try {
+      setUserID(jwtDecode(token).userID);
+    } catch (error) {
+      alert("Error decoding token")
+    }
 
     const fetchData = async () => {
 
       try {
-        const response = await axios.post(`${window.location.origin}/api/query`);
+        const response = await axios.post(`${window.location.origin}/api/query`, {USERID: userID});
         const { totalData, userData } = response.data;        
         setTotalData(totalData);
         setUserData(userData);

@@ -1,9 +1,8 @@
 import { prisma } from "./globalPrisma.js";
 
-const USERID = 6;
-
 export default async function handler(req, res) {
   try {
+    const {USERID} = req.body;
     const energy = await prisma.EnergyUse.findMany({
       select: {
         Timestamp: true,
