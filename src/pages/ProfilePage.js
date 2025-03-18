@@ -26,6 +26,7 @@ const ProfilePage = () => {
   const [showEnergyGoalModal, setShowEnergyGoalModal] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
   const [showRecModal, setShowRecModal] = useState(false);
+  const [monthlyEnergy, setMonthlyEnergy] = useState(0);
 
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -93,6 +94,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (userID) {
       fetchEnergyGoal();
+      fetchMonthlyEnergy();
     }
   }, [userID]);
 
@@ -187,6 +189,24 @@ const ProfilePage = () => {
   };
 
   //-----------------------------------------------Methods for energy goal feature------------------------------------------------
+  // Fetch monthly energy usage for the user
+  const fetchMonthlyEnergy = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(`${window.location.origin}/api/energy`, {
+        action: "fetchMonthlyEnergyUsage",
+        userID,
+      });
+      if (response.status === 200) {
+        setMonthlyEnergy(response.data.totalMonthlyEnergyUsed);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      alert("Failed to fetch monthly energy usage.");
+    }
+
+  }
 
   // Update energy goal for the user
   const updateEnergyGoal = async () => {
@@ -409,6 +429,10 @@ const ProfilePage = () => {
           <h3>Monthly Energy Achieving  Goal:</h3>
           <p>{energyGoal !== null ? `${energyGoal} kWh` : "Not set"}</p>
           <button onClick={() => setShowEnergyGoalModal(true)}>Change Energy Goal</button>
+        </div>
+
+        <div>
+          <p><strong>Monthly Energy Usage:</strong> {monthlyEnergy} kWh</p>
         </div>
 
         <div>

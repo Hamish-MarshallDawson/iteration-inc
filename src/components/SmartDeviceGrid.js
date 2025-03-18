@@ -243,14 +243,32 @@ export default function SmartDeviceGrid({
     }
   };
 
+  const fetchAndUpdateEnergyUsage = async (deviceID) => {
+    try {
+      const response = await axios.post(`${window.location.origin}/api/energy`, {
+        action: "fetchTotalEnergyUsage",
+        deviceID,
+      });
+  
+      if (response.status === 200) {
+        alert(`Updated total energy usage: ${response.data.totalEnergyUsed} Wh`);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Failed to fetch energy usage:", error);
+      alert("Error fetching energy usage.");
+    }
+  };
 
   // This function responsible for pop up setting modal widow
-  const openSettingsModal = (device) => {
+  const openSettingsModal = async  (device) => {
+    setIsLoading(true);
     // Set the current device and show the settings modal
     setCurrentDevice(device);
     setUpdatedName(device.DeviceName);
     setShowSettingsModal(true);
 
+    // Fetch the schedule for the device
     axios.post(`${window.location.origin}/api/device`, {
       action: "fetchSchedule",
       deviceID: device.DeviceID,
@@ -260,9 +278,31 @@ export default function SmartDeviceGrid({
       setSchedule(response.data.schedule || { frequency: "Weekly", startTime: "", endTime: "" });
     })
     .catch((error) => {
+      setIsLoading(false);
       console.error("Error fetching schedule:", error);
       alert("Failed to fetch schedule.");
     });
+
+    fetchAndUpdateEnergyUsage(device.DeviceID);
+    
+    // Fetch the energy usage for the device
+    try {
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "fetchEnergyUsage",
+        deviceID: device.DeviceID,
+      });
+      if (response.status === 200) {
+        setCurrentDevice((prevDevice) => ({
+          ...prevDevice,
+          EnergyUsed: response.data.energyUsed, 
+        }));
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Error fetching energy usage:", error);
+    }
+    fetchAndUpdateEnergyUsage(device.DeviceID);
+    setIsLoading(false);
   };
 
 
@@ -532,6 +572,11 @@ export default function SmartDeviceGrid({
             ) : (
               <p>No schedule assigned to this device.</p>
             )}
+
+            <div className="inputFields">
+              <label>Energy Used:</label>
+              <p>{currentDevice?.EnergyUsed || "0"} kWh</p>
+            </div>
 
             <Button onClick={updateDeviceName}>Save</Button>
 

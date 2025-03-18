@@ -25,7 +25,23 @@ export default async function handler(req, res) {
       other: 5,         //5h usage per day
     };
 
-
+    // Function to update the total energy usage for a device
+    async function updateDeviceEnergyUsage(deviceID, energyToAdd) {
+      const device = await prisma.Devices.findUnique({
+          where: { DeviceID: deviceID },
+          select: { EnergyUsed: true },
+      });
+  
+      // Convert existing energy to number (default to 0 if null)
+      const currentEnergy = device?.EnergyUsed ? parseInt(device.EnergyUsed, 10) : 0;
+      const updatedEnergy = currentEnergy + energyToAdd;
+  
+      // Update energy usage in Devices table, converting back to string
+      await prisma.Devices.update({
+          where: { DeviceID: deviceID },
+          data: { EnergyUsed: updatedEnergy.toString() },
+      });
+    }
 
     switch (action){
  //----------------------------------------Mannually Log---------------------------------------------------------------
@@ -43,6 +59,10 @@ export default async function handler(req, res) {
                   MachineID: data.machineID
                 },
             });
+
+            // Update total energy usage in Devices table
+            await updateDeviceEnergyUsage(data.deviceID, energyUsed);
+            
             return res.status(200).json({ message: "Energy Logged Successfully" });
 
 //---------------------------------------Weekly Simulation---------------------------------------------------------------       
@@ -86,6 +106,7 @@ export default async function handler(req, res) {
         //-------------------------------------------------------------------------------------------------------------------
             // Generate the simulated energy logs for the week for all online devices
             const energyLogs = [];
+            const updatePromises = [];
 
             // Loop through each day of the week
             for (let i = 0; i < 7; i++) {
@@ -116,6 +137,8 @@ export default async function handler(req, res) {
                   Timestamp: currentTimestamp,
                   EnergyUsed: dailyEnergyUsed,
                 });
+
+
               });
             }
 
@@ -181,7 +204,6 @@ export default async function handler(req, res) {
             const energyUsed = energyUsageMap[device.DeviceType.toLowerCase()];
             const dailyUsage = dailyUsagePatternMap[device.DeviceType.toLowerCase()];
             const dailyEnergyUsed = energyUsed * dailyUsage;
-            
             // Return the energy log entry
             return {
               DeviceID: device.DeviceID,
@@ -190,6 +212,7 @@ export default async function handler(req, res) {
               Timestamp: newTimestamp2,
               EnergyUsed: dailyEnergyUsed,
             };
+            
           });
 
           console.log("Generated Energy Logs:", energyLogs2);
@@ -204,7 +227,46 @@ export default async function handler(req, res) {
               return res.status(200).json({ message: "No energy logs to insert" });
           };
       
-//-------------------------------------------------------------------------------------------------------------------
+//-------------------------------------Fetch and update total energy usage for device-----------------------------------------------------------------
+        case "fetchTotalEnergyUsage":
+          const  now = new Date();
+          const energyLogs3 = await prisma.EnergyUse.findMany({
+            where: {
+              DeviceID: data.deviceID,
+              Timestamp: { lte: now },  
+            },
+            select: { EnergyUsed: true },
+          });
+          const totalEnergyUsed = energyLogs3.reduce((sum, log) => sum + (parseInt(log.EnergyUsed)), 0);
+          const totalEnergyUsedString = totalEnergyUsed.toString();
+
+          await prisma.Devices.update({
+            where: { DeviceID: data.deviceID },
+            data: { EnergyUsed: totalEnergyUsedString },
+          });
+
+          return res.status(200).json({ totalEnergyUsed });
+  
+//-------------------------------------Fetch monthoy energy usage-----------------------------------------------------------------
+        case "fetchMonthlyEnergyUsage":
+          const now1 = new Date();
+          const startOfMonth = new Date(now1.getFullYear(), now1.getMonth(), 1);
+
+          const monthlyEnergyLogs = await prisma.EnergyUse.findMany({
+            where: {
+              UserID: data.userID,
+              Timestamp: {
+                gte: startOfMonth,  // From start of the month
+                lte: now1,           // Until now
+              },
+            },
+            select: { EnergyUsed: true },
+          });
+
+          const totalMonthlyEnergyUsed = monthlyEnergyLogs.reduce((sum, log) => sum + parseInt(log.EnergyUsed, 10), 0);
+          return res.status(200).json({ totalMonthlyEnergyUsed});
+
+
         default:
                 return res.status(400).json({ message: "Invalid action" });
 

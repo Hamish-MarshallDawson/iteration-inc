@@ -182,6 +182,19 @@ export default async function handler(req, res) {
           });
           return res.status(201).json({ message: "New schedule created successfully" });
         }
+
+      //----------------------------------------Devices Energy Fetch------------------------------------------------------
+      case "fetchEnergyUsage":
+        const device = await prisma.Devices.findUnique({
+          where: { DeviceID: data.deviceID },
+          select: { EnergyUsed: true },
+        });
+        if (!device) {
+          return res.status(404).json({ message: "Device not found" });
+        }
+        return res.status(200).json({ energyUsed: device.EnergyUsed});
+
+        
       default:
         return res.status(400).json({ message: "Invalid action" });
     }
