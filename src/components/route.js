@@ -20,7 +20,6 @@ import PasswordReset2 from "../pages/PasswordReset2.js";
 import SignUp from "../pages/SignUp.js";
 import Verify from "./Verify.js";
 import FillInfo from "../pages/SignUpFillingInfo.js";
-import TestDB from "../pages/Testdb.js";
 import UpdateEmail from "../pages/UpdateEmail.js";
 import ConfirmUpdateEmail from "../pages/ConfirmUpdateEmail.js";
 

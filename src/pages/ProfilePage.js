@@ -244,7 +244,6 @@ const ProfilePage = () => {
     }
     if (email.length > 50) {
       alert("Your email has length greater than 50 characters, please enter a valid email.");
-      setIsLoading(false);
       return;
     }
     // Redirect to verify page and pass email and next redirect page

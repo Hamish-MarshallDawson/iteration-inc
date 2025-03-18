@@ -26,7 +26,7 @@ export default function UpdateEmail() {
         }
 
         // Email length validation
-        if (email.length > 50) {
+        if (newEmail.length > 50) {
           alert("Your email has length greater than 50 characters, please enter a valid email.");
           setIsLoading(false);
           return;
