@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import axios from "axios"; 
+import Spinner from "../components/Spinner.js";
 
 // !!Import jwtDecode to decode jwt
 import { jwtDecode } from "jwt-decode"; 
@@ -27,6 +28,7 @@ const ProfilePage = () => {
   const [showRecModal, setShowRecModal] = useState(false);
 
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for role base ui. Available for manager and admin only
   const [loggedUsers, setLoggedUsers] = useState([]);
@@ -109,6 +111,7 @@ const ProfilePage = () => {
 
   // Fetch recommendations manually when user requests
   const fetchRecommendations = async () => {
+    setIsLoading(true);
     try {
       // Make a POST request to fetch recommendations
       const response = await axios.post(`${window.location.origin}/api/recommendation`, {
@@ -116,9 +119,12 @@ const ProfilePage = () => {
         action: "fetch",
       });
       // Set the recommendations and display the modal
+      setIsLoading(false);
       setRecommendations(response.data.recommendations);
       setShowRecModal(true);
+
     } catch (error) {
+      setIsLoading(false);
       console.error("Error fetching recommendations:", error);
     }
   };
@@ -140,16 +146,19 @@ const ProfilePage = () => {
 
   // Update energy goal for the user
   const updateEnergyGoal = async () => {
+    setIsLoading(true);
     try {
       // Check if the energy goal is a valid number
       if (newEnergyGoal< 0){
         alert("Energy goal can not be negative number");
         setShowEnergyGoalModal(false);
+        setIsLoading(false);
         return;
       }
       if (newEnergyGoal > 1000){
         alert("Energy goal can not be larger than 1000");
         setShowEnergyGoalModal(false);
+        setIsLoading(false);
         return;
       }
 
@@ -163,6 +172,7 @@ const ProfilePage = () => {
       // If the request is successful, update the energy goal and display success message
       if (response.status === 200) {
         alert("Energy goal updated successfully");
+        setIsLoading(false);
         // Update the energy goal and close the modal
         setEnergyGoal(newEnergyGoal); 
         setShowEnergyGoalModal(false);
@@ -170,12 +180,14 @@ const ProfilePage = () => {
         setNewEnergyGoal(""); 
       }
     } catch (error) {
+      setIsLoading(false);
       alert("Failed to update energy goal. Please try again.");
     }
   };
   
   // Fetch energy goal for the user
   const fetchEnergyGoal = async () => {
+    setIsLoading(true);
     try {
       // Make a POST request to fetch the energy goal
       const response = await axios.post(`${window.location.origin}/api/user`, {
@@ -186,8 +198,10 @@ const ProfilePage = () => {
       // If the request is successful, set the energy goal 
       if (response.status === 200) {
         setEnergyGoal(response.data.energyGoal);
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Failed to fetch energy goal:", error);
     }
   };
@@ -237,17 +251,21 @@ const ProfilePage = () => {
 
   // Handle email update, by redirect to verify page and further update-email page
   const handleUpdateEmail = () => {
+    setIsLoading(true);
     // Check if email is valid
     if (!email) {
       alert("Please enter your email.");
+      setIsLoading(false);
       return;
     }
     if (email.length > 50) {
       alert("Your email has length greater than 50 characters, please enter a valid email.");
+      setIsLoading(false);
       return;
     }
     // Redirect to verify page and pass email and next redirect page
     alert("Please verify your current email first.");
+    setIsLoading(false);
     navigate("/verify", { state: { email, redirectTo: "/updateEmail" } });
   };
 
@@ -262,6 +280,7 @@ const ProfilePage = () => {
 
   // Fetch data for manager and admin, not for dweller
   const fetchData = async (action) => {
+    setIsLoading(true);
     try {
       // Make a POST request to fetch data based on the action
       const response = await axios.post(`${window.location.origin}/api/profile`, {
@@ -286,10 +305,13 @@ const ProfilePage = () => {
       if (action === "getSecurityLogs") 
         setSecurityLogs(response.data.logs);
 
+      setIsLoading(false);
+
       // Display modal
       setModalType(action);
       setShowModal(true);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error fetching data:", error);
     }
   };
@@ -345,6 +367,8 @@ const ProfilePage = () => {
         <div>
           <button onClick={fetchRecommendations}> View Recommendations</button>
         </div>
+
+        {isLoading && <Spinner />}
         {/* Profile Info end*/}
 
       </div>
@@ -385,6 +409,7 @@ const ProfilePage = () => {
             <button onClick={updateEnergyGoal}>Save</button>
             <button onClick={() => setShowEnergyGoalModal(false)}>Cancel</button>
           </div>
+          
         </div>
       )}
       {/* Energy Goal Modal end*/}
@@ -430,7 +455,7 @@ const ProfilePage = () => {
     {/* Log out button */}
     <div>
       <Link to="/">
-            <button onClick={handleLogout} >
+            <button onClick={handleLogout}> 
               Log Out
             </button>
       </Link>
@@ -508,9 +533,9 @@ const ProfilePage = () => {
               </li>
             ))}
           </ul>
-
           <button onClick={() => setShowModal(false)}>Close</button>
         </div>
+        
       </div>
     )}
     {/* Modal for showing devices end*/}
@@ -540,6 +565,7 @@ const ProfilePage = () => {
           </ul>
           <button onClick={() => setShowModal(false)}>Close</button>
         </div>
+        
       </div>
     )}
     {/* Modal for Admin only showing security log end*/}

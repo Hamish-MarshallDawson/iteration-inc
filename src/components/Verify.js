@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation  } from "react-router-dom";
 import "../App.css";
+import Spinner from "../components/Spinner.js";
 
 export default function Verify() {
 
@@ -13,6 +14,7 @@ export default function Verify() {
 
   const navigate = useNavigate();         // React Router hook for navigation
   const location = useLocation();         // React Router hook for getting passed state (email & redirectTo)
+  const [isLoading, setIsLoading] = useState(false);
 
    // Retrieves email passed from the previous page 
   const email = location.state?.email || "";  
@@ -40,21 +42,24 @@ export default function Verify() {
 
   // Function to verify the input code against the generated code
   const verifyCode = () => {
-
+    setIsLoading(true); 
     // Check if code is expired (date.now > date.then+30s) or not generated
     if (!generatedCode || Date.now() > codeExpiration) {
       alert("Code expired! Please generate a new one.");
+      setIsLoading(false);
       return;
     }
 
     // Check if the input code matches the generated code
     if (inputCode === generatedCode) {
+      //setIsLoading(false);
       alert("Verification successful!");
       if (redirectTo) {
         // redirect to the page that was passed in the state, also with email
         navigate(redirectTo, { state: { email } });
       }
     } else {
+      setIsLoading(false);
       alert("Incorrect code. Try again.");
     }
   };
@@ -124,9 +129,10 @@ export default function Verify() {
           {countdown > 0 ? `Code expires in: ${countdown}s` : "Code expired! Request a new code."}
         </p>
 
-        <button onClick={verifyCode} className="submit-button">
-          Verify
+        <button onClick={verifyCode} className="submit-button" disabled={isLoading}>
+          {isLoading ? "Verifying..." : "Verify"}
         </button>
+        {isLoading && <Spinner />}
 
         <button onClick={generateAndStoreCode} className="submit-button">
           Resend Code

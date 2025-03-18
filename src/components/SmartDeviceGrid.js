@@ -8,7 +8,7 @@ import Card from "./ui/card.js";
 import Button from "./ui/button.js";
 import Switch from "./ui/Switch";
 import CardContent from "./ui/cardContent";
-
+import Spinner from "../components/Spinner.js"; 
 import "../App.css";
 
 
@@ -28,6 +28,7 @@ export default function SmartDeviceGrid({
 
 //----------------------------------------State variables------------------------------------------------------
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [devices, setDevices] = useState([]);
   const [deviceName, setDeviceName] = useState("");
@@ -107,7 +108,7 @@ export default function SmartDeviceGrid({
       alert("Device name cannot be longger than 30 characters.");
       return;
     }
-
+    setIsLoading(true);
     try {
       // Make a POST request to add a new device
       const response = await axios.post(
@@ -130,8 +131,10 @@ export default function SmartDeviceGrid({
         setDeviceName("");
         setDeviceType("lightbulb");
         alert("Device added successfully.");
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       alert("Failed to add device.");
     }
   };
@@ -142,6 +145,7 @@ export default function SmartDeviceGrid({
     // Toggle the status
     const newStatus = currentStatus === "Online" ? "Offline" : "Online";
     try {
+      setIsLoading(true);
       // Make a POST request to update the device status
       const response = await axios.post(
         `${window.location.origin}/api/device`,
@@ -165,8 +169,10 @@ export default function SmartDeviceGrid({
           )
         );
         alert(response.data.message);
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       alert("Failed to toggle device status.");
     }
   };
@@ -194,6 +200,7 @@ export default function SmartDeviceGrid({
         alert("Device name cannot be longger than 30 characters.");
         return;
       }
+      setIsLoading(true);
       // Make a POST request to update the device name
       const response = await axios.post(
         `${window.location.origin}/api/device`,
@@ -220,7 +227,9 @@ export default function SmartDeviceGrid({
         setShowSettingsModal(false);
       }
       alert(response.data.message);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error updating device name:", error);
 
       alert("Failed to update device name.");
@@ -230,6 +239,7 @@ export default function SmartDeviceGrid({
   // This function responsible for remove a device
   const removeDevice = async () => {
     try {
+      setIsLoading(true);
       // Make a POST request to remove the device
       const response = await axios.post(
         `${window.location.origin}/api/device`,
@@ -251,8 +261,10 @@ export default function SmartDeviceGrid({
         );
         setShowSettingsModal(false);
         alert(response.data.message);
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       alert("Failed to remove device.");
     }
   };
@@ -283,6 +295,7 @@ export default function SmartDeviceGrid({
   // This function responsible for incrementing a devices energy amount
   const energyUse = async (device) => {
     try {
+      setIsLoading(true);
       // Make a POST request to increment the energy amount
       const response = await axios.post(
         `${window.location.origin}/api/energy`,
@@ -297,8 +310,10 @@ export default function SmartDeviceGrid({
 
       if (response.status === 200) {
         alert("Energy Logged Successfully!");
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Error incrementing energy:", error);
       alert("Failed to increment energy amount.");
     }
@@ -337,6 +352,7 @@ export default function SmartDeviceGrid({
               >
                 <Settings size={16} /> Settings
               </Button>
+              {isLoading && <Spinner />}
             </CardContent>
           </Card>
         ))}
@@ -429,11 +445,11 @@ export default function SmartDeviceGrid({
 
             <Button onClick={updateDeviceName}>Save</Button>
 
-            <button onClick={removeDevice} style={{ backgroundColor: "#f44336"}}>
+            <button onClick={removeDevice} style={{backgroundColor: "#f44336"}}>
               Remove
             </button>
-
-            <button onClick={() => energyUse(currentDevice)} style={{ backgroundColor: "#008CBA"}}>
+            
+            <button onClick={() => energyUse(currentDevice)} style={{backgroundColor: "#007BFF"}} >
               Log Energy Use
             </button>
             <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
