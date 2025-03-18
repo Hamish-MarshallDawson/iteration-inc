@@ -2,21 +2,29 @@ import { prisma } from "./globalPrisma.js";
 
 export default async function handler(req, res) {
   try {
+//------------------------------------------Helper methods-------------------------------------------------------------------
+
+    // Get the userID and action from the request body
     const { userID, action } = req.body;
 
+    // Fetch the user's machine ID
     const user = await prisma.Users.findUnique({
       where: { UserID: userID },
       select: { MachineID: true },
     });
 
+    // Check if the user exists
     if (!user) {
-      console.error(`🔴 User not found: ${userID}`);
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" }); 
     }
 
+    // Get the machine ID of the user
     const machineID = user.MachineID;
 
-    // Get current time and today's start time
+   
+    // Get the current date and time
+    // Get the start of the day
+    // Get the current date in ISO format
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
     const todayISO = new Date().toISOString().split("T")[0]; // Store only the date part for easy checking
@@ -41,9 +49,12 @@ export default async function handler(req, res) {
       other: 12, // 12 hours
     };
 
+//-------------------------------------------------------------------------------------------------------------
     switch (action) {
+
+      //----------------------------------------Fetch-------------------------------------------------------
       case "fetch":
-        // ✅ Fetch recommendations for the user
+        // Fetch stored recommendations for today
         const storedRecommendations = await prisma.Recommendations.findMany({
           where: { UserID: userID,
                 EnvConditions: {
@@ -59,30 +70,28 @@ export default async function handler(req, res) {
             MachineID: true,
           },
         });
-        console.log(`✅ Recommendations fetched for user ${userID}:`, storedRecommendations);
         return res.status(200).json({ recommendations: storedRecommendations });
 
+      //----------------------------------------Check-------------------------------------------------------
       case "check":
-        // ✅ Fetch user devices
+        // Fetch all devices owned by the user
         const devices = await prisma.Devices.findMany({
           where: { UserID: userID },
           select: { DeviceID: true, DeviceType: true },
         });
 
-        if (devices.length === 0) {
-          console.warn(`⚠️ No devices found for user ${userID}`);
-        }
-
+        // Store generated recommendations
         let recommendations = [];
 
+        // Loop through each device and check for recommendations
         for (const device of devices) {
+          // Get the device ID and type
           const deviceID = device.DeviceID;
           const deviceIDString = deviceID.toString();
           const deviceType = device.DeviceType.toLowerCase();
 
-          console.log(`🔍 Checking device ${deviceID} (${deviceType}) for recommendations...`);
-
-          // ✅ Fetch total energy usage for this device today
+          //----------------------------------------Energy Check-------------------------------------------------------
+          // Fetch and sum up the total energy used by the device today
           const energyUsage = await prisma.EnergyUse.aggregate({
             where: {
               DeviceID: deviceID,
@@ -90,16 +99,12 @@ export default async function handler(req, res) {
             },
             _sum: { EnergyUsed: true },
           });
-
           const totalEnergyUsed = energyUsage._sum.EnergyUsed || 0;
 
-          console.log(
-            `🔹 Device ${deviceID} (${deviceType}) used ${totalEnergyUsed} Wh today (Threshold: ${energyThresholds[deviceType]})`
-          );
 
-          // ✅ Check if energy usage exceeds the threshold
+          // Check if the device has exceeded the energy threshold
           if (energyThresholds[deviceType] && totalEnergyUsed > energyThresholds[deviceType]) {
-            // ✅ Check if a recommendation already exists for today
+            // Check if a recommendation already exists for today
             const existingRec = await prisma.Recommendations.findFirst({
               where: {
                 UserID: userID,
@@ -108,25 +113,26 @@ export default async function handler(req, res) {
                   contains: "is using too much energy today",
                 },
                 EnvConditions: {
-                  contains: todayISO, // ✅ Check if stored today
+                  contains: todayISO, //  Check if stored today
                 },
               },
             });
 
+            // If no recommendation exists, add a new one
             if (!existingRec) {
-              console.log(`⚠️ Device ${deviceID} exceeded energy threshold! Adding recommendation.`);
               recommendations.push({
                 UserID: userID,
                 DeviceID: deviceID,
                 MachineID: machineID || null,
                 DeviceConditions: JSON.stringify({ energyUsage: totalEnergyUsed }),
-                EnvConditions: JSON.stringify({ timestamp: todayISO }), // ✅ Store today's timestamp
+                EnvConditions: JSON.stringify({ timestamp: todayISO }), // Store today's timestamp
                 SuggestedAction: `Your ${deviceType} is using too much energy today (${totalEnergyUsed} Wh). Consider turning it off.`,
               });
             }
           }
 
-          // ✅ Fetch the last activity of the device
+          //----------------------------------------Activities Check-------------------------------------------------------
+          // Fetch the last activity of the device
           const lastActivity = await prisma.UserActivity.findFirst({
             where: { 
               DeviceID: deviceIDString, 
@@ -136,18 +142,18 @@ export default async function handler(req, res) {
             select: { Action: true, Timestamp: true },
           });
 
+          // Check if the device has any activity history
           if (!lastActivity) {
-            console.log(`⚠️ No activity history found for device ${deviceID}, skipping on-time check.`);
-            continue; // ✅ Skip to next device if no history exists
+            continue; // Skip to next device if no history exists
           }
 
-          const lastActivityTime = new Date(lastActivity.Timestamp); // ✅ Only runs if lastActivity exists
+          // Calculate the time since the device was last turned ON
+          const lastActivityTime = new Date(lastActivity.Timestamp); 
           const timeSinceOn = (now - lastActivityTime) / (1000 * 60 * 60); // Convert to hours
-          console.log(`🔹 Device ${deviceID} last turned ON ${timeSinceOn.toFixed(2)} hours ago.`);
 
-          // ✅ Check if the device has been ON for too long
+          // Check if the device has been ON for too long
           if (deviceOnThresholds[deviceType] && timeSinceOn >= deviceOnThresholds[deviceType]) {
-            // ✅ Check if a recommendation already exists for today
+            // Check if a recommendation already exists for today
             const existingRec = await prisma.Recommendations.findFirst({
               where: {
                 UserID: userID,
@@ -156,46 +162,48 @@ export default async function handler(req, res) {
                   contains: "has been on for over",
                 },
                 EnvConditions: {
-                  contains: todayISO, // ✅ Check if stored today
+                  contains: todayISO, // Check if stored today
                 },
               },
             });
 
+            // If no recommendation exists, add a new one
             if (!existingRec) {
-              console.log(`⚠️ Device ${deviceID} has been ON for too long! Adding recommendation.`);
               recommendations.push({
                 UserID: userID,
                 DeviceID: deviceID,
                 MachineID: machineID || null,
                 DeviceConditions: JSON.stringify({ lastOnTime: lastActivity.Timestamp }),
-                EnvConditions: JSON.stringify({ timestamp: todayISO }), // ✅ Store today's timestamp
+                EnvConditions: JSON.stringify({ timestamp: todayISO }), // Store today's timestamp
                 SuggestedAction: `Your ${deviceType} has been on for over ${deviceOnThresholds[deviceType]} hours. Consider turning it off.`,
               });
             }
           }
         }
 
-        console.log(`🔹 Final Recommendations for user ${userID}:`, recommendations);
+        // Log the final recommendations
+        console.log(`Final Recommendations for user ${userID}:`, recommendations);
 
-        // ✅ Store new recommendations in the database (Only if there are any)
+        // Store new recommendations in the database (Only if there are any)
         if (recommendations.length > 0) {
           await prisma.Recommendations.createMany({
             data: recommendations,
-            skipDuplicates: true, // ✅ Prevent duplicate entries
+            skipDuplicates: true, // Prevent duplicate entries
           });
-          console.log(`✅ ${recommendations.length} recommendations stored for user ${userID}`);
+          console.log(`${recommendations.length} recommendations stored for user ${userID}`);
         } else {
-          console.log(`✅ No new recommendations generated for user ${userID}`);
+          console.log(`No new recommendations generated for user ${userID}`);
         }
 
+        // Return a success message
         return res.status(200).json({ message: "Recommendation check completed" });
 
       default:
-        console.warn(`❌ Invalid action received: ${action}`);
+        console.warn(`Invalid action received: ${action}`);
         return res.status(400).json({ message: "Invalid action" });
     }
   } catch (error) {
-    console.error("❌ Database Error:", error);
+    console.error("Database Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

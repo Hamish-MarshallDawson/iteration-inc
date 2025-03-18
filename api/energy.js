@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
     const { action, ...data} = req.body;
 
-    //
+    // Define the energy usage and daily usage pattern for each device type
     const energyUsageMap = {
         coffee_machine: 100, //30s consumption
         speaker: 50,        //1h consumption
@@ -15,22 +15,25 @@ export default async function handler(req, res) {
         other: 50,         //1h consumption
       };
 
-      const dailyUsagePatternMap = {
-        coffee_machine: 0.5, //30m usage per day
-        speaker: 3,        //3h usage per day
-        light: 6,          //6h usage per day
-        thermostat: 20,    //20h usage per day
-        robot: 4,         //4h usage per day
-        other: 5,         //5h usage per day
-      };
+    // Define the daily usage pattern for each device type
+    const dailyUsagePatternMap = {
+      coffee_machine: 0.5, //30m usage per day
+      speaker: 3,        //3h usage per day
+      light: 6,          //6h usage per day
+      thermostat: 20,    //20h usage per day
+      robot: 4,         //4h usage per day
+      other: 5,         //5h usage per day
+    };
 
 
 
     switch (action){
- //-------------------------------------------------------------------------------------------------------------------
+ //----------------------------------------Mannually Log---------------------------------------------------------------
         case "increment":
             // Get energy use based on device type
             const energyUsed = energyUsageMap[data.deviceType.toLowerCase()];
+
+            // Log the energy use
             await prisma.EnergyUse.create({
                 data: {
                   DeviceID: data.deviceID,
@@ -41,10 +44,11 @@ export default async function handler(req, res) {
                 },
             });
             return res.status(200).json({ message: "Energy Logged Successfully" });
-//-------------------------------------------------------------------------------------------------------------------       
+
+//---------------------------------------Weekly Simulation---------------------------------------------------------------       
         case "simulateWeeklyUsage":
-        //-------------------------------------------------------------------------------------------------------------------
-        // First get all the online devices that belong to this user, store in the onlineDevices list
+        
+            // First get all the online devices that belong to this user, store in the onlineDevices list
             const onlineDevices = await prisma.Devices.findMany({
                 where: {
                   UserID: data.userID,
@@ -56,21 +60,23 @@ export default async function handler(req, res) {
                 },
             });
 
-            console.log("Retrieved Online Devices:", onlineDevices);
-
+            // If no online devices found, skip the simulation
             if (onlineDevices.length === 0) {
                 console.log("No online devices found.");
                 return res.status(200).json({ message: "No online devices found, skipping simulation." });
             }
         //-------------------------------------------------------------------------------------------------------------------
-        // Next we track last time this user log the energy usage, then we add 7 days to it, simulate a week have passed
+
+            // Get the last log entry for this user
             const lastLog = await prisma.EnergyUse.findFirst({
               where: { UserID: data.userID },
               orderBy: { Timestamp: "desc" }, // Get the most recent log
               select: { Timestamp: true }
             });
 
+            // Set the start timestamp for the simulation
             let startTimestamp  = new Date();
+            // If there is a last log entry, set the start timestamp to the day after the last log
             if (lastLog && lastLog.Timestamp) {
               startTimestamp  = new Date(lastLog.Timestamp);
               startTimestamp .setDate(startTimestamp .getDate() + 1); // Add 1 days
@@ -78,24 +84,31 @@ export default async function handler(req, res) {
       
 
         //-------------------------------------------------------------------------------------------------------------------
-        // Generate the simulated energy logs for the week for all online devices
+            // Generate the simulated energy logs for the week for all online devices
             const energyLogs = [];
+
+            // Loop through each day of the week
             for (let i = 0; i < 7; i++) {
+              // Calculate the current timestamp
               const currentTimestamp = new Date(startTimestamp);
+              // Add the day offset
               currentTimestamp.setDate(startTimestamp.getDate() + i);
-          
+              
+              // Loop through each online device
               onlineDevices.forEach((device) => {
+                // Get the energy usage and daily usage pattern for this device type
                 const deviceTypeKey = device.DeviceType.toLowerCase();
-          
                 if (!energyUsageMap[deviceTypeKey] || !dailyUsagePatternMap[deviceTypeKey]) {
                   console.error(`Device type ${device.DeviceType} is missing in energy usage maps.`);
                   return; // Skip if type is not found
                 }
           
+                // Calculate the daily energy usage for this device
                 const energyUsed = energyUsageMap[deviceTypeKey];
                 const dailyUsage = dailyUsagePatternMap[deviceTypeKey];
                 const dailyEnergyUsed = energyUsed * dailyUsage;
           
+                // Add the energy log entry to the list of logs
                 energyLogs.push({
                   DeviceID: device.DeviceID,
                   UserID: data.userID,
@@ -108,6 +121,7 @@ export default async function handler(req, res) {
 
           console.log("Generated Energy Logs:", energyLogs);
 
+          // Insert the generated energy logs into the database
           if (energyLogs.length > 0) {
               await prisma.EnergyUse.createMany({ data: energyLogs });
               console.log("Energy logs inserted successfully.");
@@ -116,8 +130,10 @@ export default async function handler(req, res) {
               console.log("No valid energy logs to insert.");
               return res.status(200).json({ message: "No energy logs to insert" });
           };
-//-------------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------Daily Simulation---------------------------------------------------------------
         case "simulateDailyUsage":
+          // Get all online devices that belong to this user
           const onlineDevices2 = await prisma.Devices.findMany({
             where: {
               UserID: data.userID,
@@ -128,36 +144,45 @@ export default async function handler(req, res) {
               DeviceType: true,
             },
           });
+
+          // If no online devices found, skip the simulation
           if (onlineDevices2.length === 0) {
               console.log("No online devices found.");
               return res.status(200).json({ message: "No online devices found, skipping simulation." });
           }
 
+          // Get the last log entry for this user
           const lastLog2 = await prisma.EnergyUse.findFirst({
             where: { UserID: data.userID },
             orderBy: { Timestamp: "desc" }, 
             select: { Timestamp: true }
           });
-
+          
+          // Set the start timestamp for the simulation
           let newTimestamp2 = new Date();
+          // If there is a last log entry, set the start timestamp to the day after the last log
           if (lastLog2 && lastLog2.Timestamp) {
             newTimestamp2 = new Date(lastLog2.Timestamp);
             newTimestamp2.setDate(newTimestamp2.getDate() + 1); // Add 1 day
           }
 
+          // Generate the simulated energy logs for the day for all online devices
           const energyLogs2 = onlineDevices2.map((device) => {
             console.log("Processing device:", device);
-            const deviceTypeKey = device.DeviceType.toLowerCase();
 
+            // Get the energy usage and daily usage pattern for this device type
+            const deviceTypeKey = device.DeviceType.toLowerCase();
             if (!energyUsageMap[deviceTypeKey] || !dailyUsagePatternMap[deviceTypeKey]) {
               console.error(`Device type ${device.DeviceType} is missing in energy usage maps.`);
               return null; // Skip if type is not found in the map
             }
 
+            // Calculate the daily energy usage for this device
             const energyUsed = energyUsageMap[device.DeviceType.toLowerCase()];
             const dailyUsage = dailyUsagePatternMap[device.DeviceType.toLowerCase()];
             const dailyEnergyUsed = energyUsed * dailyUsage;
-  
+            
+            // Return the energy log entry
             return {
               DeviceID: device.DeviceID,
               UserID: data.userID,
@@ -168,6 +193,8 @@ export default async function handler(req, res) {
           });
 
           console.log("Generated Energy Logs:", energyLogs2);
+
+          // Insert the generated energy logs into the database
           if (energyLogs2.length > 0) {
               await prisma.EnergyUse.createMany({ data: energyLogs2 });
               console.log("Energy logs inserted successfully.");
