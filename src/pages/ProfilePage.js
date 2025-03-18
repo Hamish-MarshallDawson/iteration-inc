@@ -1,19 +1,19 @@
 // Filename - pages/ProfilePage.js
 
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
-import axios from "axios"; 
+import axios from "axios";
 import Spinner from "../components/Spinner.js";
 
 // !!Import jwtDecode to decode jwt
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 
 const ProfilePage = () => {
 
-//----------------------------------------State variables------------------------------------------------------
+  //----------------------------------------State variables------------------------------------------------------
   // State variables for user info, energy goal and recommendations. Available for all user types
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -24,7 +24,7 @@ const ProfilePage = () => {
   const [energyGoal, setEnergyGoal] = useState(null);
   const [newEnergyGoal, setNewEnergyGoal] = useState("");
   const [showEnergyGoalModal, setShowEnergyGoalModal] = useState(false);
-  const [recommendations, setRecommendations] = useState([]); 
+  const [recommendations, setRecommendations] = useState([]);
   const [showRecModal, setShowRecModal] = useState(false);
 
   const navigate = useNavigate();
@@ -40,14 +40,14 @@ const ProfilePage = () => {
   const [modalType, setModalType] = useState("");
 
 
-//--------------------------------------------------------Page auto loading contents--------------------------------------------------
+  //--------------------------------------------------------Page auto loading contents--------------------------------------------------
 
   // Extract email from JWT token when page is load
   useEffect(() => {
     const token = localStorage.getItem("token");
     // If it dont exist, means they exipired, then redirect them back to login, ask them to login again
     if (!token) {
-      navigate("/"); 
+      navigate("/");
       return;
     }
     try {
@@ -69,24 +69,24 @@ const ProfilePage = () => {
 
 
   // //Simulate weekly energy usage for the user every time they logged in
-  useEffect(() => {
-    // Extract the boolean flag from local storage to determine if the energy usage has been simulated
-    const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
-    if (userID && machineID && hasSimulated === "false") {
-      simulateEnergyUsage();
-    }
-  }, [userID, machineID]); 
+  // useEffect(() => {
+  //   // Extract the boolean flag from local storage to determine if the energy usage has been simulated
+  //   const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
+  //   if (userID && machineID && hasSimulated === "false") {
+  //     simulateEnergyUsage();
+  //   }
+  // }, [userID, machineID]); 
 
 
-  // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
-  useEffect(() => {
+  // // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
+  // useEffect(() => {
 
-    const interval = setInterval(() => { 
-      simulateDailyUsage();
-    }, 300000); // Execute every 5 minutes
+  //   const interval = setInterval(() => { 
+  //     simulateDailyUsage();
+  //   }, 300000); // Execute every 5 minutes
 
-    return () => clearInterval(interval);   // Clear the interval when the component is unmounted
-  }, [userID, machineID]);
+  //   return () => clearInterval(interval);   // Clear the interval when the component is unmounted
+  // }, [userID, machineID]);
 
 
   // Fetch energy goal for the user when page is load
@@ -102,10 +102,42 @@ const ProfilePage = () => {
       checkRecommendations(userID);
     }, 1 * 60 * 1000); // Every 1 minutes
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [userID]);
 
-//----------------------------------------------Helper methods-----------------------------------------------------------------------  
+  useEffect(() => {
+    setIsLoading(true);
+    const hasDisplayed  = localStorage.getItem("hasDisplayedRecoms");
+
+    const fetchRecommendations = async () => {
+      setIsLoading(true);
+      try {
+        // Make a POST request to fetch recommendations
+        const response = await axios.post(`${window.location.origin}/api/recommendation`, {
+          userID,
+          action: "fetch",
+        });
+
+        // Set the recommendations and display the modal
+        setIsLoading(false);
+        const recommendations = response.data.recommendations;
+        if (hasDisplayed === "false") {
+          for(const rec of recommendations){
+            alert(`${rec.SuggestedAction}`);
+          } 
+          localStorage.setItem("hasDisplayedRecoms", "true");
+        }
+
+      } catch (error) {
+        setIsLoading(false);
+        console.error("Error fetching recommendations:", error);
+      }
+    };
+    
+    fetchRecommendations();
+
+  }, [userID]);
+  //----------------------------------------------Helper methods-----------------------------------------------------------------------  
 
   //-----------------------------------------------Methods for recommendations feature------------------------------------------------
 
@@ -122,7 +154,6 @@ const ProfilePage = () => {
       setIsLoading(false);
       setRecommendations(response.data.recommendations);
       setShowRecModal(true);
-
     } catch (error) {
       setIsLoading(false);
       console.error("Error fetching recommendations:", error);
@@ -149,13 +180,13 @@ const ProfilePage = () => {
     setIsLoading(true);
     try {
       // Check if the energy goal is a valid number
-      if (newEnergyGoal< 0){
+      if (newEnergyGoal < 0) {
         alert("Energy goal can not be negative number");
         setShowEnergyGoalModal(false);
         setIsLoading(false);
         return;
       }
-      if (newEnergyGoal > 1000){
+      if (newEnergyGoal > 1000) {
         alert("Energy goal can not be larger than 1000");
         setShowEnergyGoalModal(false);
         setIsLoading(false);
@@ -167,6 +198,7 @@ const ProfilePage = () => {
         action: "updateEnergyGoal",
         userID,
         newEnergyGoal: newEnergyGoal,
+        machineID: machineID
       });
 
       // If the request is successful, update the energy goal and display success message
@@ -174,17 +206,17 @@ const ProfilePage = () => {
         alert("Energy goal updated successfully");
         setIsLoading(false);
         // Update the energy goal and close the modal
-        setEnergyGoal(newEnergyGoal); 
+        setEnergyGoal(newEnergyGoal);
         setShowEnergyGoalModal(false);
         // Reset the new energy goal
-        setNewEnergyGoal(""); 
+        setNewEnergyGoal("");
       }
     } catch (error) {
       setIsLoading(false);
       alert("Failed to update energy goal. Please try again.");
     }
   };
-  
+
   // Fetch energy goal for the user
   const fetchEnergyGoal = async () => {
     setIsLoading(true);
@@ -241,12 +273,17 @@ const ProfilePage = () => {
   };
 
   //-----------------------------------------------Methods for regular profile page------------------------------------------------
+
+  // Handle remove profile
+  const removeProfile = () => {
+    navigate("/verify", { state: { email, redirectTo: "/confirmRemoval" } });
+  };
   
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {
     alert("Successfully log out.");
     localStorage.removeItem("token");
-    navigate("/"); 
+    navigate("/");
   };
 
   // Handle email update, by redirect to verify page and further update-email page
@@ -290,19 +327,19 @@ const ProfilePage = () => {
       });
 
       // Show all users logged in this system
-      if (action === "getLoggedUsers") 
+      if (action === "getLoggedUsers")
         setLoggedUsers(response.data.users);
       // Show all users activities in this system
-      if (action === "getUserActivityLogs") 
+      if (action === "getUserActivityLogs")
         setActivityLogs(response.data.logs);
       // Show all users energy usage in this system
-      if (action === "getEnergyUseLogs") 
+      if (action === "getEnergyUseLogs")
         setEnergyLogs(response.data.logs);
       // Show all devices added in this system
-      if (action === "getDevicesInMachine") 
+      if (action === "getDevicesInMachine")
         setDevicesInMachine(response.data.devices);
       // Show all security logs in this system
-      if (action === "getSecurityLogs") 
+      if (action === "getSecurityLogs")
         setSecurityLogs(response.data.logs);
 
       setIsLoading(false);
@@ -315,7 +352,7 @@ const ProfilePage = () => {
       console.error("Error fetching data:", error);
     }
   };
-//----------------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="profile-container">
@@ -330,11 +367,11 @@ const ProfilePage = () => {
 
       {/* Profile Info */}
       <div className="profile-card"
-      style = {{
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-      }}>
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+        }}>
         <div className="profile-image">
           <svg
             viewBox="0 0 24 24"
@@ -343,7 +380,7 @@ const ProfilePage = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style = {{
+            style={{
               width: 40,
               height: 40,
             }}
@@ -409,166 +446,172 @@ const ProfilePage = () => {
             <button onClick={updateEnergyGoal}>Save</button>
             <button onClick={() => setShowEnergyGoalModal(false)}>Cancel</button>
           </div>
-          
+
         </div>
       )}
       {/* Energy Goal Modal end*/}
-      
 
-    {/* Manager OR Admin Only Buttons */}
-    {(userType === "Home_Manager" || userType === "Admin") && (
+
+      {/* Manager OR Admin Only Buttons */}
+      {(userType === "Home_Manager" || userType === "Admin") && (
         <div className="profile-card" style={{ marginTop: "2rem" }}>
           <button onClick={() => fetchData("getLoggedUsers")}>View Logged-in Users</button>
           <button onClick={() => fetchData("getUserActivityLogs")}>View User Activity Logs</button>
           <button onClick={() => fetchData("getEnergyUseLogs")}>View Energy Logs</button>
           <button onClick={() => fetchData("getDevicesInMachine")}>View Devices</button>
         </div>
-    )}
-    {/* Manager Only Buttons end */}
+      )}
+      {/* Manager Only Buttons end */}
 
 
-    {/* Admin Only Button */}
-    {userType === "Admin" && (
-      <div className="profile-card" style={{ marginTop: "2rem" }}>
-        <button onClick={() => fetchData("getSecurityLogs")}>View Security Logs</button>
-      </div>
-    )}
-    {/* Admin Only Button end*/}
+      {/* Admin Only Button */}
+      {userType === "Admin" && (
+        <div className="profile-card" style={{ marginTop: "2rem" }}>
+          <button onClick={() => fetchData("getSecurityLogs")}>View Security Logs</button>
+        </div>
+      )}
+      {/* Admin Only Button end*/}
 
 
-    {/* Update Email & Password Buttons */}
-    <div className="profile-card"
+      {/* Update Email & Password Buttons */}
+      <div className="profile-card"
         style={{
           marginTop: "2rem",
-    }}>
-      <button onClick={handleUpdateEmail}>
-        Update Email
-      </button>
+        }}>
+        <button onClick={handleUpdateEmail}>
+          Update Email
+        </button>
 
-      <button onClick={handleUpdatePassword}>
-        Update Password
-      </button>
-    </div>
-    {/* Update Email & Password Buttons end*/}
-
-
-    {/* Log out button */}
-    <div>
-      <Link to="/">
-            <button onClick={handleLogout}> 
-              Log Out
-            </button>
-      </Link>
-    </div>
-    {/* Log out button end*/}
-
-
-    {/* Modal for manager only contents */}
-    {showModal && (
-      <div className="modal-overlay" onClick={() => setShowModal(false)}>
-        <div className="modal-content">
-
-          <h3>
-            {modalType === "getLoggedUsers" ? "Logged-in Users"
-              : modalType === "getUserActivityLogs" ? "User Activity Logs"
-              : "Energy Logs"}
-          </h3>
-
-          {/* Display logs */}
-          <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
-
-            {(modalType === "getLoggedUsers" ? loggedUsers
-              : modalType === "getUserActivityLogs" ? activityLogs
-              : energyLogs).map((log, index) => (
-
-                <li key={index} style={{ marginBottom: "10px", padding: "10px", borderBottom: "1px solid #fca17d" }}>
-
-                  <strong>{log.Timestamp ? new Date(log.Timestamp).toLocaleString() : "No Timestamp"}</strong>
-                  <br />
-
-                  {modalType === "getUserActivityLogs" ? (
-                    <>
-                      <strong>User ID:</strong> {log.UserID || "Unknown"}<br />
-                      <strong>Device ID:</strong> {log.DeviceID || "Unknown"}<br />
-                      <strong>Action:</strong> {log.Action || "N/A"}
-                    </>
-                    ) : modalType === "getLoggedUsers" ? (
-                      <>
-                        <strong>Name:</strong> {log.FirstName} {log.LastName} <br />
-                        <strong>Email:</strong> {log.Email}
-                      </>
-                    ) : (
-                      log.EventDescription || JSON.stringify(log, null, 2)
-                  )}
-                </li>
-            ))}
-          </ul>
-          <button onClick={() => setShowModal(false)}>Close</button>
-        </div>
+        <button onClick={handleUpdatePassword}>
+          Update Password
+        </button>
       </div>
-    )}
-    {/* Modal for manager only contents end*/}
+      {/* Update Email & Password Buttons end*/}
 
 
-    {/* Modal for showing devices */}
-    {showModal && modalType === "getDevicesInMachine" && (
-      <div className="modal-overlay" onClick={() => setShowModal(false)}>
-        <div 
-          className="modal-content"
-          onClick={(e) => e.stopPropagation()} 
-        >
-          <h3>
-            Devices in this Machine
-          </h3>
-          
-          <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto"}}>
+      {/* Log out button */}
+      <div>
+        <Link to="/">
+          <button onClick={handleLogout}>
+            Log Out
+          </button>
 
-            {devicesInMachine.map((device, index) => (
-              <li key={index} style={{ 
-                marginBottom: "10px", 
-                padding: "10px", 
-                borderBottom: "1px solid #fca17d" }}
-              >
-                <strong>{device.DeviceName}</strong> - {device.DeviceType} ({device.Status})
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => setShowModal(false)}>Close</button>
-        </div>
-        
+          <button onClick={removeProfile}>
+            Delete account
+          </button>
+        </Link>
       </div>
-    )}
-    {/* Modal for showing devices end*/}
+      {/* Log out button end*/}
 
 
-    {/* Modal for Admin only showing security log */}
-    {showModal && modalType === "getSecurityLogs" && (
-      <div className="modal-overlay" onClick={() => setShowModal(false)}>
-        <div className="modal-content">
+      {/* Modal for manager only contents */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content">
 
-          <h3>Security Logs</h3>
-          <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
-            {securityLogs.length > 0 ? (
-              securityLogs.map((log, index) => (
-                <li key={index} style={{ 
-                  marginBottom: "10px", 
-                  padding: "10px", 
-                  borderBottom: "1px solid #fca17d" }}
+            <h3>
+              {modalType === "getLoggedUsers" ? "Logged-in Users"
+                : modalType === "getUserActivityLogs" ? "User Activity Logs"
+                  : "Energy Logs"}
+            </h3>
+
+            {/* Display logs */}
+            <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
+
+              {(modalType === "getLoggedUsers" ? loggedUsers
+                : modalType === "getUserActivityLogs" ? activityLogs
+                  : energyLogs).map((log, index) => (
+
+                    <li key={index} style={{ marginBottom: "10px", padding: "10px", borderBottom: "1px solid #fca17d" }}>
+
+                      <strong>{log.Timestamp ? new Date(log.Timestamp).toLocaleString() : "No Timestamp"}</strong>
+                      <br />
+
+                      {modalType === "getUserActivityLogs" ? (
+                        <>
+                          <strong>User ID:</strong> {log.UserID || "Unknown"}<br />
+                          <strong>Device ID:</strong> {log.DeviceID || "Unknown"}<br />
+                          <strong>Action:</strong> {log.Action || "N/A"}
+                        </>
+                      ) : modalType === "getLoggedUsers" ? (
+                        <>
+                          <strong>Name:</strong> {log.FirstName} {log.LastName} <br />
+                          <strong>Email:</strong> {log.Email}
+                        </>
+                      ) : (
+                        log.EventDescription || JSON.stringify(log, null, 2)
+                      )}
+                    </li>
+                  ))}
+            </ul>
+            <button onClick={() => setShowModal(false)}>Close</button>
+          </div>
+        </div>
+      )}
+      {/* Modal for manager only contents end*/}
+
+
+      {/* Modal for showing devices */}
+      {showModal && modalType === "getDevicesInMachine" && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>
+              Devices in this Machine
+            </h3>
+
+            <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
+
+              {devicesInMachine.map((device, index) => (
+                <li key={index} style={{
+                  marginBottom: "10px",
+                  padding: "10px",
+                  borderBottom: "1px solid #fca17d"
+                }}
                 >
-                  <strong>Event:</strong> {log.EventDescription} <br />
-                  <strong>Timestamp:</strong> {new Date(log.Timestamp).toLocaleString()}
+                  <strong>{device.DeviceName}</strong> - {device.DeviceType} ({device.Status})
                 </li>
-              ))
-            ) : (
-              <p>No security logs found.</p>
-            )}
-          </ul>
-          <button onClick={() => setShowModal(false)}>Close</button>
+              ))}
+            </ul>
+            <button onClick={() => setShowModal(false)}>Close</button>
+          </div>
+
         </div>
-        
-      </div>
-    )}
-    {/* Modal for Admin only showing security log end*/}
+      )}
+      {/* Modal for showing devices end*/}
+
+
+      {/* Modal for Admin only showing security log */}
+      {showModal && modalType === "getSecurityLogs" && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content">
+
+            <h3>Security Logs</h3>
+            <ul style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
+              {securityLogs.length > 0 ? (
+                securityLogs.map((log, index) => (
+                  <li key={index} style={{
+                    marginBottom: "10px",
+                    padding: "10px",
+                    borderBottom: "1px solid #fca17d"
+                  }}
+                  >
+                    <strong>Event:</strong> {log.EventDescription} <br />
+                    <strong>Timestamp:</strong> {new Date(log.Timestamp).toLocaleString()}
+                  </li>
+                ))
+              ) : (
+                <p>No security logs found.</p>
+              )}
+            </ul>
+            <button onClick={() => setShowModal(false)}>Close</button>
+          </div>
+
+        </div>
+      )}
+      {/* Modal for Admin only showing security log end*/}
 
     </div>
   );

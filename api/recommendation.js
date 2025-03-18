@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
    
     // Get the current date and time
-    // Get the start of the day
+    // Get the start of the day 
     // Get the current date in ISO format
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);

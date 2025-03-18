@@ -60,8 +60,8 @@ model Schedules {
   Frequency  freq?
   StartTime  DateTime? @db.Timestamp(6)
   EndTime    DateTime? @db.Timestamp(6)
-  Devices    Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: NoAction, onUpdate: NoAction, map: "DeviceID")
-  Users      Users?    @relation(fields: [UserID], references: [UserID], onDelete: NoAction, onUpdate: NoAction, map: "UserID")
+  Devices    Devices?  @relation(fields: [DeviceID], references: [DeviceID], onDelete: Cascade, onUpdate: NoAction, map: "DeviceID")
+  Users      Users?    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction, map: "UserID")
 }
 
 model SecurityLogs {

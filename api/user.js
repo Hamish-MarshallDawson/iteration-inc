@@ -138,7 +138,44 @@ export default async function handler(req, res) {
           where: { UserID: data.userID },
           data: { EnergyGoal: data.newEnergyGoal },
         });
+
+        // Log the energy goal update event
+        await prisma.SecurityLogs.create({
+          data: {
+            UserID: data.userID,
+            EventDescription: `Energy goal update to ${data.newEnergyGoal } on Profile ID: ${data.userID }`,
+            Timestamp: new Date(),
+            MachineID: data.machineID
+          },
+        });
         return res.status(200).json({ message: "Energy goal updated successfully" });
+
+      //----------------------------------------User profile remove------------------------------------------------------  
+      case "removeProfile":
+        // Delete all related data for the this user
+        await prisma.Devices.deleteMany({ where: { UserID: data.userID } });
+        await prisma.UserActivity.deleteMany({ where: { UserID: data.userID } });
+        await prisma.Recommendations.deleteMany({ where: { UserID: data.userID } });
+        await prisma.Schedules.deleteMany({ where: { UserID: data.userID } });
+        await prisma.EnergyUse.deleteMany({ where: { UserID: data.userID} });
+        await prisma.SecurityLogs.deleteMany({ where: { UserID: data.userID} });
+        await prisma.UserAwards.deleteMany({ where: { UserID: data.userID} });
+
+        // Delete the user profile
+        await prisma.Users.delete({
+          where: { UserID: data.userID },
+        });
+
+        // Log the profile removal event
+        await prisma.SecurityLogs.create({
+          data: {
+            UserID: data.userID,
+            EventDescription: `Removed User Profile ID: ${data.userID }`,
+            Timestamp: new Date(),
+            MachineID: data.machineID
+          },
+        });
+        return res.status(200).json({ message: "Profile removed successfully" });
 
       //----------------------------------------Default ------------------------------------------------------
       default:

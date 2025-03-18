@@ -86,6 +86,7 @@ function Login() {
       if (response.status === 200) { 
         localStorage.setItem("token", response.data.token);       // Store the token in local storage
         localStorage.setItem("hasSimulatedEnergy", "false");
+        localStorage.setItem("hasDisplayedRecoms", "false");
         
         alert("User registered, " + response.data.message);
         navigate("/verify", { state: { email, redirectTo: "/profile" } });     // Redirect to profile page after 2FA

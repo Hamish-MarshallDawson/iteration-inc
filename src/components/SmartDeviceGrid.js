@@ -8,7 +8,7 @@ import Card from "./ui/card.js";
 import Button from "./ui/button.js";
 import Switch from "./ui/Switch";
 import CardContent from "./ui/cardContent";
-import Spinner from "../components/Spinner.js"; 
+import Spinner from "../components/Spinner.js";
 import "../App.css";
 
 
@@ -26,7 +26,7 @@ export default function SmartDeviceGrid({
   ],
 }) {
 
-//----------------------------------------State variables------------------------------------------------------
+  //----------------------------------------State variables------------------------------------------------------
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,8 +43,18 @@ export default function SmartDeviceGrid({
   const [currentDevice, setCurrentDevice] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
 
-  
-//------------------------------Page auto loading contents--------------------------------------------------------------------------------
+  // State variable for automation rules
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [schedule, setSchedule] = useState({
+    frequency: "Weekly",
+    startTime: "",
+    endTime: "",
+  });
+  const [userType, setUserType] = useState(null);
+
+
+  //------------------------------Page auto loading contents--------------------------------------------------------------------------------
 
   // This part responsible for get room ID and decode JWT to get user ID
   useEffect(() => {
@@ -61,6 +71,7 @@ export default function SmartDeviceGrid({
       const decoded = jwtDecode(token);
       setUserID(decoded.userId);
       setmachineID(decoded.machineId);
+      setUserType(decoded.userType);
     } catch (error) {
       alert("Invalid token. Logging out.");
       localStorage.removeItem("token");
@@ -74,10 +85,10 @@ export default function SmartDeviceGrid({
     if (userID && roomID) {
       // Fetch devices for the room and user
       axios.post(`${window.location.origin}/api/device`, {
-          action: "get",
-          userID: userID,
-          roomID: roomID,
-          machineID,
+        action: "get",
+        userID: userID,
+        roomID: roomID,
+        machineID,
       })
         .then((response) => {
           //alert("Response Received");
@@ -90,9 +101,72 @@ export default function SmartDeviceGrid({
     }
   }, [userID, roomID]);
 
-  
 
-//---------------------------------------Helper methods-----------------------------------------------------------------------------
+
+  //---------------------------------------Helper methods-----------------------------------------------------------------------------
+
+  //-------------------------------------------For manage automation rules-------------------------------------------
+
+  const openScheduleModal = (device) => {
+    setIsLoading(true);
+
+    // Check if the user is allowed to modify schedules
+    if (userType !== "Home_Manager" && userType !== "Admin") {
+      alert("Only Managers and Admins can modify schedules.");
+      setIsLoading(false);
+      return;
+    }
+    
+    setSelectedDevice(device);
+    setShowScheduleModal(true);
+  
+    // Fetch the existing schedule from API
+    axios.post(`${window.location.origin}/api/device`, {
+      action: "fetchSchedule",
+      deviceID: device.DeviceID,
+      userID,
+    })
+    .then((response) => {
+      setIsLoading(false);
+      // Set the schedule to the response data, or default values if no schedule exists
+      setSchedule(response.data.schedule || {
+        frequency: "Weekly",
+        startTime: "",
+        endTime: "",
+      });
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      console.error("Error fetching schedule:", error);
+      alert("Failed to fetch schedule.");
+    });
+  };
+
+  const updateSchedule = async () => {
+
+    if (!selectedDevice) return; // If no device is selected, return
+
+    try {
+      // Make a POST request to update the schedule
+      const response = await axios.post(`${window.location.origin}/api/device`, {
+        action: "updateSchedule",
+        deviceID: selectedDevice.DeviceID,
+        userID,
+        frequency: schedule.frequency,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+      });
+  
+      if (response.status === 200) {
+        alert("Schedule updated successfully!");
+        setShowScheduleModal(false);
+      }
+    } catch (error) {
+      console.error("Error updating schedule:", error);
+      alert("Failed to update schedule.");
+    }
+  };
+
 
   //-------------------------------------------For manage devices-----------------------------------------------
 
@@ -319,8 +393,8 @@ export default function SmartDeviceGrid({
     }
   };
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-  
+  //-----------------------------------------------------------------------------------------------------------------------------------------------
+
   return (
     <div className="smart-device-grid-container">
       <h2 className="section-title">Smart Devices</h2>
@@ -400,14 +474,14 @@ export default function SmartDeviceGrid({
                       {type === "lightbulb"
                         ? "Lightbulb"
                         : type === "coffee"
-                        ? "Coffee Maker"
-                        : type === "speaker"
-                        ? "Speaker"
-                        : type === "thermostat"
-                        ? "Thermostat"
-                        : type === "robot"
-                        ? "Robot"
-                        : "Other"}
+                          ? "Coffee Maker"
+                          : type === "speaker"
+                            ? "Speaker"
+                            : type === "thermostat"
+                              ? "Thermostat"
+                              : type === "robot"
+                                ? "Robot"
+                                : "Other"}
                     </option>
                   ))}
                 </select>
@@ -445,17 +519,68 @@ export default function SmartDeviceGrid({
 
             <Button onClick={updateDeviceName}>Save</Button>
 
-            <button onClick={removeDevice} style={{backgroundColor: "#f44336"}}>
+            <button onClick={removeDevice} style={{ backgroundColor: "#f44336" }}>
               Remove
             </button>
-            
-            <button onClick={() => energyUse(currentDevice)} style={{backgroundColor: "#007BFF"}} >
+
+            <button onClick={() => energyUse(currentDevice)} style={{ backgroundColor: "#007BFF" }} >
               Log Energy Use
+            </button>
+
+            <button onClick={() => openScheduleModal(currentDevice)} style={{ backgroundColor: "#007BFF" }}>
+              Modify Schedule
             </button>
             <Button onClick={() => setShowSettingsModal(false)}>Cancel</Button>
           </div>
         </div>
       )}
+
+      {/* Schedule Modal */}
+      {showScheduleModal && (
+        <div className="modal-overlay" onClick={() => setShowScheduleModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Modify Schedule for {selectedDevice?.DeviceName}</h3>
+
+            <div className="inputFields">
+              <label>Frequency:</label>
+
+              <select
+                value={schedule.frequency}
+                onChange={(e) => setSchedule({ ...schedule, frequency: e.target.value })}
+              >
+                {["Once", "Daily", "Weekly", "Monthly"].map((freq) => (
+                  <option key={freq} value={freq}>{freq}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="inputFields">
+              <label>Start Time:</label>
+              <input
+                type="datetime-local"
+                value={schedule.startTime}
+                onChange={(e) => setSchedule({ ...schedule, startTime: e.target.value })}
+              />
+            </div>
+
+            <div className="inputFields">
+              <label>End Time:</label>
+              <input
+                type="datetime-local"
+                value={schedule.endTime}
+                onChange={(e) => setSchedule({ ...schedule, endTime: e.target.value })}
+              />
+            </div>
+
+            <Button onClick={updateSchedule}>Save</Button>
+            <Button onClick={() => setShowScheduleModal(false)}>Cancel</Button>
+          </div>
+        </div>
+      )}
+
+
+
+
     </div>
   );
 }

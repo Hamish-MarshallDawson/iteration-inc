@@ -4,18 +4,19 @@ export default async function handler(req, res) {
   try {
     // Extract the action and data from the request body
     const { action, ...data } = req.body;
+    console.log(action);
 
     switch (action) {
-    //----------------------------------------Device add------------------------------------------------------  
+      //----------------------------------------Device add------------------------------------------------------  
       case "add":
 
         const typeMapping = {
-            coffee: "Coffee_Machine",
-            speaker: "Speaker",
-            lightbulb: "Light",
-            thermostat: "Thermostat",
-            robot: "Robot",
-            other: "Other",
+          coffee: "Coffee_Machine",
+          speaker: "Speaker",
+          lightbulb: "Light",
+          thermostat: "Thermostat",
+          robot: "Robot",
+          other: "Other",
         };
         // Map the device type to the corresponding value in the database
         const prismaDeviceType = typeMapping[data.deviceType];
@@ -40,9 +41,23 @@ export default async function handler(req, res) {
             MachineID: data.machineID
           },
         });
+
+        let startTimestamp = new Date();
+        let endTimeStamp = new Date();
+        endTimeStamp.setDate(startTimestamp.getDate() + 7);
+        await prisma.Schedules.create({
+          data: {
+              DeviceID: newDevice.DeviceID,
+              UserID: data.userID,
+              Frequency: "Weekly",
+              StartTime: startTimestamp,
+              EndTime: endTimeStamp,
+          },
+        });
+
         return res.status(201).json({ message: "Device added successfully", device: newDevice });
 
-    //----------------------------------------Devices get------------------------------------------------------ 
+      //----------------------------------------Devices get------------------------------------------------------ 
       case "get":
         // Fetch all devices for the user in the specified room
         const devices = await prisma.Devices.findMany({
@@ -63,7 +78,7 @@ export default async function handler(req, res) {
         // Return the list of devices
         return res.status(200).json({ devices });
 
-    //----------------------------------------Devices toggle------------------------------------------------------ 
+      //----------------------------------------Devices toggle------------------------------------------------------ 
       case "updateStatus":
         await prisma.Devices.update({   // Update the device status
           where: { DeviceID: data.deviceID },
@@ -81,11 +96,11 @@ export default async function handler(req, res) {
         });
         return res.status(200).json({ message: "Device status updated successfully" });
 
-    //----------------------------------------Devices update name------------------------------------------------------ 
+      //----------------------------------------Devices update name------------------------------------------------------ 
       case "updateName":
         // Validate the device ID and new device name
         if (!data.deviceID || typeof data.newDeviceName !== "string" || !data.newDeviceName.trim()) {
-            return res.status(400).json({ message: "Device ID and valid new device name are required" });
+          return res.status(400).json({ message: "Device ID and valid new device name are required" });
         }
         // Update the device name
         await prisma.Devices.update({
@@ -101,13 +116,13 @@ export default async function handler(req, res) {
             MachineID: data.machineID
           },
         });
-        return res.status(200).json({ message: "Device name updated successfully" }); 
+        return res.status(200).json({ message: "Device name updated successfully" });
 
-    //----------------------------------------Devices remove------------------------------------------------------ 
+      //----------------------------------------Devices remove------------------------------------------------------ 
       case "remove":
         // Delete all related data for the device
         await prisma.EnergyUse.deleteMany({ where: { DeviceID: data.deviceID } });
-        await prisma.UserActivity.deleteMany({ where: { DeviceID: data.deviceID.toString() } }); 
+        await prisma.UserActivity.deleteMany({ where: { DeviceID: data.deviceID.toString() } });
         await prisma.Recommendations.deleteMany({ where: { DeviceID: data.deviceID } });
         await prisma.Schedules.deleteMany({ where: { DeviceID: data.deviceID } });
         // Delete the device
@@ -124,6 +139,29 @@ export default async function handler(req, res) {
           },
         });
         return res.status(200).json({ message: "Device removed successfully" });
+
+      //----------------------------------------Devices Automation Rule Fetch------------------------------------------------------
+      case "fetchSchedule":
+        const existingSchedule = await prisma.Schedules.findFirst({
+          where: { DeviceID: data.deviceID, UserID: data.userID },
+          select: { Frequency: true, StartTime: true, EndTime: true },
+        });
+
+        return res.status(200).json({ schedule: existingSchedule });
+
+
+
+      //----------------------------------------Devices Automation Rule Update------------------------------------------------------
+      case "updateSchedule":
+        await prisma.Schedules.updateMany({
+          where: { DeviceID: data.deviceID, UserID: data.userID },
+          data: {
+            Frequency: data.frequency,
+            StartTime: new Date(data.startTime),
+            EndTime: new Date(data.endTime),
+          },
+        });
+        return res.status(200).json({ message: "Schedule updated successfully" });
 
       default:
         return res.status(400).json({ message: "Invalid action" });
