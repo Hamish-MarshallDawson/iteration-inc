@@ -496,7 +496,7 @@ const ProfilePage = () => {
             Log Out
           </button>
 
-          <button onClick={removeProfile}>
+          <button onClick={removeProfile} style={{ backgroundColor: "#f44336" }}>
             Delete account
           </button>
         </Link>

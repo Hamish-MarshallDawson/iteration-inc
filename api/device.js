@@ -153,16 +153,35 @@ export default async function handler(req, res) {
 
       //----------------------------------------Devices Automation Rule Update------------------------------------------------------
       case "updateSchedule":
-        await prisma.Schedules.updateMany({
+        
+        const existingSchedule2 = await prisma.Schedules.findFirst({
           where: { DeviceID: data.deviceID, UserID: data.userID },
-          data: {
-            Frequency: data.frequency,
-            StartTime: new Date(data.startTime),
-            EndTime: new Date(data.endTime),
-          },
         });
-        return res.status(200).json({ message: "Schedule updated successfully" });
-
+        
+        if (existingSchedule2) {
+          // If schedule exists, update it
+          await prisma.Schedules.updateMany({
+            where: { DeviceID: data.deviceID, UserID: data.userID },
+            data: {
+              Frequency: data.frequency,
+              StartTime: new Date(data.startTime),
+              EndTime: new Date(data.endTime),
+            },
+          });
+          return res.status(200).json({ message: "Schedule updated successfully" });
+        } else {
+          // If no schedule exists, create a new one
+          await prisma.Schedules.create({
+            data: {
+              DeviceID: data.deviceID,
+              UserID: data.userID,
+              Frequency: data.frequency,
+              StartTime: new Date(data.startTime),
+              EndTime: new Date(data.endTime),
+            },
+          });
+          return res.status(201).json({ message: "New schedule created successfully" });
+        }
       default:
         return res.status(400).json({ message: "Invalid action" });
     }

@@ -46,11 +46,7 @@ export default function SmartDeviceGrid({
   // State variable for automation rules
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [schedule, setSchedule] = useState({
-    frequency: "Weekly",
-    startTime: "",
-    endTime: "",
-  });
+  const [schedule, setSchedule] = useState(null);
   const [userType, setUserType] = useState(null);
 
 
@@ -129,11 +125,7 @@ export default function SmartDeviceGrid({
     .then((response) => {
       setIsLoading(false);
       // Set the schedule to the response data, or default values if no schedule exists
-      setSchedule(response.data.schedule || {
-        frequency: "Weekly",
-        startTime: "",
-        endTime: "",
-      });
+      setSchedule(response.data.schedule || { frequency: "Weekly", startTime: "", endTime: "" });
     })
     .catch((error) => {
       setIsLoading(false);
@@ -258,6 +250,19 @@ export default function SmartDeviceGrid({
     setCurrentDevice(device);
     setUpdatedName(device.DeviceName);
     setShowSettingsModal(true);
+
+    axios.post(`${window.location.origin}/api/device`, {
+      action: "fetchSchedule",
+      deviceID: device.DeviceID,
+      userID,
+    })
+    .then((response) => {
+      setSchedule(response.data.schedule || { frequency: "Weekly", startTime: "", endTime: "" });
+    })
+    .catch((error) => {
+      console.error("Error fetching schedule:", error);
+      alert("Failed to fetch schedule.");
+    });
   };
 
 
@@ -517,6 +522,17 @@ export default function SmartDeviceGrid({
               </div>
             </div>
 
+            {schedule && schedule.Frequency ? (
+              <div>
+                <h4>Current Schedule:</h4>
+                <p><strong>Frequency:</strong> {schedule.Frequency}</p>
+                <p><strong>Start Time:</strong> {schedule.StartTime ? new Date(schedule.StartTime).toLocaleString() : "Not Set"}</p>
+                <p><strong>End Time:</strong> {schedule.EndTime ? new Date(schedule.EndTime).toLocaleString() : "Not Set"}</p>
+              </div>
+            ) : (
+              <p>No schedule assigned to this device.</p>
+            )}
+
             <Button onClick={updateDeviceName}>Save</Button>
 
             <button onClick={removeDevice} style={{ backgroundColor: "#f44336" }}>
@@ -545,8 +561,8 @@ export default function SmartDeviceGrid({
               <label>Frequency:</label>
 
               <select
-                value={schedule.frequency}
-                onChange={(e) => setSchedule({ ...schedule, frequency: e.target.value })}
+                value={schedule?.frequency || "Weekly"}  
+                onChange={(e) => setSchedule((prev) => ({ ...prev, frequency: e.target.value }))}
               >
                 {["Once", "Daily", "Weekly", "Monthly"].map((freq) => (
                   <option key={freq} value={freq}>{freq}</option>
@@ -558,7 +574,7 @@ export default function SmartDeviceGrid({
               <label>Start Time:</label>
               <input
                 type="datetime-local"
-                value={schedule.startTime}
+                value={schedule.startTime || ""}
                 onChange={(e) => setSchedule({ ...schedule, startTime: e.target.value })}
               />
             </div>
@@ -567,7 +583,7 @@ export default function SmartDeviceGrid({
               <label>End Time:</label>
               <input
                 type="datetime-local"
-                value={schedule.endTime}
+                value={schedule.endTime  || ""}
                 onChange={(e) => setSchedule({ ...schedule, endTime: e.target.value })}
               />
             </div>
