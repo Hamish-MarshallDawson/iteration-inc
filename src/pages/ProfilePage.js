@@ -111,6 +111,11 @@ const ProfilePage = () => {
 
     const fetchRecommendations = async () => {
       setIsLoading(true);
+      if (!userID) {
+        console.warn("Skipping API call because userID is null");
+        setIsLoading(false);
+        return;
+      }
       try {
         // Make a POST request to fetch recommendations
         const response = await axios.post(`${window.location.origin}/api/recommendation`, {
@@ -143,6 +148,10 @@ const ProfilePage = () => {
 
   // Fetch recommendations manually when user requests
   const fetchRecommendations = async () => {
+    if (!userID) {
+      console.warn("Skipping API call because userID is null");
+      return;
+    }  
     setIsLoading(true);
     try {
       // Make a POST request to fetch recommendations
@@ -162,6 +171,10 @@ const ProfilePage = () => {
 
   // Automatically check for recommendations every 1 minute
   const checkRecommendations = async (userID) => {
+    if (!userID) {
+      console.warn("Skipping API call because userID is null");
+      return;
+    }  
     try {
       // Make a POST request to check for recommendations
       await axios.post(`${window.location.origin}/api/recommendation`, {
@@ -275,9 +288,6 @@ const ProfilePage = () => {
   //-----------------------------------------------Methods for regular profile page------------------------------------------------
 
   // Handle remove profile
-  const removeProfile = () => {
-    navigate("/verify", { state: { email, redirectTo: "/confirmRemoval" } });
-  };
   
   // Handle logout, by clear token and go back to login page
   const handleLogout = () => {
@@ -494,10 +504,6 @@ const ProfilePage = () => {
         <Link to="/">
           <button onClick={handleLogout}>
             Log Out
-          </button>
-
-          <button onClick={removeProfile} style={{ backgroundColor: "#f44336" }}>
-            Delete account
           </button>
         </Link>
       </div>

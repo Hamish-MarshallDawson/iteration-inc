@@ -150,7 +150,8 @@ export default async function handler(req, res) {
         });
         return res.status(200).json({ message: "Energy goal updated successfully" });
 
-      //----------------------------------------User profile remove------------------------------------------------------  
+      //----------------------------------------User profile remove------------------------------------------------------ 
+      // not use 
       case "removeProfile":
         // Delete all related data for the this user
         await prisma.Devices.deleteMany({ where: { UserID: data.userID } });
