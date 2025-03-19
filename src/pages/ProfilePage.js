@@ -70,24 +70,24 @@ const ProfilePage = () => {
 
 
   // //Simulate weekly energy usage for the user every time they logged in
-  // useEffect(() => {
-  //   // Extract the boolean flag from local storage to determine if the energy usage has been simulated
-  //   const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
-  //   if (userID && machineID && hasSimulated === "false") {
-  //     simulateEnergyUsage();
-  //   }
-  // }, [userID, machineID]); 
+  useEffect(() => {
+    // Extract the boolean flag from local storage to determine if the energy usage has been simulated
+    const hasSimulated  = localStorage.getItem("hasSimulatedEnergy");
+    if (userID && machineID && hasSimulated === "false") {
+      simulateEnergyUsage();
+    }
+  }, [userID, machineID]); 
 
 
-  // // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
-  // useEffect(() => {
+  // Simulate daily energy usage for the user every time they logged in and stay in the page for 5 minutes
+  useEffect(() => {
 
-  //   const interval = setInterval(() => { 
-  //     simulateDailyUsage();
-  //   }, 300000); // Execute every 5 minutes
+    const interval = setInterval(() => { 
+      simulateDailyUsage();
+    }, 300000); // Execute every 5 minutes
 
-  //   return () => clearInterval(interval);   // Clear the interval when the component is unmounted
-  // }, [userID, machineID]);
+    return () => clearInterval(interval);   // Clear the interval when the component is unmounted
+  }, [userID, machineID]);
 
 
   // Fetch energy goal for the user when page is load

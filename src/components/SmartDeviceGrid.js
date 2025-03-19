@@ -301,7 +301,7 @@ export default function SmartDeviceGrid({
       setIsLoading(false);
       console.error("Error fetching energy usage:", error);
     }
-    fetchAndUpdateEnergyUsage(device.DeviceID);
+    //fetchAndUpdateEnergyUsage(device.DeviceID);
     setIsLoading(false);
   };
 
