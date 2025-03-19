@@ -53,7 +53,7 @@ const useEnergyData = () => {
     const fetchData = async () => {
 
       try {
-        const response = await axios.post(`${window.location.origin}/api/query`, {USERID: userID});
+        const response = await axios.post(`${window.location.origin}/api/query`, {USERID: 8});// userID});
         const { totalData, userData } = response.data;        
         setTotalData(totalData);
         setUserData(userData);
