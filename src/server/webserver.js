@@ -336,6 +336,30 @@ A route will be needed for:
 
 */
 
+
+/*
+
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+NOTE: UPDATE "lastUpdated" EVERY TIME A DEVICE IS CALLED
+
+*/
+
+
+
+// turns a client device into a server one
+function formatClientDevice(clientDevice) {
+    let SD = new simDevice(clientDevice.ID, clientDevice.name, clientDevice.deviceType, clientDevice.location, SIM)
+    return SD
+}
+
 // get all devices
 // TODO: don't send the simulator object with it
 // would need to itterate through devices and "delete(device.simulator)"
@@ -350,6 +374,54 @@ app.post('/api/allDevices', (req, res) => {
     res.json(JSON.stringify(SDM.devices))
     return res.status(200)
 });
+
+// update the data of a specific device
+// returns all devices on success
+app.post('/api/setData', (req, res) => {
+    // log request
+    console.log("REQUEST RECIEVED: setData")
+
+    // console.log("REQ:")
+    // console.log(req)
+
+    console.log("REQ BODY")
+    console.log(req.body)
+
+    //check the device actually exists
+    if (SDM.devices["" + req.body.ID] != undefined) {
+        console.log("setData: DEVICE EXISTS:")
+        console.log(SDM.devices["" + req.body.ID])
+        SDM.devices["" + req.body.ID] = req.body//.data
+        
+        res.status(200)
+    }
+    else {
+        console.log("setData: DEVICE DOES NOT EXIST:")
+        res.status(500)
+    }
+    // return updated devices
+    res.json(JSON.stringify(SDM.devices))
+    return res
+    
+});
+
+app.post('/api/addDevice', (req, res) => {
+    // log request
+    console.log("REQUEST RECIEVED: addDevice")
+
+    // send response object with all the devices
+    // TODO: error checking
+    console.log("RECIEVED OBJECT:")
+    console.log(req.data)
+    if (SDM.addDevice(formatClientDevice(req.data))) {
+        return res.status(200)
+    }
+    else {
+        return res.status(500)
+    }
+    
+});
+
 
 
 // Testing route

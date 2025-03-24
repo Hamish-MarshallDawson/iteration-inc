@@ -139,7 +139,7 @@ export default function SmartDeviceGrid({ roomId }) {
           console.log(new clientDevice( (JSON.parse(response.data))[""+device],null))
           outArr[outArr.length]  = (JSON.parse(response.data))[""+device]
   
-      }
+        }
 
         setClientDevices(outArr)
       }
@@ -173,27 +173,27 @@ export default function SmartDeviceGrid({ roomId }) {
   }, [navigate]);
 
   // This part fetch devices when page load
-  useEffect(() => {
-    if (userID && roomID) {
-      alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
+  // useEffect(() => {
+  //   if (userID && roomID) {
+  //     alert(`Fetching devices for Room ID: ${roomID} and User ID: ${userID}`);
 
-      axios
-        .post(`${window.location.origin}/api/device`, {
-          action: "get",
-          userID: userID,
-          roomID: roomID,
-          machineID,
-        })
-        .then((response) => {
-          alert("Response Received");
-          setDevices(response.data.devices || []);
-        })
-        .catch((error) => {
-          console.error("Error fetching devices:", error);
-          alert("Failed to fetch devices.");
-        });
-    }
-  }, [userID, roomID]);
+  //     axios
+  //       .post(`${window.location.origin}/api/device`, {
+  //         action: "get",
+  //         userID: userID,
+  //         roomID: roomID,
+  //         machineID,
+  //       })
+  //       .then((response) => {
+  //         alert("Response Received");
+  //         setDevices(response.data.devices || []);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching devices:", error);
+  //         alert("Failed to fetch devices.");
+  //       });
+  //   }
+  // }, [userID, roomID]);
 
   // This part is for debugg purpose only
   useEffect(() => {
@@ -233,28 +233,36 @@ export default function SmartDeviceGrid({ roomId }) {
   };
 
   // This function responsible for change device status
-  const toggleDeviceStatus = async (deviceID, currentStatus) => {
-    const newStatus = currentStatus === "Online" ? "Offline" : "Online";
+  const toggleDeviceStatus = async (device) => {
+    const newStatus = device.data.status === "Online" ? "Offline" : "Online";
     try {
-      const response = await axios.post(
-        `${window.location.origin}/api/device`,
-        {
-          action: "updateStatus",
-          deviceID,
-          newStatus,
-          userID,
-          machineID,
-        }
-      );
+      device.data.status = newStatus
+      console.log("SENDING DEVICE STATUS REQUEST WITH DEVICE:")
+      console.log(JSON.stringify(device))
+      let response = await axios.post("http://localhost:5000/api/setData", JSON.stringify(device), { headers: {'Content-Type': 'application/json'}})
 
       if (response.status === 200) {
-        setDevices((prevDevices) =>
-          prevDevices.map((device) =>
-            device.DeviceID === deviceID
-              ? { ...device, Status: newStatus }
-              : device
-          )
-        );
+        // setDevices((prevDevices) =>
+        //   prevDevices.map((device) =>
+        //     device.DeviceID === deviceID
+        //       ? { ...device, Status: newStatus }
+        //       : device
+        //   )
+        // );
+        // make response into array
+        let outArr = []
+        for (let device in JSON.parse(response.data)) {
+          // needs device and dom
+          console.log("RECIEVED DEVICE:")
+          console.log(device)
+          console.log(new clientDevice( (JSON.parse(response.data))[""+device],null))
+          outArr[outArr.length]  = (JSON.parse(response.data))[""+device]
+  
+        }
+        setClientDevices(outArr)
+      }
+      else {
+        alert("Error toggling device status")
       }
     } catch (error) {
       console.error("Error updating device status:", error);
@@ -368,9 +376,10 @@ export default function SmartDeviceGrid({ roomId }) {
               <div className="device-status-wrapper">
                 <Switch
                   isOn={device.data.status === "Online"} // Pass the correct status
-                  onToggle={() =>
-                    // toggleDeviceStatus(device.DeviceID, device.Status)
+                  onToggle={() => {
                     console.log("TODO: THIS SHOULD TOGGLE DEVICE STATUS")
+                    toggleDeviceStatus(device)
+                  }
                   } // Handle toggle
                   className="device-switch"
                 />
