@@ -40,6 +40,9 @@ function MainContent() {
     "/passwordReset2",
     "/verify",
     "/filling-information",
+    "/updateEmail",
+    "/confirmUpdateEmail",
+
   ];
 
   // Automatically replace the URL if navigating to the hidden route
@@ -76,6 +79,8 @@ function MainContent() {
             <Route path="/deviceTest" element={<DeviceTest />} />
             {/* Hidden route that automatically disappears from the URL */}
             <Route path="/hidden" element={<h1>Hidden Route</h1>} />
+
+            <Route path="*" element={<Login />} />
           </Routes>
         </div>
       </div>

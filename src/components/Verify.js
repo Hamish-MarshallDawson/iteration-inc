@@ -64,6 +64,11 @@ export default function Verify() {
     }
   };
 
+  const loginGoBack = () => {
+    localStorage.removeItem("token");   
+    navigate(-1); 
+  };
+
 //----------------------------------------Page auto loading contents------------------------------------------------------
 
   // Automatically generate and send code when the page loads
@@ -94,6 +99,7 @@ export default function Verify() {
     // Clear the interval when the component unmounts
     return () => clearInterval(interval); 
   }, [codeExpiration]);
+
 
 //------------------------------------------------------------------------------------------------------------------------------
 
@@ -138,7 +144,7 @@ export default function Verify() {
           Resend Code
         </button>
 
-        <button onClick={() => navigate(-1)} className="submit-button">
+        <button onClick={loginGoBack} className="submit-button">
           Go Back
         </button>
       </div>
