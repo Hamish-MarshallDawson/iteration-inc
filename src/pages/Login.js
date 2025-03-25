@@ -89,7 +89,7 @@ function Login() {
         localStorage.setItem("hasDisplayedRecoms", "false");
         
         alert("User registered, " + response.data.message);
-        navigate("/verify", { state: { email, redirectTo: "/profile" } });     // Redirect to profile page after 2FA
+        navigate("/verify", { state: { email, redirectTo: "/profile",from: "login" } });     // Redirect to profile page after 2FA
       } 
     } catch (error) {
       // Set state of spinner to false (stop spinning) as the form is submitted

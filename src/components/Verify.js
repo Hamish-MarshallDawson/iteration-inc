@@ -21,6 +21,8 @@ export default function Verify() {
   // Retrieves target page after verification, default to log in if missing
   const redirectTo = location.state?.redirectTo || "/";
 
+  const fromPage = location.state?.from || "unknown";
+
   // Functiona that can generate a random 4-digit code
   const generateCode = () => {
     // Math.random() generates a random number between 0 and 1 (e.g. 0.1111111)
@@ -65,8 +67,11 @@ export default function Verify() {
   };
 
   const loginGoBack = () => {
-    localStorage.removeItem("token");   
-    navigate(-1); 
+    
+    if (fromPage === "login") {
+      localStorage.removeItem("token");
+    }
+    navigate(-1);
   };
 
 //----------------------------------------Page auto loading contents------------------------------------------------------
