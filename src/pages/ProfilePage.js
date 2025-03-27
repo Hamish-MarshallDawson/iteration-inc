@@ -144,6 +144,24 @@ const ProfilePage = () => {
     fetchRecommendations();
 
   }, [userID]);
+
+    // Activate scheduled devices when page is load
+    useEffect(() => {
+      const activateScheduledDevices = async () => {
+        try {
+          await axios.post(`${window.location.origin}/api/device`, {
+            action: "activateSchedule",
+            userID,
+            machineID,
+          });
+        } catch (error) {
+          console.error("Failed to activate scheduled devices:", error);
+        }
+      };
+      if (userID && machineID) {
+        activateScheduledDevices();
+      }
+    }, [userID, machineID]);
   //----------------------------------------------Helper methods-----------------------------------------------------------------------  
 
   //-----------------------------------------------Methods for recommendations feature------------------------------------------------

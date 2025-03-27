@@ -193,8 +193,98 @@ export default async function handler(req, res) {
           return res.status(404).json({ message: "Device not found" });
         }
         return res.status(200).json({ energyUsed: device.EnergyUsed});
+      
+      case "activateSchedule":
+        // Fetch all schedules bind to this user
+        const schedules = await prisma.Schedules.findMany({
+          where: {
+            UserID: data.userID,
+          },
+          include: {
+            Devices: true,
+          },
+        });
 
-        
+        // Get the current time
+        const now = new Date();
+
+        // Loop through all schedules
+        for (const schedule of schedules) {
+
+          // Skip schedules with missing start or end times
+          if (!schedule.StartTime || !schedule.EndTime) continue;
+
+          // Extract the schedule details
+          const { DeviceID, Frequency, StartTime, EndTime } = schedule;
+          
+          // Check if the current time is between the start and end times
+          if (StartTime <= now && now <= EndTime) {
+            await prisma.Devices.update({
+              where: { DeviceID },
+              data: { Status: "Online" },
+            });
+      
+            await prisma.UserActivity.create({
+              data: {
+                UserID: data.userID,
+                DeviceID: DeviceID.toString(),
+                Timestamp: now,
+                Action: "Turn_On",
+                MachineID: data.machineID,
+              },
+            });
+          }
+
+          // Check if the current time is past the end time
+          if (EndTime < now) {
+            await prisma.Devices.update({
+              where: { DeviceID },
+              data: { Status: "Offline" },
+            });
+      
+            await prisma.UserActivity.create({
+              data: {
+                UserID: data.userID,
+                DeviceID: DeviceID.toString(),
+                Timestamp: now,
+                Action: "Turn_Off",
+                MachineID: data.machineID,
+              },
+            });
+          }
+
+
+          // Update the schedule status based on the freq after activate it 
+          const nextStart = new Date(StartTime);
+          const nextEnd = new Date(EndTime);
+          switch (Frequency) {
+            case "Daily":
+              nextStart.setDate(nextStart.getDate() + 1);
+              nextEnd.setDate(nextEnd.getDate() + 1);
+              break;
+            case "Weekly":
+              nextStart.setDate(nextStart.getDate() + 7);
+              nextEnd.setDate(nextEnd.getDate() + 7);
+              break;
+            case "Monthly":
+              nextStart.setMonth(nextStart.getMonth() + 1);
+              nextEnd.setMonth(nextEnd.getMonth() + 1);
+              break;
+            case "Once":
+            default:
+              continue; 
+          }
+          await prisma.Schedules.update({
+            where: { ScheduleID: schedule.ScheduleID },
+            data: {
+              StartTime: nextStart,
+              EndTime: nextEnd,
+            },
+          });
+
+
+        }
+
       default:
         return res.status(400).json({ message: "Invalid action" });
     }
