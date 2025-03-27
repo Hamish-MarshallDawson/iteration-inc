@@ -65,6 +65,7 @@ body::before {
   overflow: hidden; /* Prevent scrolling issues */
 }
 
+/* fixed */
 .MainContent {
   /* margin-left: 20rem; */
   width: 100%;
